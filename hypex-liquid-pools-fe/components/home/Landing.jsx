@@ -1,4 +1,6 @@
 import { useRouter } from "next/router";
+import styled from "styled-components";
+import styles from '../../styles/Landing.module.css'
 import { Container, Logo, Left } from "./style";
 
 const Landing = () => {
@@ -11,15 +13,17 @@ const Landing = () => {
   const listProject = async() => {
     //
   }
-
   return (
-    <Container>
-       <h>NFT AUCTION</h>
-       <p>LIQUID POOL PROTOCOL</p>
-       <p>🔥Total Trading Volume: $13,355</p> <p>🔥Total Value Locked: $4,3465</p>
-       <button onclick={swapNFTs}> Swap NFTs</button>
-       <button onclick={listProject}> List Your Project </button>
-    </Container>
+    <div className={styles.content}>
+       <h className={styles.title}>NFT AUCTION</h>
+       <p className={styles.subtitle}>LIQUID POOL PROTOCOL</p>
+       <div className={styles.subcontent}>
+         <div className={styles.data}><p>🔥Total Trading Volume: $13,355</p></div>
+         <div className={styles.data}><p>🔥Total Value Locked: $4,3465</p></div>
+       </div>
+       <button className={`${styles.button} ${styles.purple}`} onclick={swapNFTs}> Swap NFTs</button>
+       <button className={styles.button} onclick={listProject}> List Your Project </button>
+    </div>
   );
 }
 
