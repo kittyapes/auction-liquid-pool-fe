@@ -1,9 +1,10 @@
 import HypexLogo from '../../static/images/logo.png'
 import { Container, Logo, Left } from "./style";
+import styles from '../header/style/Header.module.css';
 import { useRouter } from "next/router";
 
 const Header = () => {
-  const router = useRouter()
+  const router = useRouter();
   const useToHome = () => {
     router.push('/')
   }
@@ -11,9 +12,9 @@ const Header = () => {
   return (
     <Container>
       <Left>
-        <Logo onClick={useToHome}>
+        <div className={styles.logo} onClick={useToHome}>
           <img src={HypexLogo.src} alt="hypex-logo" />
-        </Logo>
+        </div>
       </Left>
     </Container>
   );

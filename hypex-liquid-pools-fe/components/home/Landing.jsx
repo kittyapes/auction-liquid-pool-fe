@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import styled from "styled-components";
-import styles from '../../styles/Landing.module.css'
+import styles from '../home/style/Landing.module.css'
 import { Container, Logo, Left } from "./style";
 
 const Landing = () => {
