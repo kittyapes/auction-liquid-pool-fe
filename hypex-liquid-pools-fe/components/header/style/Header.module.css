@@ -69,11 +69,21 @@
 }
 
 .right {
-    margin-right: 5%;
+    margin-right: 1%;
     display: flex;
     color: grey;
+    float: right;
 }
 
 .container {
-    display: flex;;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 96px;
+    background: rgba(255, 255, 255, 0.03);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 999;
 }
