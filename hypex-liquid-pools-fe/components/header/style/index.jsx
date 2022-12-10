@@ -118,6 +118,12 @@ export const BigLetter = styled.span`
 export const Left = styled.div`
   margin-left: 5%;
 `
+
+export const Right = styled.div`
+  margin-right: 5%;
+  display:flex;
+  color: grey;
+`
 export const Logo = styled.div`
   display: flex;
   align-items: center;

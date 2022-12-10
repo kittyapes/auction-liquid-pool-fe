@@ -3,15 +3,17 @@ import { useRouter } from "next/router";
 import styles from '../home/style/Landing.module.css'
 import { useWeb3React } from "@web3-react/core";
 import { injected } from "../Wallet/connectors";
-import {
-  useChainId,
-} from "../../api/contract";
+import { useWalletContext } from "../../context/wallet";
+import { useChainId } from "../../api/contract";
 
 const Landing = () => {
   const CHAIN_ID = "1";
   const router = useRouter();
   const { active, account, activate } = useWeb3React();
   const [chainId, setChainId] = useState(null);
+  const { 
+    setWalletAddress,
+} = useWalletContext()
 
   useEffect(()=>{
     async function fetchData() {
@@ -33,6 +35,7 @@ const Landing = () => {
       }
     }
     fetchData();
+    setWalletAddress(account);
   }, [account]);
 
   useEffect(() => {
