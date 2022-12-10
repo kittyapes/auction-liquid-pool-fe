@@ -67,3 +67,13 @@
     height: auto;
     width: 128px;
 }
+
+.right {
+    margin-right: 5%;
+    display: flex;
+    color: grey;
+}
+
+.container {
+    display: flex;;
+}
