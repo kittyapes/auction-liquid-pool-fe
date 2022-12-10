@@ -55,6 +55,7 @@ const Landing = () => {
   const swapNFTs = async() => {
     if(active) {
       // navigate to swap page.
+      router.push('/swap');
     } else {
       // remind user to connect wallet.
       await activate(injected);
@@ -65,6 +66,7 @@ const Landing = () => {
   const listProject = async() => {
     if(active) {
       // navigate to list project page.
+      router.push('/list_project');
     } else {
       // remind user to connect wallet.
       await activate(injected);
