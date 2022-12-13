@@ -1,0 +1,12 @@
+.MuiTab-textColorInherit {
+    color:#FFFFFF66;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+
+.selected {
+    color:white;
+    font-size: 24px;
+    font-weight: 700;
+}
