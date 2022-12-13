@@ -1,9 +1,6 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
-import Details from "../components/pool/details/Details";
-import Landing from "../components/home/Landing";
-import SwapList from '../components/swap/SwapList';
+import Head from "next/head";
+import styles from "../styles/Home.module.css";
+import SwapList from "../components/swap/SwapList";
 
 export default function Home() {
   return (
@@ -14,8 +11,8 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <SwapList/>
+        <SwapList />
       </main>
     </div>
-  )
+  );
 }

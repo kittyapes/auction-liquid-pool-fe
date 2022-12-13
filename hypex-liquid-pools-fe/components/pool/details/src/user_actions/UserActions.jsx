@@ -1,10 +1,10 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import styles from '../user_actions/style/UserActions.module.css';
+import * as React from "react";
+import PropTypes from "prop-types";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import styles from "../user_actions/style/UserActions.module.css";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -35,11 +35,11 @@ TabPanel.propTypes = {
 function a11yProps(index) {
   return {
     id: `simple-tab-${index}`,
-    'aria-controls': `simple-tabpanel-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
   };
 }
 
-export default function UserActions({pool}) {
+export default function UserActions({ pool }) {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
@@ -47,9 +47,14 @@ export default function UserActions({pool}) {
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
-      <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-        <Tabs value={value} textColor="inherit" onChange={handleChange} aria-label="basic tabs example">
+    <Box sx={{ width: "100%" }}>
+      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Tabs
+          value={value}
+          textColor="inherit"
+          onChange={handleChange}
+          aria-label="basic tabs example"
+        >
           <Tab label={`Trade $${pool.name}`} {...a11yProps(0)} />
           <Tab label="Buy NFTs" {...a11yProps(1)} />
           <Tab label={`Your ${pool.name}`} {...a11yProps(2)} />

@@ -17,7 +17,7 @@ export const WalletProvider = ({ children }) => {
     <WalletContext.Provider
       value={{
         walletAddress,
-        setWalletAddress
+        setWalletAddress,
       }}
     >
       {children}
@@ -27,7 +27,7 @@ export const WalletProvider = ({ children }) => {
 
 export function useWalletContext() {
   const context = useContext(WalletContext);
-   
+
   if (!context) {
     throw new Error("Cannot Use without WalletProvider");
   }
