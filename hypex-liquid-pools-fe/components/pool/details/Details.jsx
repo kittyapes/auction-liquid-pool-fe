@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useWeb3React } from "@web3-react/core";
+import Paper from "@mui/material/Paper";
+import { styled } from "@mui/material/styles";
 import styles from "../details/style/Details.module.css";
 import Azuki from "../../../static/images/azuki.jpeg";
 import eth from "../../../static/images/eth.png";
@@ -56,22 +57,7 @@ const Details = () => {
               <Grid xs={2}>
                 <p className={styles.text}>{data.title}</p>
                 <p className={styles.value}>
-                  <span
-                    style={{
-                      visibility:
-                        data.subValue == undefined ? "hidden" : "visible",
-                    }}
-                  >
-                    <Avatar
-                      style={{
-                        width: "25px",
-                        height: "25px",
-                        display: "inline-block",
-                        verticalAlign: "middle",
-                      }}
-                      src={eth.src}
-                    ></Avatar>{" "}
-                  </span>
+                  <span></span>
                   {data.value}
                 </p>
                 <p className={styles.sub_value}>{data.subValue ?? ""}</p>
