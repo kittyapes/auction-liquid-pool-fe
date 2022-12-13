@@ -2,9 +2,9 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
-  background-color: #271E33;
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  background-color: #271e33;
 }
 
 a {
@@ -27,14 +27,13 @@ a {
 }
 
 .MuiTab-textColorInherit {
-  color:#FFFFFF66;
+  color: #ffffff66;
   font-size: 20px;
   font-weight: 700;
 }
 
-
 .Mui-selected {
-  color:white;
+  color: white;
   font-size: 20px;
   font-weight: 700;
 }
