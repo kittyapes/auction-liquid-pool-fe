@@ -44,15 +44,17 @@ const Details = () => {
                     cardDatas.map((data) => {
                         return <Grid xs={2}>
                             <p className={styles.text}>{data.title}</p>
-                            <p className={styles.value}>{data.value}</p>
+                            <p className={styles.value}>
+                                <span style={{visibility: data.subValue == undefined ? "hidden" : "visible"}}>
+                                    <Avatar style={{width:'25px', height:'25px', display: 'inline-block', verticalAlign: "middle"}} src={eth.src} ></Avatar>  </span>{data.value}</p>
                             <p className={styles.sub_value}>{data.subValue ?? ''}</p>
                         </Grid>
                     })
                 }
             </Grid>
         </Grid>
-        <Grid>
-            <UserActions />
+        <Grid className={styles.user_actions}>
+            <UserActions pool={pool}/>
         </Grid>
     </Grid>
   );
@@ -68,7 +70,7 @@ let cardDatas = [{
   }, {
     title: 'Floor Price',
     value: 9.734,
-    subValue: null
+    subValue: '$ 432,321'
   },
   {
     title: '7 Days Volume',
@@ -79,7 +81,7 @@ let cardDatas = [{
   {
     title: 'Pool TVL',
     value: 9.734,
-    subValue: null
+    subValue: '$ 432,321'
   },
   {
     title: 'Trading Fees',

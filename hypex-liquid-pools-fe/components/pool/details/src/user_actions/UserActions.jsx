@@ -39,7 +39,7 @@ function a11yProps(index) {
   };
 }
 
-export default function UserActions() {
+export default function UserActions({pool}) {
   const [value, setValue] = React.useState(0);
 
   const handleChange = (event, newValue) => {
@@ -50,9 +50,9 @@ export default function UserActions() {
     <Box sx={{ width: '100%' }}>
       <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
         <Tabs value={value} textColor="inherit" onChange={handleChange} aria-label="basic tabs example">
-          <Tab label="Item One" {...a11yProps(0)} />
-          <Tab label="Item Two" {...a11yProps(1)} />
-          <Tab label="Item Three" {...a11yProps(2)} />
+          <Tab label={`Trade $${pool.name}`} {...a11yProps(0)} />
+          <Tab label="Buy NFTs" {...a11yProps(1)} />
+          <Tab label={`Your ${pool.name}`} {...a11yProps(2)} />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
