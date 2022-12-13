@@ -32,52 +32,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
-const columns = [
-  {
-    field: "name",
-    headerName: "Name",
-    width: 300,
-    renderCell: (params) => {
-      return (
-        <>
-          <Avatar src={params.value.avatar} />
-          {params.value.name}
-        </>
-      );
-    }
-  },
-  { field: 'token', headerName: 'Token', width: 130 },
-  {
-    field: "floorPrice",
-    headerName: "Floor Price",
-    width: 130,
-    renderCell: (params) => {
-      return (
-        <>
-          <img style={{width:'30px', height:'30px'}} src={params.value.coinImage} />
-          {params.value.price}
-        </>
-      );
-    }
-  },
-  { field: 'dayChange', headerName: '24h Change', width: 130 },
-  {
-    field: 'offerTVL',  
-    headerName: 'offer TVL',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    width: 1300,
-    renderCell: (params) => {
-      return (
-        <>
-          <img style={{width:'30px', height:'30px'}} src={params.value.coinImage} />
-          {params.value.price}
-        </>
-      );
-    }
-  },
-];
-
 const rows = [
   {
     id:1,
@@ -92,7 +46,7 @@ const rows = [
       coinImage:
       eth.src
     },
-    dayChange:"-0.03%",
+    dayChange:-0.007,
     offerTVL: {
       price: "6.99",
       coinImage:
@@ -112,7 +66,7 @@ const rows = [
       coinImage:
       eth.src
     },
-    dayChange:"-0.03%",
+    dayChange:-0.0003,
     offerTVL: {
       price: "6.99",
       coinImage:
@@ -132,7 +86,7 @@ const rows = [
       coinImage:
       eth.src
     },
-    dayChange:"-0.03%",
+    dayChange:0.0003,
     offerTVL: {
       price: "6.99",
       coinImage:
@@ -169,7 +123,9 @@ export default function SwapList() {
                 <Avatar style={{width:'25px', height:'25px', display: 'inline-block', verticalAlign: "middle"}} src={row.floorPrice.coinImage} ></Avatar>  
                 <span style={{marginLeft:'10px', display: 'inline-block', verticalAlign: "middle"}}>{row.floorPrice.price}</span>
               </TableCell>
-              <TableCell align="left">{row.dayChange}</TableCell>
+              <TableCell align="left">
+                <span className={row.dayChange>0? styles.green: styles.red}>{(row.dayChange*100).toFixed(2) + '%'}</span>
+              </TableCell>
               <TableCell align="left">
               <Avatar style={{width:'25px', height:'25px', display: 'inline-block', verticalAlign: "middle"}} src={row.offerTVL.coinImage} ></Avatar>  
                 <span style={{marginLeft:'10px', display: 'inline-block', verticalAlign: "middle"}}>{row.offerTVL.price}</span>
