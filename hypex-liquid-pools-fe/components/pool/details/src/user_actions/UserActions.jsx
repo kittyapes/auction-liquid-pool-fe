@@ -5,12 +5,14 @@ import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import styles from "../user_actions/style/UserActions.module.css";
-
+import Collection from "../collection/Collection";
+import Azuki from "../../../../../static/images/azuki.jpeg";
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
   return (
     <div
+      className={styles.tab_panel}
       role="tabpanel"
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
@@ -18,7 +20,7 @@ function TabPanel(props) {
       {...other}
     >
       {value === index && (
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 0 }}>
           <Typography>{children}</Typography>
         </Box>
       )}
@@ -64,11 +66,42 @@ export default function UserActions({ pool }) {
         Item One
       </TabPanel>
       <TabPanel value={value} index={1}>
-        Item Two
+        <Collection nfts={nfts} type={"Auction"} />
       </TabPanel>
       <TabPanel value={value} index={2}>
-        Item Three
+        <Collection nfts={nfts} type={"Swap"} />
       </TabPanel>
     </Box>
   );
 }
+
+let nfts = [
+  {
+    src: Azuki.src,
+    address: "0x342153215aabdc432143",
+  },
+  {
+    src: Azuki.src,
+    address: "0x342153215aabdc432143",
+  },
+  {
+    src: Azuki.src,
+    address: "0x342153215aabdc432143",
+  },
+  {
+    src: Azuki.src,
+    address: "0x342153215aabdc432143",
+  },
+  {
+    src: Azuki.src,
+    address: "0x342153215aabdc432143",
+  },
+  {
+    src: Azuki.src,
+    address: "0x342153215aabdc432143",
+  },
+  {
+    src: Azuki.src,
+    address: "0x342153215aabdc432143",
+  },
+];

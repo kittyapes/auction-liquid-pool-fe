@@ -20,6 +20,7 @@ const Details = () => {
     address: "0x342153215aabdc432143",
     name: "Azuki",
   };
+
   return (
     <Grid container className={styles.container}>
       <Grid container className={styles.upper_detail}>
