@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useWeb3React } from "@web3-react/core";
 import HypexLogo from "../../static/images/logo.png";
-import { Container, Logo, Left, Right } from "./style";
 import styles from "../header/style/Header.module.css";
 import { useRouter } from "next/router";
 if (typeof window !== "undefined") {
@@ -31,19 +30,19 @@ const Header = () => {
     return address.slice(0, 5) + "..." + address.slice(-4);
   };
   return (
-    <Container className={styles.container}>
-      <Left>
+    <div className={styles.container}>
+      <div>
         <div className={styles.logo} onClick={useToHome}>
           <img src={HypexLogo.src} alt="hypex-logo" />
         </div>
-      </Left>
+      </div>
       {account && (
         <div className={styles.right}>
           <div ref={avatarRef}></div>
           <div>{abbreviateWalletAddress(account)}</div>
         </div>
       )}
-    </Container>
+    </div>
   );
 };
 

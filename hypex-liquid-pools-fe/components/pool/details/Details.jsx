@@ -25,14 +25,14 @@ const Details = ({ address }) => {
     <Grid container className={styles.container}>
       <Grid container className={styles.upper_detail}>
         <Grid container className={styles.detail_intro}>
-          <Grid xs={2}>
+          <Grid xs={2} item={true}>
             <Avatar
               src={pool.src}
               alt="pool-logo"
               sx={{ width: 150, height: 150 }}
             />
           </Grid>
-          <Grid xs={10} className={styles.details}>
+          <Grid xs={10} className={styles.details} item={true}>
             <div>
               <div>
                 <p className={styles.text}>NFT Auction Liquidity Pool:</p>
@@ -55,7 +55,7 @@ const Details = ({ address }) => {
         <Grid container>
           {cardDatas.map((data) => {
             return (
-              <Grid xs={2}>
+              <Grid xs={2} key={data.title} item={true}>
                 <p className={styles.text}>{data.title}</p>
                 <p className={styles.value}>{data.value}</p>
                 <p className={styles.sub_value}>{data.subValue ?? ""}</p>
