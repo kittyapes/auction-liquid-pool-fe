@@ -10,14 +10,14 @@ import UserActions from "./src/user_actions/UserActions";
 import { useRouter } from "next/router";
 import Divider from "@mui/material/Divider";
 
-const Details = () => {
+const Details = ({ address }) => {
   const router = useRouter();
   const useToHome = () => {
     router.push("/");
   };
   let pool = {
     src: Azuki.src,
-    address: "0x342153215aabdc432143",
+    address: address,
     name: "Azuki",
   };
 
@@ -57,23 +57,7 @@ const Details = () => {
             return (
               <Grid xs={2}>
                 <p className={styles.text}>{data.title}</p>
-                <p className={styles.value}>
-                  {data.coin && (
-                    <span>
-                      <Avatar
-                        style={{
-                          width: "20px",
-                          height: "20px",
-                          display: "inline-block",
-                          verticalAlign: "middle",
-                          margin: "5px",
-                        }}
-                        src={data.coin}
-                      ></Avatar>
-                    </span>
-                  )}
-                  {data.value}
-                </p>
+                <p className={styles.value}>{data.value}</p>
                 <p className={styles.sub_value}>{data.subValue ?? ""}</p>
               </Grid>
             );

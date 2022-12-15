@@ -1,4 +1,5 @@
 import styles from "./style/SwapList.module.css";
+import { useRouter } from "next/router";
 import Avatar from "@mui/material/Avatar";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -49,6 +50,7 @@ const rows = [
       price: "6.99",
       coinImage: eth.src,
     },
+    address: "0x342153215aabdc432143",
   },
   {
     id: 2,
@@ -66,6 +68,7 @@ const rows = [
       price: "6.99",
       coinImage: eth.src,
     },
+    address: "0x342153215aabdc432143",
   },
   {
     id: 3,
@@ -83,10 +86,12 @@ const rows = [
       price: "6.99",
       coinImage: eth.src,
     },
+    address: "0x342153215aabdc432143",
   },
 ];
 
 export default function SwapList() {
+  const router = useRouter();
   return (
     <div className={styles.container}>
       <Paper>
@@ -102,7 +107,10 @@ export default function SwapList() {
           </TableHead>
           <TableBody>
             {rows.map((row) => (
-              <StyledTableRow key={row.id}>
+              <StyledTableRow
+                key={row.id}
+                onClick={() => router.push(`/details/${row.address}`)}
+              >
                 <TableCell component="th" scope="row">
                   <Avatar
                     style={{
