@@ -58,7 +58,20 @@ const Details = () => {
               <Grid xs={2}>
                 <p className={styles.text}>{data.title}</p>
                 <p className={styles.value}>
-                  <span></span>
+                  {data.coin && (
+                    <span>
+                      <Avatar
+                        style={{
+                          width: "20px",
+                          height: "20px",
+                          display: "inline-block",
+                          verticalAlign: "middle",
+                          margin: "5px",
+                        }}
+                        src={data.coin}
+                      ></Avatar>
+                    </span>
+                  )}
                   {data.value}
                 </p>
                 <p className={styles.sub_value}>{data.subValue ?? ""}</p>
@@ -86,11 +99,13 @@ let cardDatas = [
     title: "Floor Price",
     value: 9.734,
     subValue: "$ 432,321",
+    coin: eth.src,
   },
   {
     title: "7 Days Volume",
     value: 9.734,
     subValue: "$ 4,132,321",
+    coin: eth.src,
   },
 
   {
