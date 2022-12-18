@@ -7,6 +7,7 @@ import Box from "@mui/material/Box";
 import styles from "../user_actions/style/UserActions.module.css";
 import Collection from "../collection/Collection";
 import Azuki from "../../../../../static/images/azuki.jpeg";
+import Trade from "../trade/Trade"
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
 
@@ -63,7 +64,7 @@ export default function UserActions({ pool }) {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        Item One
+        <Trade/>
       </TabPanel>
       <TabPanel value={value} index={1}>
         <Collection nfts={nfts} type={"Auction"} />
