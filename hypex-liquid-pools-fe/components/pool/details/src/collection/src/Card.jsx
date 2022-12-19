@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import styles from "../style/Collection.module.css";
-import Grid from "@mui/material/Grid";
 const Card = ({ nft, type }) => {
   const router = useRouter();
   const useToHome = () => {

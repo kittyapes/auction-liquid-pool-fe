@@ -12,7 +12,7 @@ const Collection = ({ nfts, type }) => {
   return (
     <Grid container className={styles.collection}>
       {nfts.map((nft) => {
-        return <Card nft={nft} type={type} />;
+        return <Card nft={nft} key={nft.address} type={type} item={true} />;
       })}
     </Grid>
   );

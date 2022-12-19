@@ -78,7 +78,15 @@ export default function UserActions({ pool }) {
 let nfts = [
   {
     src: Azuki.src,
-    address: "0x342153215aabdc432143",
+    address: "0x342153215aabdc432147",
+  },
+  {
+    src: Azuki.src,
+    address: "0x342153215aabdc432148",
+  },
+  {
+    src: Azuki.src,
+    address: "0x342153215aabdc432149",
   },
   {
     src: Azuki.src,
@@ -86,22 +94,14 @@ let nfts = [
   },
   {
     src: Azuki.src,
-    address: "0x342153215aabdc432143",
+    address: "0x342153215aabdc432140",
   },
   {
     src: Azuki.src,
-    address: "0x342153215aabdc432143",
+    address: "0x342153215aabdc432141",
   },
   {
     src: Azuki.src,
-    address: "0x342153215aabdc432143",
-  },
-  {
-    src: Azuki.src,
-    address: "0x342153215aabdc432143",
-  },
-  {
-    src: Azuki.src,
-    address: "0x342153215aabdc432143",
+    address: "0x342153215aabdc432142",
   },
 ];
