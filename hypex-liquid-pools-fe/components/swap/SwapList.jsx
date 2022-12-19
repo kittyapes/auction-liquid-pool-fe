@@ -11,6 +11,8 @@ import { withStyles } from "@mui/styles";
 import { styled } from "@mui/material/styles";
 import clonex from "../../static/images/clonex.jpg";
 import eth from "../../static/images/eth.png";
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 const TableCell = withStyles({
   root: {
     borderBottom: "2px solid rgba(31, 25, 39, 1);",
@@ -184,6 +186,9 @@ export default function SwapList() {
           </TableBody>
         </Table>
       </Paper>
+      <Stack spacing={2}>
+          <Pagination className={styles.pagination} count={5} sx={{button:{color: '#ffffff', borderColor:'rgba(255, 255, 255, 0.1)', borderRadius:'10px'}}} variant="outlined" shape="rounded" color='primary' />
+      </Stack>
     </div>
   );
 }

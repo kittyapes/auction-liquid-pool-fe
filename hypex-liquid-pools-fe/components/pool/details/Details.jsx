@@ -64,7 +64,7 @@ const Details = ({ address }) => {
           })}
         </Grid>
       </Grid>
-      <Grid className={styles.user_actions}>
+      <Grid xs={12} className={styles.user_actions}>
         <UserActions pool={pool} />
       </Grid>
     </Grid>
