@@ -1,0 +1,17 @@
+.container {
+  color: white;
+  display: block;
+  padding-left: 10%;
+  padding-right: 10%;
+}
+.title {
+  color: #ffffff99;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.subtitle {
+  color: #ffffff99;
+  font-weight: 600;
+  font-size: 16px;
+}
