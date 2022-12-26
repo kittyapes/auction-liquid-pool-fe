@@ -1,13 +1,48 @@
 import React, { useEffect, useState, useRef } from "react";
-import Paper from "@mui/material/Paper";
-import { styled } from "@mui/material/styles";
 import styles from "../auction/style/Auction.module.css";
-import Azuki from "../../../static/images/azuki.jpeg";
-import eth from "../../../static/images/eth.png";
+import src from "../../../static/images/src.jpeg";
 import Grid from "@mui/material/Grid";
-import Avatar from "@mui/material/Avatar";
 import { useRouter } from "next/router";
-import Divider from "@mui/material/Divider";
+import { Button } from '@mui/material';
+import dynamic from 'next/dynamic';
+const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
+
+const chart = {
+    series: [{
+        name: "Desktops",
+        data: [10, 41, 35, 51, 49, 62, 69, 91, 148]
+    }],
+    options: {
+        chart: {
+            height: 350,
+            type: 'line',
+            zoom: {
+                enabled: false
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        stroke: {
+            curve: 'straight'
+        },
+        title: {
+            text: '',
+            align: 'left'
+        },
+        grid: {
+            row: {
+                colors: ['transparent', 'transparent'], // takes an array which will be repeated on columns
+                opacity: 0.5
+            },
+        },
+        xaxis: {
+            categories: ['1/1', '1/2', '1/3', '1/4', '1/5', '1/6', '1/7', '1/8', '1/9'],
+        }
+    },
+
+
+}
 
 const Auction = ({ address }) => {
     const router = useRouter();
@@ -15,7 +50,7 @@ const Auction = ({ address }) => {
         router.push("/");
     };
     let pool = {
-        src: Azuki.src,
+        src: src.src,
         address: address,
         name: "Azuki",
     };
@@ -24,28 +59,28 @@ const Auction = ({ address }) => {
         <Grid container className={styles.container}>
             <div>
                 <p className={styles.title}>NFT Auction Liquidity Pool:</p>
-                <input value={address} />
+                <input className={styles.addressBar} disabled value={address} />
             </div>
             <div>
-                <p className={styles.title}>ETH Price Per DGRP</p>
+                <p className={`${styles.title} ${styles.compress}`}>ETH Price Per DGRP</p>
                 <p className={styles.subtitle}>Displays how your sell price gose up with each DGRP sold.</p>
-                <p>placeholder</p>
+                <div id="chart">
+                    <ApexCharts options={chart.options} series={chart.series} type="area" height={350} />
+                </div>
             </div>
             <div>
                 <p className={styles.title}>Tokens In the Pool:</p>
                 <Grid container className={styles.upper_detail}>
                     <Grid container className={styles.detail_intro}>
-                        <Grid xs={2} item={true}>
-                            <Avatar
-                                src={pool.src}
-                                alt="pool-logo"
-                                sx={{ width: 150, height: 150 }}
-                            />
-                        </Grid>
-                        <Grid xs={10} className={styles.details} item={true}>
+                        <img
+                            src={pool.src}
+                            alt="pool-logo"
+                            style={{ width: 300, height: 350, borderRadius: 10 }}
+                        />
+                        <div className={styles.details}>
                             <div>
                                 <div>
-                                    <p className={styles.text}>Current Highest Bid:</p>
+                                    <p className={styles.subtitle}>Current Highest Bid:</p>
                                 </div>
                                 <div>
                                     <p>23:59:40 LEFT</p>
@@ -53,21 +88,18 @@ const Auction = ({ address }) => {
                             </div>
                             <div>
                                 <div>
-                                    <p className={styles.text}>Current Highest Bid:</p>
+                                    <p className={styles.subtitle}>Current Highest Bid:</p>
                                 </div>
                                 <div>
-                                    <p>{pool.address}</p>
+                                    <p>0.9 wnABC 0.05 ETH</p>
                                 </div>
                             </div>
                             <div>
-                                <div>
-                                    <p className={styles.text}>Next Bid:</p>
-                                </div>
-                                <div>
-                                    <p>{pool.address}</p>
-                                </div>
+                                <p className={styles.subtitle}>Next Bid:</p>
+                                <input placeholder='1.1 wnABC' /> <input value='0.08 ETH' disabled />
                             </div>
-                        </Grid>
+                            <Button sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" fullWidth>PLACE THE NEXT BID</Button>
+                        </div>
                     </Grid>
 
                 </Grid>
