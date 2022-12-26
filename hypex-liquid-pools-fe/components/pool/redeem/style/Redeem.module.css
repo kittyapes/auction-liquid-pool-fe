@@ -32,10 +32,6 @@
   align-items: center;
 }
 
-.swapBox {
-  text-align: center;
-}
-
 .swapInput {
   margin: 5px;
   line-height: 40px;
@@ -49,16 +45,13 @@
 }
 
 .swapPartLeft {
-  float: left;
+  margin-left: 0;
+  margin-right: auto;
 }
 
 .swapPartRight {
-  float: right;
-}
-
-.redeemButton {
   margin-left: auto;
-  margin-right: auto;
+  margin-right: 0;
 }
 
 .redeemDone {
@@ -67,4 +60,10 @@
 
 .redeemDetails {
   margin-left: 75px;
+}
+.redeemButton {
+  margin: auto;
+}
+.redeemBox {
+  margin: auto;
 }

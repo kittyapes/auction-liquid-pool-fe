@@ -26,7 +26,7 @@ const Redeem = ({ address }) => {
             <div>
                 <p className={styles.title}>Random Redemption:</p>
                 <Grid container className={styles.upper_detail}>
-                    {!redeemDone && <div>
+                    {!redeemDone && <div style={{ width: '100%', textAlign: 'center' }}>
                         <Grid container className={styles.swapBox}>
                             <div className={styles.swapPartLeft}>
                                 <img
