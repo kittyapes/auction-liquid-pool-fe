@@ -1,9 +1,10 @@
 import * as React from "react";
 import PropTypes from "prop-types";
+import { useRouter } from "next/router";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
+import { Button, Box, Divider } from '@mui/material';
 import styles from "../user_actions/style/UserActions.module.css";
 import Collection from "../collection/Collection";
 import Azuki from "../../../../../static/images/azuki.jpeg";
@@ -46,10 +47,14 @@ function a11yProps(index) {
 
 export default function UserActions({ pool }) {
   const [value, setValue] = React.useState(0);
-
+  const router = useRouter();
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  const randomRedeem = () => {
+    router.push(`/redeem/${pool.address}`)
+  }
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -70,6 +75,11 @@ export default function UserActions({ pool }) {
       </TabPanel>
       <TabPanel value={value} index={1}>
         <Collection nfts={nfts} type={"Auction"} />
+        <Divider className={styles.divider} variant="middle" />
+        <div className={styles.redeem}>
+          <Button sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" className={styles.button} onClick={randomRedeem}>Random Redeem</Button>
+          <input className={styles.redeemInput} value={1} type='number' />
+        </div>
       </TabPanel>
       <TabPanel value={value} index={2}>
         <Collection nfts={nfts} type={"Swap"} />

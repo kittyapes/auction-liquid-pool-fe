@@ -5,8 +5,8 @@ import Grid from "@mui/material/Grid";
 import { useRouter } from "next/router";
 import { Button } from '@mui/material';
 import dynamic from 'next/dynamic';
+import congrats from "../../../static/animation/congrats.json";
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
-
 const chart = {
     series: [{
         name: "Desktops",
@@ -45,6 +45,7 @@ const chart = {
 }
 
 const Auction = ({ address }) => {
+    const [auctionDone, setAuctionDone] = useState(false);
     const router = useRouter();
     const useToHome = () => {
         router.push("/");
@@ -55,6 +56,10 @@ const Auction = ({ address }) => {
         name: "Azuki",
     };
 
+
+    const placeAuction = () => {
+        setAuctionDone(true);
+    }
     return (
         <Grid container className={styles.container}>
             <div>
@@ -77,7 +82,7 @@ const Auction = ({ address }) => {
                             alt="pool-logo"
                             style={{ width: 300, height: 350, borderRadius: 10 }}
                         />
-                        <div className={styles.details}>
+                        {!auctionDone && <div className={styles.details}>
                             <div>
                                 <div>
                                     <p className={styles.subtitle}>Current Highest Bid:</p>
@@ -98,8 +103,20 @@ const Auction = ({ address }) => {
                                 <p className={styles.subtitle}>Next Bid:</p>
                                 <input placeholder='1.1 wnABC' /> <input value='0.08 ETH' disabled />
                             </div>
-                            <Button sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" fullWidth>PLACE THE NEXT BID</Button>
-                        </div>
+                            <Button sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" fullWidth onClick={placeAuction}>PLACE THE NEXT BID</Button>
+                        </div>}
+                        {auctionDone && <div className={styles.auctionDone}>
+                            <div>
+                                <p>YOU WIN THE ACTION</p>
+                                <p>NFT ACB 2123 is yours！</p>
+                            </div>
+                            <div>
+                                <p>cost</p>
+                                <p>0.9 wnABC</p>
+                                <p>0.05 ETH</p>
+                                <Button sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" fullWidth onClick={placeAuction}>Check Your NFTs</Button>
+                            </div>
+                        </div>}
                     </Grid>
 
                 </Grid>

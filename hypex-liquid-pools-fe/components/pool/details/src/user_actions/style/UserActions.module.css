@@ -13,3 +13,33 @@
 .tab_panel p {
   margin: 0;
 }
+
+.button {
+  background: linear-gradient(265.68deg, #00b0e8 0%, #2ca800 100%);
+  width: 250px;
+}
+
+.redeemInput {
+  margin-top: 16px;
+  margin-left: 20px;
+  line-height: 60px;
+  width: 80px;
+  background-color: transparent;
+  border: 1px solid #ffffff66;
+  border-radius: 5px;
+  color: white;
+  font-weight: 700;
+  text-align: center;
+}
+
+.redeem {
+  align-items: center;
+  display: flex;
+}
+
+.divider {
+  border-color: #ffffff1a;
+  border-width: 1px;
+  width: 90%;
+  margin: 20px 0;
+}
