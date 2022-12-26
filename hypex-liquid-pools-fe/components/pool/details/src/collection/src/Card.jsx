@@ -6,7 +6,7 @@ import { Button, Box, Divider } from '@mui/material';
 const Card = ({ nft, type }) => {
   const router = useRouter();
   const auction = () => {
-    router.push(`/auction/${nft.address}`);
+    router.push(`/${type.toLowerCase()}/${nft.address}`);
   };
   return (
     <div className={styles.card}>
