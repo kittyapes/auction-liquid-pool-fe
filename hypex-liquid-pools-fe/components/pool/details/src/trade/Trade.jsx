@@ -8,17 +8,14 @@ import { withStyles } from '@mui/styles';
 import { Button } from '@mui/material';
 const CssTextField = withStyles({
     root: {
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: 'rgba(255, 255, 255, 0.3);',
-          borderWidth: '2px'
+        '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+                borderColor: 'rgba(255, 255, 255, 0.3);',
+                borderWidth: '2px'
+            }
         },
-        '&:hover fieldset': {
-            borderColor: 'rgba(255, 255, 255, 0.3);',
-          }
-      },
     },
-  })(TextField);
+})(TextField);
 
 
 export default function Trade() {
@@ -30,7 +27,7 @@ export default function Trade() {
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'flex-start',
-                        marginTop:2,
+                        marginTop: 2,
                         p: 2,
                         backgroundColor: 'rgba(20, 17, 25, 1)',
                         borderRadius: 2
@@ -45,23 +42,23 @@ export default function Trade() {
                         >
                             {"Buy $AZUKI with ETH"}
                         </Box>
-                        <CssTextField 
+                        <CssTextField
                             sx={{
-                                marginTop:2,
+                                marginTop: 2,
                                 display: 'flex',
                                 fontSize: '1rem',
                                 fontWeight: '700',
-                                input:{color:'white'}
+                                input: { color: 'white' }
                             }}
-                            id="outlined-basic" 
+                            id="outlined-basic"
                             fullWidth
                             variant="outlined" />
-                         <Box sx={{height:60,marginTop:1}}></Box>    
+                        <Box sx={{ height: 60, marginTop: 1 }}></Box>
                         <Box
                             sx={{
                                 display: 'flex',
-                                marginTop:1,
-                                color:'rgba(255, 255, 255, 0.4)',
+                                marginTop: 1,
+                                color: 'rgba(255, 255, 255, 0.4)',
                                 fontFamily: 'Poppins',
                                 fontSize: '0.7rem',
                                 fontWeight: '700',
@@ -69,15 +66,15 @@ export default function Trade() {
                         >
                             {"0.44"}
                         </Box>
-                        <Button sx={{marginTop:2, height:60}} variant="contained" size="large" fullWidth>Buy</Button>
+                        <Button sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" fullWidth>Buy</Button>
                     </Box>
                 </Grid>
                 <Grid item xs={4}>
-                <Box sx={{
+                    <Box sx={{
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'flex-start',
-                        marginTop:2,
+                        marginTop: 2,
                         p: 2,
                         backgroundColor: 'rgba(20, 17, 25, 1)',
                         borderRadius: 2
@@ -92,24 +89,24 @@ export default function Trade() {
                         >
                             {"Sell $AZUKI with ETH"}
                         </Box>
-                        <CssTextField 
+                        <CssTextField
                             sx={{
-                                marginTop:2,
+                                marginTop: 2,
                                 display: 'flex',
                                 fontSize: '1rem',
                                 fontWeight: '700',
-                                height:60,
-                                input:{color:'white'}
+                                height: 60,
+                                input: { color: 'white' }
                             }}
-                            id="outlined-basic" 
+                            id="outlined-basic"
                             fullWidth
                             variant="outlined" />
-                        <Box sx={{height:60,marginTop:1}}></Box>                        
+                        <Box sx={{ height: 60, marginTop: 1 }}></Box>
                         <Box
                             sx={{
                                 display: 'flex',
-                                marginTop:1,
-                                color:'rgba(255, 255, 255, 0.4)',
+                                marginTop: 1,
+                                color: 'rgba(255, 255, 255, 0.4)',
                                 fontFamily: 'Poppins',
                                 fontSize: '0.7rem',
                                 fontWeight: '700',
@@ -117,15 +114,15 @@ export default function Trade() {
                         >
                             {"$0.44"}
                         </Box>
-                        <Button sx={{marginTop:2, height:60}} variant="contained" size="large" fullWidth>Sell</Button>
+                        <Button sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" fullWidth>Sell</Button>
                     </Box>
                 </Grid>
                 <Grid item xs={4}>
-                <Box sx={{
+                    <Box sx={{
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'flex-start',
-                        marginTop:2,
+                        marginTop: 2,
                         p: 2,
                         backgroundColor: 'rgba(20, 17, 25, 1)',
                         borderRadius: 2
@@ -140,33 +137,33 @@ export default function Trade() {
                         >
                             {"Stake $AZUKI with ETH"}
                         </Box>
-                        <CssTextField 
+                        <CssTextField
                             sx={{
-                                marginTop:2,
+                                marginTop: 2,
                                 display: 'flex',
                                 fontSize: '1rem',
                                 fontWeight: '700',
-                                input:{color:'white'}
+                                input: { color: 'white' }
                             }}
-                            id="outlined-basic" 
+                            id="outlined-basic"
                             fullWidth
                             variant="outlined" />
-                        <CssTextField 
+                        <CssTextField
                             sx={{
-                                marginTop:2,
+                                marginTop: 2,
                                 display: 'flex',
                                 fontSize: '1rem',
                                 fontWeight: '700',
-                                input:{color:'white'}
+                                input: { color: 'white' }
                             }}
-                            id="outlined-basic" 
+                            id="outlined-basic"
                             fullWidth
                             variant="outlined" />
                         <Box
                             sx={{
                                 display: 'flex',
-                                marginTop:1,
-                                color:'rgba(255, 255, 255, 0.4)',
+                                marginTop: 1,
+                                color: 'rgba(255, 255, 255, 0.4)',
                                 fontFamily: 'Poppins',
                                 fontSize: '0.7rem',
                                 fontWeight: '700',
@@ -174,7 +171,7 @@ export default function Trade() {
                         >
                             {"33% Interest Rate"}
                         </Box>
-                        <Button sx={{marginTop:2, height:60}} variant="contained" size="large" fullWidth>Stake</Button>
+                        <Button sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" fullWidth>Stake</Button>
                     </Box>
                 </Grid>
             </Grid>

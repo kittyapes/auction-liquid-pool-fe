@@ -1,0 +1,37 @@
+.container {
+  color: white;
+  display: block;
+  padding-left: 15%;
+  padding-right: 15%;
+}
+.title {
+  color: #ffffff99;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.subtitle {
+  color: #ffffff99;
+  font-weight: 600;
+  font-size: 16px;
+  margin-top: 0px;
+}
+.compress {
+  margin-bottom: 0px;
+}
+.details {
+  margin-left: 75px;
+}
+.addressBar {
+  width: 100%;
+  color: white;
+  background-color: transparent;
+  border: 1px solid #ffffff99;
+  border-radius: 5px;
+  line-height: 50px;
+  font-size: 20px;
+}
+.auctionDone {
+  margin-left: 75px;
+  text-align: center;
+}
