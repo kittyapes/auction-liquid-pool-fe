@@ -12,7 +12,10 @@ const CssTextField = withStyles({
         '& fieldset': {
           borderColor: 'rgba(255, 255, 255, 0.3);',
           borderWidth: '2px'
-        }
+        },
+        '&:hover fieldset': {
+            borderColor: 'rgba(255, 255, 255, 0.3);',
+          }
       },
     },
   })(TextField);
