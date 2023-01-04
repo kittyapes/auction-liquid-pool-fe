@@ -13,7 +13,7 @@ const Card = ({ nft, type }) => {
       <div>
         <img className={styles.nft_image} src={nft.src} />
       </div>
-      <Button sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" className={styles.button} onClick={auction}>{type}</Button>
+      <Button sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" className={`${styles.button} ${styles.purple}`} onClick={auction}>{type}</Button>
     </div>
   );
 };
