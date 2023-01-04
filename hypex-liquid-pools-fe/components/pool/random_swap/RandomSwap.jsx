@@ -5,6 +5,7 @@ import Grid from "@mui/material/Grid";
 import { useRouter } from "next/router";
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import { Button } from '@mui/material';
+import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import dynamic from 'next/dynamic';
 
 const RandomSwap = ({ address }) => {
@@ -40,14 +41,13 @@ const RandomSwap = ({ address }) => {
                             <p>Azuki #2134</p>
                         </div>
                         <ArrowRightAltIcon className={styles.swapIcon} />
-                        <div className={styles.swapPartRight}>
-                            <img
-                                src={pool.src}
-                                alt="pool-logo"
-                                style={{ width: 300, height: 350, borderRadius: 10 }}
-                            />
-                            <p>?</p>
-                        </div>
+                        {swapDone ? <img
+                            src={pool.src}
+                            alt="pool-logo"
+                            style={{ width: 300, height: 350, borderRadius: 10 }}
+                        /> : <div className={styles.swapPartRight}>
+                            <QuestionMarkIcon style={{ width: 300, height: 350, borderRadius: 10 }} />
+                        </div>}
                     </Grid>
                     <Button className={styles.swapButton} sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" onClick={placeSwap}>PLACE THE RANDOM SWAP</Button>
                 </Grid>
