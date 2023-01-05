@@ -20,6 +20,7 @@
     "apexcharts": "^3.36.3",
     "eslint": "8.28.0",
     "eslint-config-next": "13.0.5",
+    "ethers": "^5.7.2",
     "jazzicon": "^1.5.0",
     "next": "13.0.5",
     "react": "18.2.0",
@@ -27,5 +28,9 @@
     "react-dom": "18.2.0",
     "styled-components": "^5.3.6",
     "web3": "^1.7.4"
+  },
+  "devDependencies": {
+    "@uniswap/sdk-core": "^3.1.0",
+    "@uniswap/v3-sdk": "^3.9.0"
   }
 }

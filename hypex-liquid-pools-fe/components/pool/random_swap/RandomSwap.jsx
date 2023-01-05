@@ -41,15 +41,22 @@ const RandomSwap = ({ address }) => {
                             <p>Azuki #2134</p>
                         </div>
                         <ArrowRightAltIcon className={styles.swapIcon} />
-                        {swapDone ? <img
-                            src={pool.src}
-                            alt="pool-logo"
-                            style={{ width: 300, height: 350, borderRadius: 10 }}
-                        /> : <div className={styles.swapPartRight}>
-                            <QuestionMarkIcon style={{ width: 300, height: 350, borderRadius: 10 }} />
-                        </div>}
+                        <div className={styles.swapPartRight}>
+                            {swapDone ? <img
+                                src={pool.src}
+                                alt="pool-logo"
+                                style={{ width: 300, height: 350, borderRadius: 10 }}
+                            /> :
+                                <QuestionMarkIcon style={{ width: 300, height: 350, borderRadius: 10 }} />}
+                        </div>
                     </Grid>
-                    <Button className={styles.swapButton} sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" onClick={placeSwap}>PLACE THE RANDOM SWAP</Button>
+                    <Button
+                        className={styles.swapButton}
+                        sx={{ marginTop: 2, height: 60 }}
+                        variant="contained"
+                        size="large"
+                        onClick={swapDone ? checkUserNFTs : placeSwap}>
+                        {swapDone ? 'check User NFTs' : 'PLACE THE RANDOM SWAP'}</Button>
                 </Grid>
             </div>
         </Grid>
