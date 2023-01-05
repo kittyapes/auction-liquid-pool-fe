@@ -18,6 +18,12 @@ const CssTextField = withStyles({
             '& fieldset': {
                 borderColor: 'rgba(255, 255, 255, 0.3);',
                 borderWidth: '2px'
+            },
+            '&:hover fieldset': {
+                borderColor: 'rgba(255, 255, 255, 0.3);',
+              },
+            '&.Mui-focused fieldset': {
+            borderColor: 'rgba(255, 255, 255, 0.3);',
             }
         },
     },
@@ -108,8 +114,9 @@ export default function Trade() {
                             sx={{
                                 display: 'flex',
                                 paddingTop: 1,
-                                fontSize: '1rem',
+                                fontSize: 'rem',
                                 fontWeight: '700',
+                                color:'white'
                             }}
                         >
                             {"Buy $AZUKI with ETH"}
@@ -157,6 +164,7 @@ export default function Trade() {
                                 paddingTop: 1,
                                 fontSize: '1rem',
                                 fontWeight: '700',
+                                color:'white'
                             }}
                         >
                             {"Sell $AZUKI with ETH"}
@@ -205,6 +213,7 @@ export default function Trade() {
                                 paddingTop: 1,
                                 fontSize: '1rem',
                                 fontWeight: '700',
+                                color:'white'
                             }}
                         >
                             {"Stake $AZUKI with ETH"}
