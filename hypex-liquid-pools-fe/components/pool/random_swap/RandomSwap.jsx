@@ -7,8 +7,10 @@ import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import { Button } from '@mui/material';
 import QuestionMarkIcon from '@mui/icons-material/QuestionMark';
 import dynamic from 'next/dynamic';
-
-const RandomSwap = ({ address }) => {
+import {randomSwap} from '../contract/poolContract'
+import { useWeb3React } from "@web3-react/core";
+const RandomSwap = ({ address, tokenId }) => {
+    const { account } = useWeb3React();
     const [swapDone, setSwapDone] = useState(false);
     const router = useRouter();
     let pool = {
@@ -16,8 +18,10 @@ const RandomSwap = ({ address }) => {
         address: address,
         name: "Azuki",
     };
-    const placeSwap = () => {
-        setSwapDone(true);
+    const item = router.query;
+    const placeSwap = async () => {
+        randomSwap(item.id,account)
+        // setSwapDone(true);
     }
     const checkUserNFTs = () => {
         // todo

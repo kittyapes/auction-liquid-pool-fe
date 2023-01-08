@@ -1,6 +1,6 @@
-import * as React from "react";
 import PropTypes from "prop-types";
 import { useRouter } from "next/router";
+import React, { useEffect, useState, useRef } from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
@@ -9,6 +9,7 @@ import styles from "../user_actions/style/UserActions.module.css";
 import Collection from "../collection/Collection";
 import Azuki from "../../../../../static/images/azuki.jpeg";
 import dynamic from 'next/dynamic';
+import { getTokenIds } from "../../../contract/poolContract"
 const Trade = dynamic(() => import('../trade/Trade'), { ssr: false })
 
 function TabPanel(props) {
@@ -45,9 +46,27 @@ function a11yProps(index) {
   };
 }
 
+
+
+const getNTFs = async () => {
+  getTokenIds().then(e=>{
+    nfts = []
+    e.map(item=>{
+      nfts.push({
+        tokenId:item
+      })
+    })
+  })
+}
 export default function UserActions({ pool }) {
   const [value, setValue] = React.useState(0);
   const router = useRouter();
+
+  useEffect(() => {
+    getNTFs()
+  })
+  
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -74,7 +93,7 @@ export default function UserActions({ pool }) {
         <Trade />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <Collection nfts={nfts} type={"Auction"} />
+        <Collection pool={pool} nfts={nfts} type={"Auction"} />
         <Divider className={styles.divider} variant="middle" />
         <div className={styles.redeem}>
           <Button sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" className={styles.button} onClick={randomRedeem}>Random Redeem</Button>
@@ -82,39 +101,11 @@ export default function UserActions({ pool }) {
         </div>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <Collection nfts={nfts} type={"Swap"} />
+        <Collection pool={pool} nfts={nfts} type={"Swap"} />
       </TabPanel>
     </Box>
   );
 }
 
 let nfts = [
-  {
-    src: Azuki.src,
-    address: "0x342153215aabdc432147",
-  },
-  {
-    src: Azuki.src,
-    address: "0x342153215aabdc432148",
-  },
-  {
-    src: Azuki.src,
-    address: "0x342153215aabdc432149",
-  },
-  {
-    src: Azuki.src,
-    address: "0x342153215aabdc432143",
-  },
-  {
-    src: Azuki.src,
-    address: "0x342153215aabdc432140",
-  },
-  {
-    src: Azuki.src,
-    address: "0x342153215aabdc432141",
-  },
-  {
-    src: Azuki.src,
-    address: "0x342153215aabdc432142",
-  },
 ];

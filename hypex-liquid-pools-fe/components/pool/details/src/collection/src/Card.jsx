@@ -3,10 +3,10 @@ import { useRouter } from "next/router";
 import styles from "../style/Collection.module.css";
 import { Button, Box, Divider } from '@mui/material';
 
-const Card = ({ nft, type }) => {
+const Card = ({ nft, type, pool }) => {
   const router = useRouter();
   const auction = () => {
-    router.push(`/${type.toLowerCase()}/${nft.address}`);
+    router.push(`/${type.toLowerCase()}/${pool.address}?id=${nft.tokenId}`);
   };
   return (
     <div className={styles.card}>
