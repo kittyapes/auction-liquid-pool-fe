@@ -4,3 +4,14 @@ const nextConfig = {
 }
 
 module.exports = nextConfig
+module.exports = {
+  reactStrictMode: true,
+  async rewrites() {
+    return [
+      {
+        source: '/pages/:slug*',
+        destination: '/:slug*'
+      }
+    ]
+  }
+}

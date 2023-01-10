@@ -5,7 +5,9 @@ import Grid from "@mui/material/Grid";
 import { useRouter } from "next/router";
 import { Button } from '@mui/material';
 import dynamic from 'next/dynamic';
+import { useWeb3React } from "@web3-react/core";
 import congrats from "../../../static/animation/congrats.json";
+import { placeBid } from "../contract/poolContract"
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 const chart = {
     series: [{
@@ -45,20 +47,20 @@ const chart = {
 }
 
 const Auction = ({ address }) => {
+    const { account } = useWeb3React();
     const [auctionDone, setAuctionDone] = useState(false);
-    const router = useRouter();
-    const useToHome = () => {
-        router.push("/");
-    };
     let pool = {
         src: src.src,
         address: address,
         name: "Azuki",
     };
-
-
-    const placeAuction = () => {
-        setAuctionDone(true);
+    const router = useRouter()
+    const item = router.query;
+    
+    const placeAuction = async () => {
+        console.log(item)
+        placeBid(item.id, account)
+       
     }
     return (
         <Grid container className={styles.container}>

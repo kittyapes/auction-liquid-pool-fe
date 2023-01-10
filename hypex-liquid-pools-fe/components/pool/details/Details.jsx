@@ -10,6 +10,7 @@ import UserActions from "./src/user_actions/UserActions";
 import { useRouter } from "next/router";
 import Divider from "@mui/material/Divider";
 
+
 const Details = ({ address }) => {
   const router = useRouter();
   const useToHome = () => {
@@ -17,9 +18,11 @@ const Details = ({ address }) => {
   };
   let pool = {
     src: Azuki.src,
-    address: address,
+    address: "0x9117808F6ebEAeaE94DBcC2255C13db607f00F22",
     name: "Azuki",
   };
+
+
 
   return (
     <Grid container className={styles.container}>

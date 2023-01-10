@@ -4,7 +4,7 @@ import Grid from "@mui/material/Grid";
 import Card from "./src/Card";
 import { useRouter } from "next/router";
 
-const Collection = ({ nfts, type }) => {
+const Collection = ({ pool, nfts, type }) => {
   const router = useRouter();
   const useToHome = () => {
     router.push("/");
@@ -12,7 +12,7 @@ const Collection = ({ nfts, type }) => {
   return (
     <Grid container className={styles.collection}>
       {nfts.map((nft) => {
-        return <Card nft={nft} key={nft.address} type={type} item={true} />;
+        return <Card pool={pool} nft={nft} key={nft.address} type={type} item={true} />;
       })}
     </Grid>
   );

@@ -8,7 +8,7 @@ import { useChainId } from "../../api/contract";
 import { Button } from '@mui/material';
 
 const Landing = () => {
-  const CHAIN_ID = "1";
+  const CHAIN_ID = "5";
   const router = useRouter();
   const { active, account, activate } = useWeb3React();
   const [chainId, setChainId] = useState(null);
@@ -25,7 +25,7 @@ const Landing = () => {
           if (tempChainId == CHAIN_ID) {
             setChainId(tempChainId);
           } else {
-            alert("Please select Ethereum Mainnet in your wallet");
+            alert("Please select correct Ethereum in your wallet");
           }
         } else {
           // alert("Cannot detect crypto wallet"); 
@@ -54,6 +54,7 @@ const Landing = () => {
   }, []);
 
   const swapNFTs = async () => {
+    console.log(active)
     if (active) {
       // navigate to swap page.
       router.push('/swap');

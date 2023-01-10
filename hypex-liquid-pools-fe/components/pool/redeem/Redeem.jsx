@@ -6,8 +6,10 @@ import { useRouter } from "next/router";
 import ArrowRightAltIcon from '@mui/icons-material/ArrowRightAlt';
 import { Button } from '@mui/material';
 import dynamic from 'next/dynamic';
-
+import {redeemNFT} from '../contract/poolContract'
+import { useWeb3React } from "@web3-react/core";
 const Redeem = ({ address }) => {
+    const { account } = useWeb3React();
     const [redeemDone, setRedeemDone] = useState(false);
     const router = useRouter();
     let pool = {
@@ -15,8 +17,8 @@ const Redeem = ({ address }) => {
         address: address,
         name: "Azuki",
     };
-    const placeRedemption = () => {
-        setRedeemDone(true);
+    const placeRedemption = async () => {
+        redeemNFT(account,1)
     }
     const checkUserNFTs = () => {
         // todo
