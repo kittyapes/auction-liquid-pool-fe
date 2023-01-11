@@ -13,26 +13,10 @@ import { CurrencyAmount, Token, TradeType, Percent } from '@uniswap/sdk-core'
 import { AlphaRouter, SwapType } from '@uniswap/smart-order-router'
 import { useWeb3React, Web3ReactProvider } from "@web3-react/core";
 import JSBI from 'jsbi';
+import { fromReadableAmount, getTokenTransferApproval } from "../../../contract/poolContract";
 
 import { abi as IUniswapV3PoolABI } from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import { abi as QuoterABI } from '@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json'
-function fromReadableAmount(amount, decimals) {
-    const extraDigits = Math.pow(10, countDecimals(amount))
-    const adjustedAmount = amount * extraDigits
-    return JSBI.divide(
-        JSBI.multiply(
-            JSBI.BigInt(adjustedAmount),
-            JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(decimals))
-        ),
-        JSBI.BigInt(extraDigits)
-    )
-}
-function countDecimals(x) {
-    if (Math.floor(x) === x) {
-        return 0
-    }
-    return x.toString().split('.')[1].length || 0
-}
 const CssTextField = withStyles({
     root: {
         '& .MuiOutlinedInput-root': {
@@ -42,9 +26,9 @@ const CssTextField = withStyles({
             },
             '&:hover fieldset': {
                 borderColor: 'rgba(255, 255, 255, 0.3);',
-              },
+            },
             '&.Mui-focused fieldset': {
-            borderColor: 'rgba(255, 255, 255, 0.3);',
+                borderColor: 'rgba(255, 255, 255, 0.3);',
             }
         },
     },
@@ -89,20 +73,22 @@ class State {
 
 
 export default function Trade() {
+    const mainnet = 'https://mainnet.infura.io/v3/8d5bc85320a64c5ca0e25c4ce8d8120e'
+    const Goerli = 'https://goerli.infura.io/v3/8d5bc85320a64c5ca0e25c4ce8d8120e'
     const browserExtensionProvider = createBrowserExtensionProvider()
     const { account } = useWeb3React();
     const [buyTargetTokenNumber, setBuyTargetTokenNumber] = useState(0);
     const [buyCurrencyTokenNumber, setBuyCurrencyTokenNumber] = useState(0);
     const [targetToCurrencyRatio, setTargetToCurrencyRatio] = useState(-1);
-    const provider = new ethers.providers.JsonRpcProvider('https://mainnet.infura.io/v3/8d5bc85320a64c5ca0e25c4ce8d8120e')
+    const provider = new ethers.providers.JsonRpcProvider(Goerli)
     /// Pool(target token / ETH) should be created first.
     /// current pool (USDC / WETH)
-    const poolAddress = '0x8ad599c3A0ff1De082011EFDDc58f1908eb6e6D8'
+    const poolAddress = "0x9117808F6ebEAeaE94DBcC2255C13db607f00F22";
     // https://github.com/Uniswap/v3-periphery/blob/main/deploys.md
     const quoterAddress = '0xb27308f9F90D607463bb33eA1BeBb41C27CE5AB6'
     const poolContract = new ethers.Contract(poolAddress, IUniswapV3PoolABI, provider)
     const quoterContract = new ethers.Contract(quoterAddress, QuoterABI, provider)
-    const router = new AlphaRouter({ chainId: 1, provider: provider })
+    const router = new AlphaRouter({ chainId: 5, provider: provider })
     const changeBuyTargetTokenNumber = (event) => {
         setBuyTargetTokenNumber(event.target.value);
     }
@@ -132,25 +118,25 @@ export default function Trade() {
     }
 
 
-    useEffect(() => {
-        async function fetchTargetTokenPrice() {
-            const [immutables, state] = await Promise.all([getPoolImmutables(), getPoolState()])
-            const currencyToken = new Token(3, immutables.token0, 6, 'USDC', 'USD Coin')
-            const targetToken = new Token(3, immutables.token1, 18, 'WETH', 'Wrapped Ether')
-            const poolExample = new Pool(
-                currencyToken,
-                targetToken,
-                immutables.fee,
-                state.sqrtPriceX96.toString(),
-                state.liquidity.toString(),
-                state.tick
-            )
-            const targetTokenOverCurrency = poolExample.token1Price
-            console.log(targetTokenOverCurrency.toSignificant(6));
-            setTargetToCurrencyRatio(targetTokenOverCurrency.toSignificant(6));
-        }
-        fetchTargetTokenPrice();
-    }, []);
+    // useEffect(() => {
+    //     async function fetchTargetTokenPrice() {
+    //         const [immutables, state] = await Promise.all([getPoolImmutables(), getPoolState()])
+    //         const currencyToken = new Token(3, immutables.token0, 6, 'USDC', 'USD Coin')
+    //         const targetToken = new Token(3, immutables.token1, 18, 'WETH', 'Wrapped Ether')
+    //         const poolExample = new Pool(
+    //             currencyToken,
+    //             targetToken,
+    //             immutables.fee,
+    //             state.sqrtPriceX96.toString(),
+    //             state.liquidity.toString(),
+    //             state.tick
+    //         )
+    //         const targetTokenOverCurrency = poolExample.token1Price
+    //         console.log(targetTokenOverCurrency.toSignificant(6));
+    //         setTargetToCurrencyRatio(targetTokenOverCurrency.toSignificant(6));
+    //     }
+    //     fetchTargetTokenPrice();
+    // }, []);
 
     const startBuy = async () => {
         // query the state and immutable variables of the pool
@@ -201,12 +187,14 @@ export default function Trade() {
 
     }
 
-    const tradeFunc = async () => {
-
-        const WETH = new Token(1, '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', 18, 'WETH', 'Wrapped Ether')
-
-        const USDC = new Token(1, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C')
+    const buyTargetToken = async () => {
+        const WETH = new Token(5, '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6', 18, 'WETHG', 'Wrapped Ether')
+        const USDC = new Token(5, '0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C', 6, 'USDCG', 'USD//C')
+        // const WETH = new Token(1, '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', 18, 'WETH', 'Wrapped Ether')
+        // const USDC = new Token(1, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C')
         const MY_ADDRESS = account;
+        const V3_SWAP_ROUTER_ADDRESS = "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45";
+
         const options = {
             recipient: MY_ADDRESS,
             slippageTolerance: new Percent(5, 100),
@@ -225,33 +213,14 @@ export default function Trade() {
             TradeType.EXACT_INPUT,
             options
         )
-        const V3_SWAP_ROUTER_ADDRESS = "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45";
-        const tokenContract = new ethers.Contract(
-            WETH.address,
-            ERC20_ABI,
-            browserExtensionProvider
-        )
-        const TOKEN_AMOUNT_TO_APPROVE_FOR_TRANSFER = 1000;
+        console.log(route);
+        const tokenApproval = await getTokenTransferApproval(MY_ADDRESS, browserExtensionProvider, WETH);
         const MAX_FEE_PER_GAS = '100000000000'
         const MAX_PRIORITY_FEE_PER_GAS = '100000000000'
-        const transaction = await tokenContract.populateTransaction.approve(
-            V3_SWAP_ROUTER_ADDRESS,
-            fromReadableAmount(
-                TOKEN_AMOUNT_TO_APPROVE_FOR_TRANSFER,
-                WETH.decimals
-            ).toString()
-        )
-
-
-        // Check the pool first.
-        // const tokenApproval = await sendTransactionViaExtension(browserExtensionProvider, {
-        //     ...transaction,
-        //     from: account
-        // });
-        // if (tokenApproval !== TransactionState.Sent) {
-        //     // TransactionState.Failed
-        // }
-
+        console.log(tokenApproval);
+        if (tokenApproval !== TransactionState.Sent) {
+            console.log('failed');
+        }
         const res = await sendTransactionViaExtension(browserExtensionProvider, {
             data: route.methodParameters?.calldata,
             to: V3_SWAP_ROUTER_ADDRESS,
@@ -261,12 +230,7 @@ export default function Trade() {
             maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
         })
         console.log(res);
-        return res
-
     }
-    useEffect(() => {
-        tradeFunc();
-    }, [])
     return (
         <Box sx={{ flexGrow: 1 }} className={styles.container}>
             <Grid container spacing={2}>
@@ -286,7 +250,7 @@ export default function Trade() {
                                 paddingTop: 1,
                                 fontSize: 'rem',
                                 fontWeight: '700',
-                                color:'white'
+                                color: 'white'
                             }}
                         >
                             {"Buy $WETH with USDC"}
@@ -323,7 +287,7 @@ export default function Trade() {
                             variant="contained"
                             size="large"
                             fullWidth
-                            onClick={startBuy}>Buy</Button>
+                            onClick={buyTargetToken}>Buy</Button>
                     </Box>
                 </Grid>
                 <Grid item xs={4}>
@@ -342,7 +306,7 @@ export default function Trade() {
                                 paddingTop: 1,
                                 fontSize: '1rem',
                                 fontWeight: '700',
-                                color:'white'
+                                color: 'white'
                             }}
                         >
                             {"Sell $AZUKI with ETH"}
@@ -391,7 +355,7 @@ export default function Trade() {
                                 paddingTop: 1,
                                 fontSize: '1rem',
                                 fontWeight: '700',
-                                color:'white'
+                                color: 'white'
                             }}
                         >
                             {"Stake $AZUKI with ETH"}
@@ -464,12 +428,13 @@ function createBrowserExtensionProvider() {
 // Transacting with a wallet extension via a Web3 Provider
 async function sendTransactionViaExtension(browserExtensionProvider, transaction) {
     try {
-        console.log(browserExtensionProvider.send);
-        console.log(transaction);
+        console.log(browserExtensionProvider);
+        console.log('transaction');
         const receipt = await browserExtensionProvider?.send(
             'eth_sendTransaction',
             [transaction]
         )
+        console.log('!!!');
         if (receipt) {
             return TransactionState.Sent
         } else {

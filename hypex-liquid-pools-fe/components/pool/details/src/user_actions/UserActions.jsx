@@ -46,14 +46,12 @@ function a11yProps(index) {
   };
 }
 
-
-
 const getNTFs = async () => {
-  getTokenIds().then(e=>{
+  getTokenIds().then(e => {
     nfts = []
-    e.map(item=>{
+    e.map(item => {
       nfts.push({
-        tokenId:item
+        tokenId: item
       })
     })
   })
@@ -65,7 +63,7 @@ export default function UserActions({ pool }) {
   useEffect(() => {
     getNTFs()
   })
-  
+
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
