@@ -5,10 +5,8 @@ import Web3 from "web3";
 import JSBI from 'jsbi';
 
 const browserExtensionProvider = createBrowserExtensionProvider()
-const V3_SWAP_ROUTER_ADDRESS = "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45";
+export const V3_SWAP_ROUTER_ADDRESS = "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45";
 const TOKEN_AMOUNT_TO_APPROVE_FOR_TRANSFER = 1000;
-const MAX_FEE_PER_GAS = '100000000000'
-const MAX_PRIORITY_FEE_PER_GAS = '100000000000'
 
 const getTokenContract = () => {
   const web3 = new Web3(window.ethereum);
@@ -26,8 +24,8 @@ export const redeemNFT = async (account, amount) => {
   return getTokenContract().methods.redeem(amount).send({
     from: account,
     type: "0x2",
-    maxFeePerGas: "50000000000",
-    maxPriorityFeePerGas: "2000000000",
+    maxFeePerGas: MAX_FEE_PER_GAS,
+    maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
   });
 }
 
@@ -35,8 +33,8 @@ export const placeBid = async (tokenId, account) => {
   return getTokenContract().methods.bid(tokenId).send({
     from: account,
     type: "0x2",
-    maxFeePerGas: "50000000000",
-    maxPriorityFeePerGas: "2000000000",
+    maxFeePerGas: MAX_FEE_PER_GAS,
+    maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
   });;
 }
 
@@ -44,8 +42,8 @@ export const randomSwap = async (tokenId, account) => {
   return getTokenContract().methods.swap(tokenId).send({
     from: account,
     type: "0x2",
-    maxFeePerGas: "50000000000",
-    maxPriorityFeePerGas: "2000000000",
+    maxFeePerGas: MAX_FEE_PER_GAS,
+    maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
   });;
 }
 
@@ -159,3 +157,6 @@ function countDecimals(x) {
   }
   return x.toString().split('.')[1].length || 0
 }
+
+export const MAX_FEE_PER_GAS = '50000000000'
+export const MAX_PRIORITY_FEE_PER_GAS = '2000000000'

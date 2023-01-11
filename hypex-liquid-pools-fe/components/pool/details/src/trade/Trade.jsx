@@ -13,7 +13,7 @@ import { CurrencyAmount, Token, TradeType, Percent } from '@uniswap/sdk-core'
 import { AlphaRouter, SwapType } from '@uniswap/smart-order-router'
 import { useWeb3React, Web3ReactProvider } from "@web3-react/core";
 import JSBI from 'jsbi';
-import { fromReadableAmount, getTokenTransferApproval } from "../../../contract/poolContract";
+import { fromReadableAmount, getTokenTransferApproval, MAX_FEE_PER_GAS, MAX_PRIORITY_FEE_PER_GAS, V3_SWAP_ROUTER_ADDRESS } from "../../../contract/poolContract";
 
 import { abi as IUniswapV3PoolABI } from '@uniswap/v3-core/artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
 import { abi as QuoterABI } from '@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json'
@@ -190,10 +190,7 @@ export default function Trade() {
     const buyTargetToken = async () => {
         const WETH = new Token(5, '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6', 18, 'WETHG', 'Wrapped Ether')
         const USDC = new Token(5, '0xD87Ba7A50B2E7E660f678A895E4B72E7CB4CCd9C', 6, 'USDCG', 'USD//C')
-        // const WETH = new Token(1, '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', 18, 'WETH', 'Wrapped Ether')
-        // const USDC = new Token(1, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C')
         const MY_ADDRESS = account;
-        const V3_SWAP_ROUTER_ADDRESS = "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45";
 
         const options = {
             recipient: MY_ADDRESS,
@@ -205,7 +202,7 @@ export default function Trade() {
             CurrencyAmount.fromRawAmount(
                 WETH,
                 fromReadableAmount(
-                    1, // 1 weth
+                    buyTargetTokenNumber, // 1 weth
                     WETH.decimals
                 ).toString()
             ),
@@ -213,11 +210,7 @@ export default function Trade() {
             TradeType.EXACT_INPUT,
             options
         )
-        console.log(route);
         const tokenApproval = await getTokenTransferApproval(MY_ADDRESS, browserExtensionProvider, WETH);
-        const MAX_FEE_PER_GAS = '100000000000'
-        const MAX_PRIORITY_FEE_PER_GAS = '100000000000'
-        console.log(tokenApproval);
         if (tokenApproval !== TransactionState.Sent) {
             console.log('failed');
         }
