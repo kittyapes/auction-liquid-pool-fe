@@ -1,8 +1,10 @@
 const baseAddress = "0x9117808F6ebEAeaE94DBcC2255C13db607f00F22";
 import tokenAbi from "./poolContractAbi.json";
-import { ethers, BigNumber } from 'ethers';
+import { ethers } from 'ethers';
 import Web3 from "web3";
 import JSBI from 'jsbi';
+import { ChainId } from '@uniswap/sdk'
+import axios from "axios";
 
 const browserExtensionProvider = createBrowserExtensionProvider()
 export const V3_SWAP_ROUTER_ADDRESS = "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45";
@@ -160,3 +162,59 @@ function countDecimals(x) {
 
 export const MAX_FEE_PER_GAS = '50000000000'
 export const MAX_PRIORITY_FEE_PER_GAS = '2000000000'
+
+
+class Price {
+  constructor(
+    baseToken,
+    quoteToken,
+    denominator,
+    numerator) {
+    this.baseToken = baseToken;
+    this.quoteToken = quoteToken;
+    this.denominator = denominator;
+    this.numerator = numerator;
+  }
+}
+
+class Immutables {
+  constructor(factory, token0, token1, fee, tickSpacing, maxLiquidityPerTick) {
+    this.factory = factory;
+    this.token0 = token0;
+    this.token1 = token1;
+    this.fee = fee;
+    this.tickSpacing = tickSpacing;
+    this.maxLiquidityPerTick = maxLiquidityPerTick;
+  }
+}
+
+class State {
+  constructor(liquidity, slot) {
+    this.liquidity = liquidity;
+    this.sqrtPriceX96 = slot[0];
+    this.tick = slot[1];
+    this.observationIndex = slot[2];
+    this.observationCardinality = slot[3];
+    this.observationCardinalityNext = slot[4];
+    this.feeProtocol = slot[5];
+    this.unlocked = slot[6];
+  }
+}
+
+export const API = {
+  GetCollectionStats: async (collectionName) => {
+    try {
+      const options = { method: 'GET', mode: 'cors' };
+      const res = await fetch('https://testnets-api.opensea.io/api/v1/collection/opensea-creature', options)
+      const data = await res.json();
+      console.log('res'); console.log(data);
+      if (res.status !== 200 && res.status !== 201) {
+        return { isSuccessful: false, data: null, message: res.statusText };
+      }
+
+      return { isSuccessful: true, data: data, message: 'successfulMessage' };
+    } catch (err) {
+      return { isSuccessful: false, data: null, message: "Unknown Error" };
+    }
+  },
+}

@@ -11,3 +11,18 @@
 .container input[type="number"] {
   -moz-appearance: textfield;
 }
+
+.placeholder {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.placeholder::after {
+  position: absolute;
+  right: 10px;
+  top: 30px;
+  content: attr(data-placeholder);
+  pointer-events: none;
+  opacity: 0.6;
+}

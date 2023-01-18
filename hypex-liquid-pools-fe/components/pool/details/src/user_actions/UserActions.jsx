@@ -9,8 +9,8 @@ import styles from "../user_actions/style/UserActions.module.css";
 import Collection from "../collection/Collection";
 import Azuki from "../../../../../static/images/azuki.jpeg";
 import dynamic from 'next/dynamic';
-import { getTokenIds } from "../../../contract/poolContract"
-const Trade = dynamic(() => import('../trade/Trade'), { ssr: false })
+import { API, getTokenIds } from "../../../contract/poolContract"
+const TradeToken = dynamic(() => import('../trade/TradeToken'), { ssr: false })
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -88,7 +88,7 @@ export default function UserActions({ pool }) {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        <Trade />
+        <TradeToken />
       </TabPanel>
       <TabPanel value={value} index={1}>
         <Collection pool={pool} nfts={nfts} type={"Auction"} />
