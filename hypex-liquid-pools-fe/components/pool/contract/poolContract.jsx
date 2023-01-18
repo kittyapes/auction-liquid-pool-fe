@@ -16,11 +16,11 @@ const getTokenContract = () => {
   );
 }
 
-export const getTokenIds = async () => {
+export const getTokenIds =  () => {
   return getTokenContract().methods.getTokenIds().call();
 }
 
-export const redeemNFT = async (account, amount) => {
+export const redeemNFT = (account, amount) => {
   return getTokenContract().methods.redeem(amount).send({
     from: account,
     type: "0x2",
@@ -29,7 +29,7 @@ export const redeemNFT = async (account, amount) => {
   });
 }
 
-export const placeBid = async (tokenId, account) => {
+export const placeBid = (tokenId, account) => {
   return getTokenContract().methods.bid(tokenId).send({
     from: account,
     type: "0x2",
@@ -38,7 +38,7 @@ export const placeBid = async (tokenId, account) => {
   });;
 }
 
-export const randomSwap = async (tokenId, account) => {
+export const randomSwap =  (tokenId, account) => {
   return getTokenContract().methods.swap(tokenId).send({
     from: account,
     type: "0x2",

@@ -57,9 +57,16 @@ const Auction = ({ address }) => {
     const router = useRouter()
     const item = router.query;
     
-    const placeAuction = async () => {
-        console.log(item)
-        placeBid(item.id, account)
+    const placeAuction = () => {
+        placeBid(item.id, account).on("transactionHash", () => {
+            console.log("e")
+        })
+        .on("receipt", () => {
+            setAuctionDone(true)
+        })
+        .on("error", () => {
+            setAuctionDone(true)
+        });
        
     }
     return (

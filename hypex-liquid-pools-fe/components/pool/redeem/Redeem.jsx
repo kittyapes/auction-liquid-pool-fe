@@ -18,7 +18,17 @@ const Redeem = ({ address }) => {
         name: "Azuki",
     };
     const placeRedemption = async () => {
-        redeemNFT(account,1)
+        redeemNFT(account,1) 
+        .on("transactionHash", () => {
+            console.log("e")
+        })
+        .on("receipt", () => {
+            setRedeemDone(true)
+        })
+        .on("error", () => {
+            setRedeemDone(true)
+        });
+        
     }
     const checkUserNFTs = () => {
         // todo
