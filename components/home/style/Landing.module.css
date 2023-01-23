@@ -1,0 +1,46 @@
+.content {
+  padding: 0 2rem;
+  text-align: center;
+}
+
+.title {
+  font-weight: 700;
+  font-size: 48px;
+  color: white;
+}
+
+.subtitle {
+  font-weight: 700;
+  font-size: 30px;
+  color: #8b42ff;
+}
+
+.subcontent {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.data {
+  padding: 10px;
+  margin: 20px;
+  background-color: black;
+  color: #ffffff66;
+  border-radius: 5px;
+}
+
+.button {
+  margin: 20px;
+  border-radius: 5px;
+  border: 0;
+  height: 90px;
+  width: 360px;
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  background-color: #514761;
+}
+
+.purple {
+  background: #7924ff;
+}

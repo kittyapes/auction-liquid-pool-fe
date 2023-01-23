@@ -1,0 +1,54 @@
+.swapDone {
+  text-align: center;
+}
+.container {
+  color: white;
+  display: block;
+  padding-left: 10%;
+  padding-right: 10%;
+}
+.title {
+  color: #ffffff99;
+  font-weight: 600;
+  font-size: 20px;
+}
+
+.subtitle {
+  color: #ffffff99;
+  font-weight: 600;
+  font-size: 16px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+}
+.congratesText {
+  color: red;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.swapIcon {
+  height: 200px;
+  width: 200px;
+  color: white;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+.upper_detail {
+  text-align: center;
+}
+.swapButton {
+  margin: auto;
+}
+.swapBox {
+  margin: auto;
+}
+
+.swapPartLeft {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.swapPartRight {
+  margin-left: auto;
+  margin-right: 0;
+}

@@ -1,0 +1,17 @@
+.container{
+    margin: auto;
+    width:80%;
+    height:800px;
+    background: rgba(31, 25, 39, 1);
+    padding-top: 120px;
+}
+
+.red{
+    color: red;
+}
+.green{
+    color: green;
+}
+.pagination{
+    margin-top: 30px;
+}
