@@ -9,10 +9,19 @@ import Avatar from "@mui/material/Avatar";
 import UserActions from "./src/user_actions/UserActions";
 import { useRouter } from "next/router";
 import Divider from "@mui/material/Divider";
-import { API } from "../contract/poolContract"
+import { API } from "../contract/poolContract";
 
-import { ChainId, Token, WETH, Fetcher, Route, Trade, TokenAmount, TradeType, Percent } from '@uniswap/sdk'
-
+import {
+  ChainId,
+  Token,
+  WETH,
+  Fetcher,
+  Route,
+  Trade,
+  TokenAmount,
+  TradeType,
+  Percent,
+} from "@uniswap/sdk";
 
 const Details = ({ address }) => {
   const router = useRouter();
@@ -30,12 +39,26 @@ const Details = ({ address }) => {
   };
   useEffect(() => {
     async function fetchETHPrice() {
-      const targetToken = new Token(ChainId.MAINNET, '0x6B175474E89094C44Da98b954EedeAC495271d0F', 18, 'DAI', 'Dai Stablecoin')
-      const pair = await Fetcher.fetchPairData(targetToken, WETH[targetToken.chainId])
-      const route = new Route([pair], WETH[targetToken.chainId])
-      console.log(route.midPrice.toSignificant(6)) // 201.306
-      console.log(route.midPrice.invert().toSignificant(6)) // 0.00496756
-      setEthPrice(route.midPrice.toSignificant(6))
+      const targetToken = new Token(
+        ChainId.GÖRLI,
+        "0xA2F60f9e9FdcA8226e6749fA1783EAbCDB6031a2",
+        18,
+        "dex",
+        "dex"
+      );
+      const currencyToken = new Token(
+        ChainId.GÖRLI,
+        "0x334E2D204EaF5EF89F0AD7b4DaC167Bf8Fcc752e",
+        18,
+        "token",
+        "token"
+      );
+      const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
+      const route = new Route([pair], currencyToken);
+      console.log("yeah!!!!!");
+      console.log(route.midPrice.toSignificant(6)); // 201.306
+      console.log(route.midPrice.invert().toSignificant(6)); // 0.00496756
+      setEthPrice(route.midPrice.toSignificant(6));
     }
     fetchETHPrice();
   }, []);
@@ -45,20 +68,24 @@ const Details = ({ address }) => {
       let res = await API.GetCollectionStats();
       let data = res.data;
       if (!data || !data.collection) return;
-      setCollection(data.collection)
-    }
+      setCollection(data.collection);
+    };
     fetch();
-  }, [])
+  }, []);
 
   useEffect(() => {
     if (!collection || !ethPrice) return;
-    const floorPrice = collection.stats.floor_price != null ? collection.stats.floor_price : 0;
+    const floorPrice =
+      collection.stats.floor_price != null ? collection.stats.floor_price : 0;
     const floorPriceUSD = floorPrice * ethPrice;
 
     const volume7Day = collection.stats.seven_day_volume;
     const volume7DayUSD = volume7Day * floorPriceUSD;
 
-    const sellerFee = Object.values(collection.fees.seller_fees).length != 0 ? Object.values(collection.fees.seller_fees)[0] : 0;
+    const sellerFee =
+      Object.values(collection.fees.seller_fees).length != 0
+        ? Object.values(collection.fees.seller_fees)[0]
+        : 0;
 
     const changeDay1 = collection.stats.one_day_change;
     const numOfOwners = collection.stats.num_owners;
@@ -108,8 +135,6 @@ const Details = ({ address }) => {
     ];
     setCardDatas(cardDatas);
   }, [collection, ethPrice]);
-
-
 
   return (
     <Grid container className={styles.container}>
