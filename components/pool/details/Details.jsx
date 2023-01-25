@@ -10,7 +10,9 @@ import UserActions from "./src/user_actions/UserActions";
 import { useRouter } from "next/router";
 import Divider from "@mui/material/Divider";
 import { API } from "../contract/poolContract";
-
+import uniswapLiquidityPoolAbi from "../../../contracts/uniswapLiquidityPoolAbi.json";
+import { getProvider } from "../../pool/contract/poolContract";
+import { ethers } from "ethers";
 import {
   ChainId,
   Token,
@@ -21,9 +23,11 @@ import {
   TokenAmount,
   TradeType,
   Percent,
+  getPoolData,
 } from "@uniswap/sdk";
 
 const Details = ({ address }) => {
+  const provider = getProvider();
   const router = useRouter();
   const [collection, setCollection] = useState({});
   const [ethPrice, setEthPrice] = useState(null);
@@ -61,6 +65,23 @@ const Details = ({ address }) => {
       setEthPrice(route.midPrice.toSignificant(6));
     }
     fetchETHPrice();
+
+    async function fetchUniswapLiquidityPoolInfo() {
+      const pool = new ethers.Contract(
+        "0x0aE03567Bc0C8cFD3e3A174B21e3678d06Cb9A88",
+        uniswapLiquidityPoolAbi,
+        provider.getSigner()
+      );
+      let targetTokenBalance = await pool.balanceOf(
+        "0xA2F60f9e9FdcA8226e6749fA1783EAbCDB6031a2"
+      );
+      let currencyTokenBalance = await pool.balanceOf(
+        "0x334E2D204EaF5EF89F0AD7b4DaC167Bf8Fcc752e"
+      );
+      console.log(targetTokenBalance.toNumber());
+      console.log(currencyTokenBalance.toNumber());
+    }
+    fetchUniswapLiquidityPoolInfo();
   }, []);
 
   useEffect(() => {

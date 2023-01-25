@@ -113,6 +113,7 @@ export default function TradeToken() {
     }
     fetchTargetTokenPrice();
   }, []);
+
   const addLiquidity = async () => {
     const UniswapV2Router01 = new ethers.Contract(
       "0xf164fC0Ec4E93095b804a4795bBe1e041497b92a",
@@ -122,44 +123,36 @@ export default function TradeToken() {
     console.log("UniswapV2Router01");
     console.log(UniswapV2Router01);
     console.log(ethers.utils.parseUnits("10"));
-    const res = await UniswapV2Router01.addLiquidity(
-      targetToken.address,
-      currencyToken.address,
-      ethers.utils.parseUnits(liquidityTargetTokenNumber.toString()),
-      ethers.utils.parseUnits(liquidityCurrencyTokenNumber.toString()),
-      0,
-      0,
-      account,
-      Date.now() + 1000
-    );
+    try {
+      const res = await UniswapV2Router01.addLiquidity(
+        targetToken.address,
+        currencyToken.address,
+        ethers.utils.parseUnits(liquidityTargetTokenNumber.toString()),
+        ethers.utils.parseUnits(liquidityCurrencyTokenNumber.toString()),
+        0,
+        0,
+        account,
+        Date.now() + 1000
+      );
+    } catch (e) {
+      console.log(e);
+    }
   };
+
   const buyTargetToken = async () => {
-    const targetToken = new Token(
-      ChainId.GÖRLI,
-      "0xA2F60f9e9FdcA8226e6749fA1783EAbCDB6031a2",
-      18,
-      "dex",
-      "dex"
-    );
     const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
     const route = new Route([pair], currencyToken);
+    const amount = buyTargetTokenNumber;
+    const bigNumberAmount = ethers.utils.parseUnits(amount.toString());
     const trade = new Trade(
       route,
-      new TokenAmount(currencyToken, "1000000000000000000"),
+      new TokenAmount(currencyToken, bigNumberAmount),
       TradeType.EXACT_INPUT
     );
 
-    console.log(route.midPrice.toSignificant(6)); // 201.306
-    console.log(route.midPrice.invert().toSignificant(6)); // 0.00496756
-
-    console.log(trade.executionPrice.toSignificant(6));
-    console.log(trade.nextMidPrice.toSignificant(6));
-
-    const amountIn = "1000000000000000000"; // 1 dex
-
     const slippageTolerance = new Percent("50", "10000"); // 50 bips, or 0.50%
     const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw; // needs to be converted to e.g. hex
-    const path = [WETH[targetToken.chainId].address, targetToken.address];
+    const path = [currencyToken.address, targetToken.address];
     const to = account; // should be a checksummed recipient address
     const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
     const value = trade.inputAmount.raw; // // needs to be converted to e.g. hex
@@ -218,6 +211,7 @@ export default function TradeToken() {
                 id="outlined-basic"
                 variant="outlined"
                 fullWidth
+                placehoder={0}
                 value={buyTargetTokenNumber}
                 onChange={changeBuyTargetTokenNumber}
                 type="number"
@@ -301,6 +295,7 @@ export default function TradeToken() {
                 id="outlined-basic"
                 fullWidth
                 variant="outlined"
+                placehoder={0}
                 value={sellTargetTokenNumber}
                 onChange={changeSellTargetTokenNumber}
                 type="number"
@@ -397,6 +392,7 @@ export default function TradeToken() {
               variant="contained"
               size="large"
               fullWidth
+              onClick={addLiquidity}
             >
               Stake
             </Button>

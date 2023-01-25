@@ -1,5 +1,8 @@
 node_modules
 .next
+.next/
+out
+out/
 
 #amplify-do-not-edit-begin
 amplify/\#current-cloud-backend
