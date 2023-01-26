@@ -139,35 +139,86 @@ export default function TradeToken() {
     }
   };
 
-  const buyTargetToken = async () => {
-    const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
-    const route = new Route([pair], currencyToken);
-    const amount = buyTargetTokenNumber;
-    const bigNumberAmount = ethers.utils.parseUnits(amount.toString());
+  const sellTargetToken = async () => {
+    const UniswapV2Router01 = new ethers.Contract(
+      "0xf164fC0Ec4E93095b804a4795bBe1e041497b92a",
+      JSON.stringify(IUniswapV2Router01.abi),
+      provider.getSigner()
+    );
+    const pair = await Fetcher.fetchPairData(currencyToken, targetToken);
+    const route = new Route([pair], targetToken);
+    const amountIn = sellTargetTokenNumber;
+    const bigNumberAmountIn = ethers.utils.parseUnits(amountIn.toString());
     const trade = new Trade(
       route,
-      new TokenAmount(currencyToken, bigNumberAmount),
+      new TokenAmount(targetToken, bigNumberAmountIn),
       TradeType.EXACT_INPUT
     );
-
-    const slippageTolerance = new Percent("50", "10000"); // 50 bips, or 0.50%
+    const slippageTolerance = new Percent("5000", "10000"); // 5000 bips, or 50%
     const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw; // needs to be converted to e.g. hex
+    const bigNumberAmountOutMin = ethers.utils.parseUnits(
+      amountOutMin.toString()
+    );
+    const path = [targetToken.address, currencyToken.address];
+    const to = account; // should be a checksummed recipient address
+    const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
+
+    try {
+      const swapData = await UniswapV2Router01.swapExactTokensForTokens(
+        bigNumberAmountIn,
+        bigNumberAmountOutMin, //amountOutMin
+        path,
+        to,
+        deadline,
+        {
+          gasLimit: 2100000,
+          gasPrice: MAX_PRIORITY_FEE_PER_GAS,
+        }
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const buyTargetToken = async () => {
+    const UniswapV2Router01 = new ethers.Contract(
+      "0xf164fC0Ec4E93095b804a4795bBe1e041497b92a",
+      JSON.stringify(IUniswapV2Router01.abi),
+      provider.getSigner()
+    );
+    const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
+    const route = new Route([pair], currencyToken);
+    const amountIn = buyTargetTokenNumber;
+    const bigNumberAmountIn = ethers.utils.parseUnits(amountIn.toString());
+    const trade = new Trade(
+      route,
+      new TokenAmount(currencyToken, bigNumberAmountIn),
+      TradeType.EXACT_INPUT
+    );
+    const slippageTolerance = new Percent("5000", "10000"); // 5000 bips, or 50%
+    const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw; // needs to be converted to e.g. hex
+    const bigNumberAmountOutMin = ethers.utils.parseUnits(
+      amountOutMin.toString()
+    );
     const path = [currencyToken.address, targetToken.address];
     const to = account; // should be a checksummed recipient address
     const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
-    const value = trade.inputAmount.raw; // // needs to be converted to e.g. hex
-    const web3 = new Web3(window.ethereum);
-    const nonce = await web3.eth.getTransactionCount(account, "latest");
-    const transaction = {
-      to: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
-      from: to,
-      value: value.toString(16),
-      gas: MAX_FEE_PER_GAS,
-      gasPrice: MAX_PRIORITY_FEE_PER_GAS,
-      nonce: nonce.toString(),
-    };
-    const res = await sendTransactionViaExtension(transaction);
-    return res;
+
+    try {
+      const swapData = await UniswapV2Router01.swapExactTokensForTokens(
+        bigNumberAmountIn,
+        bigNumberAmountOutMin, //amountOutMin
+        path,
+        to,
+        deadline,
+        {
+          gasLimit: 2100000,
+          gasPrice: MAX_PRIORITY_FEE_PER_GAS,
+        }
+      );
+    } catch (e) {
+      console.log(e);
+    }
   };
 
   return (
@@ -217,21 +268,6 @@ export default function TradeToken() {
                 type="number"
               />
             </div>
-
-            {/* <CssTextField
-                            sx={{
-                                marginTop: 2,
-                                display: 'flex',
-                                fontSize: '1rem',
-                                fontWeight: '700',
-                                input: { color: 'white' }
-                            }}
-                            id="outlined-basic"
-                            fullWidth
-                            variant="outlined"
-                            value={buyCurrencyTokenNumber}
-                            onChange={changeBuyCurrencyTokenNumber}
-                            type="number" /> USDC */}
             <Box sx={{ height: 60, marginTop: 1 }}></Box>
             <Box
               sx={{
@@ -319,6 +355,7 @@ export default function TradeToken() {
               variant="contained"
               size="large"
               fullWidth
+              onClick={sellTargetToken}
             >
               Sell
             </Button>

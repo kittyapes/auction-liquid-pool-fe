@@ -59,9 +59,6 @@ const Details = ({ address }) => {
       );
       const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
       const route = new Route([pair], currencyToken);
-      console.log("yeah!!!!!");
-      console.log(route.midPrice.toSignificant(6)); // 201.306
-      console.log(route.midPrice.invert().toSignificant(6)); // 0.00496756
       setEthPrice(route.midPrice.toSignificant(6));
     }
     fetchETHPrice();
@@ -78,8 +75,6 @@ const Details = ({ address }) => {
       let currencyTokenBalance = await pool.balanceOf(
         "0x334E2D204EaF5EF89F0AD7b4DaC167Bf8Fcc752e"
       );
-      console.log(targetTokenBalance.toNumber());
-      console.log(currencyTokenBalance.toNumber());
     }
     fetchUniswapLiquidityPoolInfo();
   }, []);
