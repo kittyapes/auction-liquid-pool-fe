@@ -9,6 +9,10 @@ import axios from "axios";
 const browserExtensionProvider = createBrowserExtensionProvider();
 export const V3_SWAP_ROUTER_ADDRESS =
   "0x68b3465833fb72A70ecDF485E0e4C7bD8665Fc45";
+
+export const V2_SWAP_ROUTER_ADDRESS =
+  "0xf164fC0Ec4E93095b804a4795bBe1e041497b92a";
+
 const TOKEN_AMOUNT_TO_APPROVE_FOR_TRANSFER = 1000;
 
 const getTokenContract = () => {

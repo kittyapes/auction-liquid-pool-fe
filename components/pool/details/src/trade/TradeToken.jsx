@@ -9,7 +9,11 @@ import { ethers } from "ethers";
 import Web3 from "web3";
 import { useWeb3React } from "@web3-react/core";
 import IUniswapV2Router01 from "@uniswap/v2-periphery/build/IUniswapV2Router01.json";
-import { getProvider } from "../../../../pool/contract/poolContract";
+import {
+  getProvider,
+  V2_SWAP_ROUTER_ADDRESS,
+} from "../../../../pool/contract/poolContract";
+import ERC20_ABI from "../../../../pool/contract/ERC20Abi.json";
 import {
   ChainId,
   Token,
@@ -20,6 +24,7 @@ import {
   TokenAmount,
   TradeType,
   Percent,
+  IERC20,
 } from "@uniswap/sdk";
 
 import {
@@ -28,6 +33,7 @@ import {
   MAX_FEE_PER_GAS,
   MAX_PRIORITY_FEE_PER_GAS,
 } from "../../../contract/poolContract";
+import { ConstructionOutlined } from "@mui/icons-material";
 
 const currencyToken = new Token(
   ChainId.GÖRLI,
@@ -61,7 +67,7 @@ const CssTextField = withStyles({
   },
 })(TextField);
 
-export default function TradeToken() {
+export default function TradeToken({ setErrorMsg }) {
   const provider = getProvider();
   const { account } = useWeb3React();
   const [buyTargetTokenNumber, setBuyTargetTokenNumber] = useState(0);
@@ -102,29 +108,56 @@ export default function TradeToken() {
 
   useEffect(() => {
     async function fetchTargetTokenPrice() {
-      const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
-      const route = new Route([pair], currencyToken);
-      const trade = new Trade(
-        route,
-        new TokenAmount(currencyToken, "1000000000000000000"),
-        TradeType.EXACT_INPUT
-      );
-      setTargetToCurrencyRatio(route.midPrice.toSignificant(6));
+      try {
+        const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
+        const route = new Route([pair], currencyToken);
+        const trade = new Trade(
+          route,
+          new TokenAmount(currencyToken, "1000000000000000000"),
+          TradeType.EXACT_INPUT
+        );
+        setTargetToCurrencyRatio(route.midPrice.toSignificant(6));
+      } catch (e) {
+        setErrorMsg(e.message);
+      }
     }
     fetchTargetTokenPrice();
   }, []);
 
   const addLiquidity = async () => {
-    const UniswapV2Router01 = new ethers.Contract(
-      "0xf164fC0Ec4E93095b804a4795bBe1e041497b92a",
-      JSON.stringify(IUniswapV2Router01.abi),
-      provider.getSigner()
-    );
-    console.log("UniswapV2Router01");
-    console.log(UniswapV2Router01);
-    console.log(ethers.utils.parseUnits("10"));
     try {
-      const res = await UniswapV2Router01.addLiquidity(
+      const UniswapV2Router01 = new ethers.Contract(
+        V2_SWAP_ROUTER_ADDRESS,
+        JSON.stringify(IUniswapV2Router01.abi),
+        provider.getSigner()
+      );
+      const bigNumberLiquidityTargetTokenNumber = ethers.utils.parseUnits(
+        liquidityTargetTokenNumber.toString()
+      );
+      console.log(bigNumberLiquidityTargetTokenNumber);
+      const bigNumberLiquidityCurrencyTokenNumber = ethers.utils.parseUnits(
+        liquidityCurrencyTokenNumber.toString()
+      );
+      console.log(bigNumberLiquidityCurrencyTokenNumber);
+      const targetTokenContract = new ethers.Contract(
+        targetToken.address,
+        JSON.stringify(ERC20_ABI),
+        provider.getSigner()
+      );
+      const currencyContract = new ethers.Contract(
+        currencyToken.address,
+        JSON.stringify(ERC20_ABI),
+        provider.getSigner()
+      );
+      await targetTokenContract.approve(
+        V2_SWAP_ROUTER_ADDRESS,
+        bigNumberLiquidityTargetTokenNumber
+      );
+      await currencyContract.approve(
+        V2_SWAP_ROUTER_ADDRESS,
+        bigNumberLiquidityCurrencyTokenNumber
+      );
+      await UniswapV2Router01.addLiquidity(
         targetToken.address,
         currencyToken.address,
         ethers.utils.parseUnits(liquidityTargetTokenNumber.toString()),
@@ -132,41 +165,54 @@ export default function TradeToken() {
         0,
         0,
         account,
-        Date.now() + 1000
+        Date.now() + 1000,
+        {
+          gasLimit: 2100000,
+          gasPrice: MAX_PRIORITY_FEE_PER_GAS,
+        }
       );
     } catch (e) {
       console.log(e);
+      setErrorMsg(e.message);
     }
   };
 
   const sellTargetToken = async () => {
-    const UniswapV2Router01 = new ethers.Contract(
-      "0xf164fC0Ec4E93095b804a4795bBe1e041497b92a",
-      JSON.stringify(IUniswapV2Router01.abi),
-      provider.getSigner()
-    );
-    const pair = await Fetcher.fetchPairData(currencyToken, targetToken);
-    const route = new Route([pair], targetToken);
-    const amountIn = sellTargetTokenNumber;
-    const bigNumberAmountIn = ethers.utils.parseUnits(amountIn.toString());
-    const trade = new Trade(
-      route,
-      new TokenAmount(targetToken, bigNumberAmountIn),
-      TradeType.EXACT_INPUT
-    );
-    const slippageTolerance = new Percent("5000", "10000"); // 5000 bips, or 50%
-    const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw; // needs to be converted to e.g. hex
-    const bigNumberAmountOutMin = ethers.utils.parseUnits(
-      amountOutMin.toString()
-    );
-    const path = [targetToken.address, currencyToken.address];
-    const to = account; // should be a checksummed recipient address
-    const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
-
     try {
-      const swapData = await UniswapV2Router01.swapExactTokensForTokens(
+      const UniswapV2Router01 = new ethers.Contract(
+        V2_SWAP_ROUTER_ADDRESS,
+        JSON.stringify(IUniswapV2Router01.abi),
+        provider.getSigner()
+      );
+      const pair = await Fetcher.fetchPairData(currencyToken, targetToken);
+      const route = new Route([pair], targetToken);
+      const amountIn = sellTargetTokenNumber;
+      const bigNumberAmountIn = ethers.utils.parseUnits(amountIn.toString());
+      const trade = new Trade(
+        route,
+        new TokenAmount(targetToken, bigNumberAmountIn),
+        TradeType.EXACT_INPUT
+      );
+      const slippageTolerance = new Percent("5000", "10000"); // 5000 bips, or 50%
+      const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw; // needs to be converted to e.g. hex
+      const bigNumberAmountOutMin = ethers.utils.parseUnits(
+        amountOutMin.toString()
+      );
+      const path = [targetToken.address, currencyToken.address];
+      const to = account; // should be a checksummed recipient address
+      const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
+      const targetTokenContract = new ethers.Contract(
+        targetToken.address,
+        JSON.stringify(ERC20_ABI),
+        provider.getSigner()
+      );
+      await targetTokenContract.approve(
+        V2_SWAP_ROUTER_ADDRESS,
+        bigNumberAmountIn
+      );
+      await UniswapV2Router01.swapExactTokensForTokens(
         bigNumberAmountIn,
-        bigNumberAmountOutMin, //amountOutMin
+        0, // bigNumberAmountOutMin, //amountOutMin
         path,
         to,
         deadline,
@@ -177,37 +223,47 @@ export default function TradeToken() {
       );
     } catch (e) {
       console.log(e);
+      setErrorMsg(e.message);
     }
   };
 
   const buyTargetToken = async () => {
-    const UniswapV2Router01 = new ethers.Contract(
-      "0xf164fC0Ec4E93095b804a4795bBe1e041497b92a",
-      JSON.stringify(IUniswapV2Router01.abi),
-      provider.getSigner()
-    );
-    const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
-    const route = new Route([pair], currencyToken);
-    const amountIn = buyTargetTokenNumber;
-    const bigNumberAmountIn = ethers.utils.parseUnits(amountIn.toString());
-    const trade = new Trade(
-      route,
-      new TokenAmount(currencyToken, bigNumberAmountIn),
-      TradeType.EXACT_INPUT
-    );
-    const slippageTolerance = new Percent("5000", "10000"); // 5000 bips, or 50%
-    const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw; // needs to be converted to e.g. hex
-    const bigNumberAmountOutMin = ethers.utils.parseUnits(
-      amountOutMin.toString()
-    );
-    const path = [currencyToken.address, targetToken.address];
-    const to = account; // should be a checksummed recipient address
-    const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
-
     try {
+      const UniswapV2Router01 = new ethers.Contract(
+        V2_SWAP_ROUTER_ADDRESS,
+        JSON.stringify(IUniswapV2Router01.abi),
+        provider.getSigner()
+      );
+      console.log(UniswapV2Router01);
+      const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
+      const route = new Route([pair], currencyToken);
+      const amountIn = buyTargetTokenNumber;
+      const bigNumberAmountIn = ethers.utils.parseUnits(amountIn.toString());
+      const trade = new Trade(
+        route,
+        new TokenAmount(currencyToken, bigNumberAmountIn),
+        TradeType.EXACT_INPUT
+      );
+      const slippageTolerance = new Percent("5000", "10000"); // 5000 bips, or 50%
+      const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw; // needs to be converted to e.g. hex
+      const bigNumberAmountOutMin = ethers.utils.parseUnits(
+        amountOutMin.toString()
+      );
+      const path = [currencyToken.address, targetToken.address];
+      const to = account; // should be a checksummed recipient address
+      const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
+      const currencyTokenContract = new ethers.Contract(
+        currencyToken.address,
+        JSON.stringify(ERC20_ABI),
+        provider.getSigner()
+      );
+      await currencyTokenContract.approve(
+        V2_SWAP_ROUTER_ADDRESS,
+        bigNumberAmountIn
+      );
       const swapData = await UniswapV2Router01.swapExactTokensForTokens(
         bigNumberAmountIn,
-        bigNumberAmountOutMin, //amountOutMin
+        0, // bigNumberAmountOutMin, //amountOutMin
         path,
         to,
         deadline,
@@ -218,6 +274,7 @@ export default function TradeToken() {
       );
     } catch (e) {
       console.log(e);
+      setErrorMsg(e.message);
     }
   };
 

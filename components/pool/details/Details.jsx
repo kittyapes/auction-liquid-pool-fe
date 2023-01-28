@@ -1,6 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-import Paper from "@mui/material/Paper";
-import { styled } from "@mui/material/styles";
 import styles from "../details/style/Details.module.css";
 import Azuki from "../../../static/images/azuki.jpeg";
 import eth from "../../../static/images/eth.png";
@@ -13,25 +11,19 @@ import { API } from "../contract/poolContract";
 import uniswapLiquidityPoolAbi from "../../../contracts/uniswapLiquidityPoolAbi.json";
 import { getProvider } from "../../pool/contract/poolContract";
 import { ethers } from "ethers";
-import {
-  ChainId,
-  Token,
-  WETH,
-  Fetcher,
-  Route,
-  Trade,
-  TokenAmount,
-  TradeType,
-  Percent,
-  getPoolData,
-} from "@uniswap/sdk";
+import { ChainId, Token, Fetcher, Route } from "@uniswap/sdk";
 
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
+import "reactjs-popup/dist/index.css";
+import Popup from "reactjs-popup";
 const Details = ({ address }) => {
   const provider = getProvider();
   const router = useRouter();
   const [collection, setCollection] = useState({});
   const [ethPrice, setEthPrice] = useState(null);
   const [cardDatas, setCardDatas] = useState([]);
+  const [errorMsg, setErrorMsg] = useState(null);
   const useToHome = () => {
     router.push("/");
   };
@@ -75,6 +67,7 @@ const Details = ({ address }) => {
       let currencyTokenBalance = await pool.balanceOf(
         "0x334E2D204EaF5EF89F0AD7b4DaC167Bf8Fcc752e"
       );
+      //TODO: Show balance in the detail page.
     }
     fetchUniswapLiquidityPoolInfo();
   }, []);
@@ -196,8 +189,21 @@ const Details = ({ address }) => {
         </Grid>
       </Grid>
       <Grid xs={12} className={styles.user_actions}>
-        <UserActions pool={pool} />
+        <UserActions pool={pool} setErrorMsg={setErrorMsg} />
       </Grid>
+      <Popup
+        open={errorMsg != null}
+        closeOnDocumentClick={true}
+        onClose={() => {
+          setErrorMsg(null);
+        }}
+        position="center"
+      >
+        <Alert severity="error">
+          <AlertTitle>Error</AlertTitle>
+          {errorMsg}
+        </Alert>
+      </Popup>
     </Grid>
   );
 };

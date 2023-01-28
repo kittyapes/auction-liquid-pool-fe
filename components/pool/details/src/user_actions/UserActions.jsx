@@ -4,13 +4,13 @@ import React, { useEffect, useState, useRef } from "react";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Typography from "@mui/material/Typography";
-import { Button, Box, Divider } from '@mui/material';
+import { Button, Box, Divider } from "@mui/material";
 import styles from "../user_actions/style/UserActions.module.css";
 import Collection from "../collection/Collection";
 import Azuki from "../../../../../static/images/azuki.jpeg";
-import dynamic from 'next/dynamic';
-import { API, getTokenIds } from "../../../contract/poolContract"
-const TradeToken = dynamic(() => import('../trade/TradeToken'), { ssr: false })
+import dynamic from "next/dynamic";
+import { API, getTokenIds } from "../../../contract/poolContract";
+const TradeToken = dynamic(() => import("../trade/TradeToken"), { ssr: false });
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -47,31 +47,30 @@ function a11yProps(index) {
 }
 
 const getNTFs = async () => {
-  getTokenIds().then(e => {
-    nfts = []
-    e.map(item => {
+  getTokenIds().then((e) => {
+    nfts = [];
+    e.map((item) => {
       nfts.push({
-        tokenId: item
-      })
-    })
-  })
-}
-export default function UserActions({ pool }) {
+        tokenId: item,
+      });
+    });
+  });
+};
+export default function UserActions({ pool, setErrorMsg }) {
   const [value, setValue] = React.useState(0);
   const router = useRouter();
 
   useEffect(() => {
-    getNTFs()
-  })
-
+    getNTFs();
+  });
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
   const randomRedeem = () => {
-    router.push(`/redeem/${pool.address}`)
-  }
+    router.push(`/redeem/${pool.address}`);
+  };
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -88,14 +87,22 @@ export default function UserActions({ pool }) {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        <TradeToken />
+        <TradeToken setErrorMsg={setErrorMsg} />
       </TabPanel>
       <TabPanel value={value} index={1}>
         <Collection pool={pool} nfts={nfts} type={"Auction"} />
         <Divider className={styles.divider} variant="middle" />
         <div className={styles.redeem}>
-          <Button sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" className={styles.button} onClick={randomRedeem}>Random Redeem</Button>
-          <input className={styles.redeemInput} value={1} type='number' />
+          <Button
+            sx={{ marginTop: 2, height: 60 }}
+            variant="contained"
+            size="large"
+            className={styles.button}
+            onClick={randomRedeem}
+          >
+            Random Redeem
+          </Button>
+          <input className={styles.redeemInput} value={1} type="number" />
         </div>
       </TabPanel>
       <TabPanel value={value} index={2}>
@@ -105,5 +112,4 @@ export default function UserActions({ pool }) {
   );
 }
 
-let nfts = [
-];
+let nfts = [];
