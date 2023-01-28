@@ -1,3 +1,4 @@
+// TODO: Set the suggested value for stake.
 import React, { useEffect, useState, useRef } from "react";
 import Box from "@mui/material/Box";
 import styles from "./style/Trade.module.css";
@@ -234,20 +235,18 @@ export default function TradeToken({ setErrorMsg }) {
         JSON.stringify(IUniswapV2Router01.abi),
         provider.getSigner()
       );
-      console.log(UniswapV2Router01);
       const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
       const route = new Route([pair], currencyToken);
-      const amountIn = buyTargetTokenNumber;
-      const bigNumberAmountIn = ethers.utils.parseUnits(amountIn.toString());
-      const trade = new Trade(
+      const amountOut = buyTargetTokenNumber;
+      const bigNumberAmountOut = ethers.utils.parseUnits(amountOut.toString());
+      const trade = new Trade.exactOut(
         route,
-        new TokenAmount(currencyToken, bigNumberAmountIn),
-        TradeType.EXACT_INPUT
+        new TokenAmount(targetToken, bigNumberAmountOut)
       );
       const slippageTolerance = new Percent("5000", "10000"); // 5000 bips, or 50%
-      const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw; // needs to be converted to e.g. hex
-      const bigNumberAmountOutMin = ethers.utils.parseUnits(
-        amountOutMin.toString()
+      const amountInMax = trade.maximumAmountIn(slippageTolerance).raw; // needs to be converted to e.g. hex
+      const bigNumberAmountInMax = ethers.utils.parseUnits(
+        amountInMax.toString()
       );
       const path = [currencyToken.address, targetToken.address];
       const to = account; // should be a checksummed recipient address
@@ -259,11 +258,11 @@ export default function TradeToken({ setErrorMsg }) {
       );
       await currencyTokenContract.approve(
         V2_SWAP_ROUTER_ADDRESS,
-        bigNumberAmountIn
+        bigNumberAmountInMax
       );
-      const swapData = await UniswapV2Router01.swapExactTokensForTokens(
-        bigNumberAmountIn,
-        0, // bigNumberAmountOutMin, //amountOutMin
+      await UniswapV2Router01.swapTokensForExactTokens(
+        bigNumberAmountOut,
+        bigNumberAmountInMax, // bigNumberAmountOutMin, //amountOutMin
         path,
         to,
         deadline,
