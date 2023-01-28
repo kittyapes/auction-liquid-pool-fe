@@ -1,4 +1,3 @@
-// TODO: Set the suggested value for stake.
 import React, { useEffect, useState, useRef } from "react";
 import Box from "@mui/material/Box";
 import styles from "./style/Trade.module.css";
@@ -90,10 +89,22 @@ export default function TradeToken({ setErrorMsg }) {
 
   const changeLiquidityTargetTokenNumber = (event) => {
     setLiquidityTargetTokenNumber(event.target.value);
+    setLiquidityCurrencyTokenNumber(event.target.value * targetToCurrencyRatio);
   };
 
   const changeLiquidityCurrencyTokenNumber = (event) => {
     setLiquidityCurrencyTokenNumber(event.target.value);
+  };
+
+  const fetchTargetTokenPrice = async () => {
+    console.log("start to fetchTargetTokenPrice");
+    try {
+      const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
+      const route = new Route([pair], currencyToken);
+      setTargetToCurrencyRatio(route.midPrice.invert().toSignificant(6));
+    } catch (e) {
+      setErrorMsg(e.message);
+    }
   };
 
   /// Update the number of currency token users need to pay when
@@ -107,24 +118,6 @@ export default function TradeToken({ setErrorMsg }) {
     );
   }, [buyTargetTokenNumber, sellTargetTokenNumber]);
 
-  useEffect(() => {
-    async function fetchTargetTokenPrice() {
-      try {
-        const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
-        const route = new Route([pair], currencyToken);
-        const trade = new Trade(
-          route,
-          new TokenAmount(currencyToken, "1000000000000000000"),
-          TradeType.EXACT_INPUT
-        );
-        setTargetToCurrencyRatio(route.midPrice.toSignificant(6));
-      } catch (e) {
-        setErrorMsg(e.message);
-      }
-    }
-    fetchTargetTokenPrice();
-  }, []);
-
   const addLiquidity = async () => {
     try {
       const UniswapV2Router01 = new ethers.Contract(
@@ -135,11 +128,9 @@ export default function TradeToken({ setErrorMsg }) {
       const bigNumberLiquidityTargetTokenNumber = ethers.utils.parseUnits(
         liquidityTargetTokenNumber.toString()
       );
-      console.log(bigNumberLiquidityTargetTokenNumber);
       const bigNumberLiquidityCurrencyTokenNumber = ethers.utils.parseUnits(
         liquidityCurrencyTokenNumber.toString()
       );
-      console.log(bigNumberLiquidityCurrencyTokenNumber);
       const targetTokenContract = new ethers.Contract(
         targetToken.address,
         JSON.stringify(ERC20_ABI),
@@ -158,6 +149,12 @@ export default function TradeToken({ setErrorMsg }) {
         V2_SWAP_ROUTER_ADDRESS,
         bigNumberLiquidityCurrencyTokenNumber
       );
+
+      // Fetch the up-to-date targetToken price.
+      const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
+      const route = new Route([pair], currencyToken);
+      setTargetToCurrencyRatio(route.midPrice.invert().toSignificant(6));
+
       await UniswapV2Router01.addLiquidity(
         targetToken.address,
         currencyToken.address,
@@ -226,6 +223,7 @@ export default function TradeToken({ setErrorMsg }) {
       console.log(e);
       setErrorMsg(e.message);
     }
+    fetchTargetTokenPrice();
   };
 
   const buyTargetToken = async () => {
@@ -275,7 +273,12 @@ export default function TradeToken({ setErrorMsg }) {
       console.log(e);
       setErrorMsg(e.message);
     }
+    fetchTargetTokenPrice();
   };
+
+  useEffect(() => {
+    fetchTargetTokenPrice();
+  }, []);
 
   return (
     <Box sx={{ flexGrow: 1 }} className={styles.container}>
@@ -391,7 +394,7 @@ export default function TradeToken({ setErrorMsg }) {
                 value={sellTargetTokenNumber}
                 onChange={changeSellTargetTokenNumber}
                 type="number"
-              />{" "}
+              />
             </div>
             <Box sx={{ height: 60, marginTop: 1 }}></Box>
             <Box
@@ -440,34 +443,44 @@ export default function TradeToken({ setErrorMsg }) {
             >
               {`Stake  $${targetToken.name} with ${currencyToken.name}`}
             </Box>
-            <CssTextField
-              sx={{
-                marginTop: 2,
-                display: "flex",
-                fontSize: "1rem",
-                fontWeight: "700",
-                input: { color: "white" },
-              }}
-              id="outlined-basic"
-              fullWidth
-              variant="outlined"
-              value={liquidityTargetTokenNumber}
-              onChange={changeLiquidityTargetTokenNumber}
-            />
-            <CssTextField
-              sx={{
-                marginTop: 2,
-                display: "flex",
-                fontSize: "1rem",
-                fontWeight: "700",
-                input: { color: "white" },
-              }}
-              id="outlined-basic"
-              fullWidth
-              variant="outlined"
-              value={liquidityCurrencyTokenNumber}
-              onChange={changeLiquidityCurrencyTokenNumber}
-            />
+            <div
+              className={styles.placeholder}
+              data-placeholder={targetToken.name}
+            >
+              <CssTextField
+                sx={{
+                  marginTop: 2,
+                  display: "flex",
+                  fontSize: "1rem",
+                  fontWeight: "700",
+                  input: { color: "white" },
+                }}
+                id="outlined-basic"
+                fullWidth
+                variant="outlined"
+                value={liquidityTargetTokenNumber}
+                onChange={changeLiquidityTargetTokenNumber}
+              />
+            </div>
+            <div
+              className={styles.placeholder}
+              data-placeholder={currencyToken.name}
+            >
+              <CssTextField
+                sx={{
+                  marginTop: 2,
+                  display: "flex",
+                  fontSize: "1rem",
+                  fontWeight: "700",
+                  input: { color: "white" },
+                }}
+                id="outlined-basic"
+                fullWidth
+                variant="outlined"
+                value={liquidityCurrencyTokenNumber}
+                onChange={changeLiquidityCurrencyTokenNumber}
+              />
+            </div>
             <Box
               sx={{
                 display: "flex",
@@ -478,7 +491,7 @@ export default function TradeToken({ setErrorMsg }) {
                 fontWeight: "700",
               }}
             >
-              {"33% Interest Rate"}
+              {"0.3% Interest Rate"}
             </Box>
             <Button
               sx={{ marginTop: 2, height: 60 }}
