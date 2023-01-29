@@ -56,7 +56,12 @@ const getNTFs = async () => {
     });
   });
 };
-export default function UserActions({ pool, setErrorMsg }) {
+export default function UserActions({
+  pool,
+  targetToken,
+  currencyToken,
+  setErrorMsg,
+}) {
   const [value, setValue] = React.useState(0);
   const router = useRouter();
 
@@ -87,7 +92,11 @@ export default function UserActions({ pool, setErrorMsg }) {
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
-        <TradeToken setErrorMsg={setErrorMsg} />
+        <TradeToken
+          targetToken={targetToken}
+          currencyToken={currencyToken}
+          setErrorMsg={setErrorMsg}
+        />
       </TabPanel>
       <TabPanel value={value} index={1}>
         <Collection pool={pool} nfts={nfts} type={"Auction"} />

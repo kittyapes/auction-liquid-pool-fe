@@ -9,7 +9,12 @@ import { useRouter } from "next/router";
 import Divider from "@mui/material/Divider";
 import { API } from "../contract/poolContract";
 import uniswapLiquidityPoolAbi from "../../../contracts/uniswapLiquidityPoolAbi.json";
-import { getProvider } from "../../pool/contract/poolContract";
+import {
+  getProvider,
+  getContract,
+  getTokenInfo,
+  dexTokenAddress,
+} from "../../pool/contract/poolContract";
 import { ethers } from "ethers";
 import { ChainId, Token, Fetcher, Route } from "@uniswap/sdk";
 
@@ -17,56 +22,56 @@ import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import "reactjs-popup/dist/index.css";
 import Popup from "reactjs-popup";
-const Details = ({ address }) => {
+
+let pool = {
+  src: Azuki.src,
+  address: "0x9117808F6ebEAeaE94DBcC2255C13db607f00F22",
+  name: "Azuki",
+};
+const Details = ({ pairAddress }) => {
+  pairAddress = "0x0aE03567Bc0C8cFD3e3A174B21e3678d06Cb9A88";
   const provider = getProvider();
   const router = useRouter();
   const [collection, setCollection] = useState({});
-  const [ethPrice, setEthPrice] = useState(null);
+  const [currencyTokenPrice, setCurrencyTokenPrice] = useState(0);
   const [cardDatas, setCardDatas] = useState([]);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [targetToken, setTargetToken] = useState(null);
+  const [currencyToken, setCurrencyToken] = useState(null);
   const useToHome = () => {
     router.push("/");
   };
 
-  let pool = {
-    src: Azuki.src,
-    address: "0x9117808F6ebEAeaE94DBcC2255C13db607f00F22",
-    name: "Azuki",
-  };
   useEffect(() => {
-    async function fetchETHPrice() {
-      const targetToken = new Token(
-        ChainId.GÖRLI,
-        "0xA2F60f9e9FdcA8226e6749fA1783EAbCDB6031a2",
-        18,
-        "dex",
-        "dex"
-      );
-      const currencyToken = new Token(
-        ChainId.GÖRLI,
-        "0x334E2D204EaF5EF89F0AD7b4DaC167Bf8Fcc752e",
-        18,
-        "token",
-        "token"
-      );
+    async function fetchCurrencyTokenPrice() {
+      console.log(targetToken);
+      console.log(currencyToken);
+      console.log(!targetToken || !currencyToken);
+      if (!targetToken || !currencyToken) return;
       const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
       const route = new Route([pair], currencyToken);
-      setEthPrice(route.midPrice.toSignificant(6));
+      setCurrencyTokenPrice(route.midPrice.toSignificant(6));
     }
-    fetchETHPrice();
+    fetchCurrencyTokenPrice();
+  }, [targetToken, currencyToken]);
 
+  useEffect(() => {
     async function fetchUniswapLiquidityPoolInfo() {
       const pool = new ethers.Contract(
-        "0x0aE03567Bc0C8cFD3e3A174B21e3678d06Cb9A88",
+        pairAddress,
         uniswapLiquidityPoolAbi,
         provider.getSigner()
       );
-      let targetTokenBalance = await pool.balanceOf(
-        "0xA2F60f9e9FdcA8226e6749fA1783EAbCDB6031a2"
-      );
-      let currencyTokenBalance = await pool.balanceOf(
-        "0x334E2D204EaF5EF89F0AD7b4DaC167Bf8Fcc752e"
-      );
+      const targetTokenAddress = await pool.token1();
+      const currencyTokenAddress = await pool.token0();
+      const t = await getTokenInfo(targetTokenAddress);
+      const c = await getTokenInfo(currencyTokenAddress);
+      setTargetToken(t);
+      setCurrencyToken(c);
+      console.log(targetToken);
+      console.log(currencyToken);
+      let targetTokenBalance = await pool.balanceOf(targetTokenAddress);
+      let currencyTokenBalance = await pool.balanceOf(currencyTokenAddress);
       //TODO: Show balance in the detail page.
     }
     fetchUniswapLiquidityPoolInfo();
@@ -83,10 +88,10 @@ const Details = ({ address }) => {
   }, []);
 
   useEffect(() => {
-    if (!collection || !ethPrice) return;
+    if (!collection || !currencyTokenPrice) return;
     const floorPrice =
       collection.stats.floor_price != null ? collection.stats.floor_price : 0;
-    const floorPriceUSD = floorPrice * ethPrice;
+    const floorPriceUSD = floorPrice * currencyTokenPrice;
 
     const volume7Day = collection.stats.seven_day_volume;
     const volume7DayUSD = volume7Day * floorPriceUSD;
@@ -143,7 +148,7 @@ const Details = ({ address }) => {
       },
     ];
     setCardDatas(cardDatas);
-  }, [collection, ethPrice]);
+  }, [collection, currencyTokenPrice]);
 
   return (
     <Grid container className={styles.container}>
@@ -170,7 +175,7 @@ const Details = ({ address }) => {
                 <p className={styles.text}>NFT Contract Address:</p>
               </div>
               <div>
-                <p>{pool.address}</p>
+                <p>{pairAddress}</p>
               </div>
             </div>
           </Grid>
@@ -189,7 +194,12 @@ const Details = ({ address }) => {
         </Grid>
       </Grid>
       <Grid xs={12} className={styles.user_actions}>
-        <UserActions pool={pool} setErrorMsg={setErrorMsg} />
+        <UserActions
+          pool={pool}
+          targetToken={targetToken}
+          currencyToken={currencyToken}
+          setErrorMsg={setErrorMsg}
+        />
       </Grid>
       <Popup
         open={errorMsg != null}

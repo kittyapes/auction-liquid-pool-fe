@@ -6,7 +6,6 @@ import TextField from "@mui/material/TextField";
 import { withStyles } from "@mui/styles";
 import { Button } from "@mui/material";
 import { ethers } from "ethers";
-import Web3 from "web3";
 import { useWeb3React } from "@web3-react/core";
 import IUniswapV2Router01 from "@uniswap/v2-periphery/build/IUniswapV2Router01.json";
 import {
@@ -35,21 +34,6 @@ import {
 } from "../../../contract/poolContract";
 import { ConstructionOutlined } from "@mui/icons-material";
 
-const currencyToken = new Token(
-  ChainId.GÖRLI,
-  "0x334E2D204EaF5EF89F0AD7b4DaC167Bf8Fcc752e",
-  18,
-  "DEX",
-  "DEX"
-);
-
-const targetToken = new Token(
-  ChainId.GÖRLI,
-  "0xA2F60f9e9FdcA8226e6749fA1783EAbCDB6031a2",
-  18,
-  "MAPT",
-  "MAPT"
-);
 const CssTextField = withStyles({
   root: {
     "& .MuiOutlinedInput-root": {
@@ -67,7 +51,12 @@ const CssTextField = withStyles({
   },
 })(TextField);
 
-export default function TradeToken({ setErrorMsg }) {
+export default function TradeToken({
+  targetToken,
+  currencyToken,
+  setErrorMsg,
+}) {
+  if (!targetToken || !currencyToken) return;
   const provider = getProvider();
   const { account } = useWeb3React();
   const [buyTargetTokenNumber, setBuyTargetTokenNumber] = useState(0);

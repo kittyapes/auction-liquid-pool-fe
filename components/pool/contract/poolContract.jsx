@@ -1,10 +1,10 @@
 const baseAddress = "0x9117808F6ebEAeaE94DBcC2255C13db607f00F22";
+export const dexTokenAddress = "0x334E2D204EaF5EF89F0AD7b4DaC167Bf8Fcc752e";
 import tokenAbi from "./poolContractAbi.json";
 import { ethers } from "ethers";
 import Web3 from "web3";
 import JSBI from "jsbi";
-import { ChainId } from "@uniswap/sdk";
-import axios from "axios";
+import { ChainId, Token, Fetcher, Route } from "@uniswap/sdk";
 
 const browserExtensionProvider = createBrowserExtensionProvider();
 export const V3_SWAP_ROUTER_ADDRESS =
@@ -18,6 +18,17 @@ const TOKEN_AMOUNT_TO_APPROVE_FOR_TRANSFER = 1000;
 const getTokenContract = () => {
   const web3 = new Web3(window.ethereum);
   return new web3.eth.Contract(tokenAbi, baseAddress);
+};
+
+export const getContract = (tokenAddress) => {
+  return new ethers.Contract(tokenAddress, ERC20_ABI, browserExtensionProvider);
+};
+
+export const getTokenInfo = async (tokenAddress) => {
+  const tokenContract = getContract(tokenAddress);
+  const decimal = await tokenContract.decimals();
+  const symbol = await tokenContract.symbol();
+  return new Token(ChainId.GÖRLI, tokenAddress, decimal, symbol, symbol);
 };
 
 export const getTokenIds = () => {
