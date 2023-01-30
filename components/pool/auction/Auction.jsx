@@ -74,7 +74,7 @@ const Auction = ({ address }) => {
   const item = router.query;
 
   const placeAuction = () => {
-    (0.05, item.id, account)
+    placeBid(0.05, item.id, account)
       .on("transactionHash", () => {
         console.log("e");
       })
