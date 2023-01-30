@@ -6,7 +6,7 @@ import TextField from "@mui/material/TextField";
 import { withStyles } from "@mui/styles";
 import { Button } from "@mui/material";
 import { ethers } from "ethers";
-import { useWeb3React } from "@web3-react/core";
+import { useWalletContext } from "../../../../../context/wallet";
 import IUniswapV2Router01 from "@uniswap/v2-periphery/build/IUniswapV2Router01.json";
 import {
   getProvider,
@@ -58,7 +58,7 @@ export default function TradeToken({
 }) {
   if (!targetToken || !currencyToken) return;
   const provider = getProvider();
-  const { account } = useWeb3React();
+  const { account } = useWalletContext();
   const [buyTargetTokenNumber, setBuyTargetTokenNumber] = useState(0);
   const [sellTargetTokenNumber, setSellTargetTokenNumber] = useState(0);
   const [buyCurrencyTokenNumber, setBuyCurrencyTokenNumber] = useState(0);

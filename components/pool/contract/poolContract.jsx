@@ -36,17 +36,17 @@ export const getTokenIds = () => {
   return getTokenContract().methods.getTokenIds().call();
 };
 
-export const getDuration = () =>{
+export const getDuration = () => {
   return getTokenContract().methods.duration().call();
-}
+};
 
-export const getBids = (tokenId) =>{
+export const getBids = (tokenId) => {
   return getTokenContract().methods.auctions(tokenId).call();
-}
+};
 
 export const getIsLinear = () =>{
   return getTokenContract().methods.isLinear().call();
-}
+};
 
 export const getDelta = () =>{
   return getTokenContract().methods.delta().call();
@@ -55,7 +55,7 @@ export const getDelta = () =>{
 export const redeemNFT = (account, amount) => {
   return getTokenContract().methods.redeem(amount).send({
     from: account,
-    to:baseAddress,
+    to: baseAddress,
     type: "0x2",
     maxFeePerGas: MAX_FEE_PER_GAS,
     maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
@@ -63,13 +63,15 @@ export const redeemNFT = (account, amount) => {
 };
 
 export const placeBid = (bidAmount, tokenId, account) => {
-  return getTokenContract().methods.bid(tokenId).send({
-    from: account,
-    value: new BigNumber(bidAmount).times(Math.pow(10, 18)).times(1),
-    type: "0x2",
-    maxFeePerGas: MAX_FEE_PER_GAS,
-    maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
-  });
+  return getTokenContract()
+    .methods.bid(tokenId)
+    .send({
+      from: account,
+      value: new BigNumber(bidAmount).times(Math.pow(10, 18)).times(1),
+      type: "0x2",
+      maxFeePerGas: MAX_FEE_PER_GAS,
+      maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
+    });
 };
 
 export const randomSwap = (tokenId, account) => {
