@@ -7,7 +7,7 @@ import { Button } from '@mui/material';
 import dynamic from 'next/dynamic';
 import { useWeb3React } from "@web3-react/core";
 import congrats from "../../../static/animation/congrats.json";
-import { placeBid } from "../contract/poolContract"
+import { placeBid, getDuration, getBids, isLinear } from "../contract/poolContract"
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 const chart = {
     series: [{
@@ -49,6 +49,7 @@ const chart = {
 const Auction = ({ address }) => {
     const { account } = useWeb3React();
     const [auctionDone, setAuctionDone] = useState(false);
+    const [noAuction, setNoAuction] = useState(false);
     let pool = {
         src: src.src,
         address: address,
@@ -58,7 +59,7 @@ const Auction = ({ address }) => {
     const item = router.query;
     
     const placeAuction = () => {
-        placeBid(item.id, account).on("transactionHash", () => {
+        (0.05, item.id, account).on("transactionHash", () => {
             console.log("e")
         })
         .on("receipt", () => {
@@ -69,6 +70,29 @@ const Auction = ({ address }) => {
         });
        
     }
+
+    let bidInfo = {}
+    let bidAmount = 10
+    const getAuctions = async() => {
+        let result = await getBids(item.id)
+        bidAmount = result.bidAmount
+        console.log(bidAmount)
+        bidInfo = result
+        if (result.winner === "0x0000000000000000000000000000000000000000"){
+            setNoAuction(true)
+        }else{
+            setNoAuction(false)
+        }
+        
+    }
+    const getDuration = () =>{
+      return getDuration()
+    }
+
+    useEffect(() => {
+        getAuctions()
+    });
+
     return (
         <Grid container className={styles.container}>
             <div>
@@ -91,13 +115,22 @@ const Auction = ({ address }) => {
                             alt="pool-logo"
                             style={{ width: 300, height: 350, borderRadius: 10 }}
                         />
-                        {!auctionDone && <div className={styles.details}>
+                        {noAuction && <div className={styles.details}>
+                            <div>
+                                <div>
+                                    <p className={styles.subtitle}>No Bids</p>
+                                </div>
+                            </div>
+                            <Button sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" fullWidth onClick={placeAuction}>PLACE THE NEXT BID</Button>
+                        </div>
+                        }
+                        {!noAuction && !auctionDone && <div className={styles.details}>
                             <div>
                                 <div>
                                     <p className={styles.subtitle}>Current Highest Bid:</p>
                                 </div>
                                 <div>
-                                    <p>23:59:40 LEFT</p>
+                                    <p>{bidAmount}</p>
                                 </div>
                             </div>
                             <div>
@@ -114,7 +147,7 @@ const Auction = ({ address }) => {
                             </div>
                             <Button sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" fullWidth onClick={placeAuction}>PLACE THE NEXT BID</Button>
                         </div>}
-                        {auctionDone && <div className={styles.auctionDone}>
+                        {!noAuction && auctionDone && <div className={styles.auctionDone}>
                             <div>
                                 <p>YOU WIN THE ACTION</p>
                                 <p>NFT ACB 2123 is yours！</p>

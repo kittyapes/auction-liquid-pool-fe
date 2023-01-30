@@ -1,6 +1,7 @@
-const baseAddress = "0x9117808F6ebEAeaE94DBcC2255C13db607f00F22";
 export const dexTokenAddress = "0x334E2D204EaF5EF89F0AD7b4DaC167Bf8Fcc752e";
+const baseAddress = "0x69a8fB7aB0672693C70a4a4DC31f51fCb22258Fb";
 import tokenAbi from "./poolContractAbi.json";
+import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
 import Web3 from "web3";
 import JSBI from "jsbi";
@@ -35,18 +36,32 @@ export const getTokenIds = () => {
   return getTokenContract().methods.getTokenIds().call();
 };
 
+export const getDuration = () =>{
+  return getTokenContract().methods.duration().call();
+}
+
+export const getBids = (tokenId) =>{
+  return getTokenContract().methods.auctions(tokenId).call();
+}
+
+export const isLinear = () =>{
+  return getTokenContract().methods.isLinear().call();
+}
+
 export const redeemNFT = (account, amount) => {
   return getTokenContract().methods.redeem(amount).send({
     from: account,
+    to:baseAddress,
     type: "0x2",
     maxFeePerGas: MAX_FEE_PER_GAS,
     maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
   });
 };
 
-export const placeBid = (tokenId, account) => {
+export const placeBid = (bidAmount, tokenId, account) => {
   return getTokenContract().methods.bid(tokenId).send({
     from: account,
+    value: new BigNumber(bidAmount).times(Math.pow(10, 18)).times(1),
     type: "0x2",
     maxFeePerGas: MAX_FEE_PER_GAS,
     maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,

@@ -13,6 +13,9 @@ const Card = ({ nft, type, pool }) => {
       <div>
         <img className={styles.nft_image} src={nft.src} />
       </div>
+      <div style={{color:'white'}}>
+        {nft.tokenId}
+      </div>
       <Button sx={{ marginTop: 2, height: 60 }} variant="contained" size="large" className={`${styles.button} ${styles.purple}`} onClick={auction}>{type}</Button>
     </div>
   );

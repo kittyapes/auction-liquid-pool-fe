@@ -8,6 +8,7 @@ import { Button } from '@mui/material';
 import dynamic from 'next/dynamic';
 import {redeemNFT} from '../contract/poolContract'
 import { useWeb3React } from "@web3-react/core";
+import {getAllowance, increaseAllowance} from '../contract/mappingTokenContract'
 const Redeem = ({ address }) => {
     const { account } = useWeb3React();
     const [redeemDone, setRedeemDone] = useState(false);
@@ -18,16 +19,9 @@ const Redeem = ({ address }) => {
         name: "Azuki",
     };
     const placeRedemption = async () => {
+        const allowance = await getAllowance(account)
         redeemNFT(account,1) 
-        .on("transactionHash", () => {
-            console.log("e")
-        })
-        .on("receipt", () => {
-            setRedeemDone(true)
-        })
-        .on("error", () => {
-            setRedeemDone(true)
-        });
+        
         
     }
     const checkUserNFTs = () => {
