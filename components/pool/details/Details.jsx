@@ -17,7 +17,6 @@ import {
 } from "../../pool/contract/poolContract";
 import { ethers } from "ethers";
 import { ChainId, Token, Fetcher, Route } from "@uniswap/sdk";
-
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import "reactjs-popup/dist/index.css";
@@ -28,6 +27,7 @@ let pool = {
   address: "0x9117808F6ebEAeaE94DBcC2255C13db607f00F22",
   name: "Azuki",
 };
+
 const Details = ({ pairAddress }) => {
   pairAddress = "0x0aE03567Bc0C8cFD3e3A174B21e3678d06Cb9A88";
   const provider = getProvider();
@@ -44,9 +44,6 @@ const Details = ({ pairAddress }) => {
 
   useEffect(() => {
     async function fetchCurrencyTokenPrice() {
-      console.log(targetToken);
-      console.log(currencyToken);
-      console.log(!targetToken || !currencyToken);
       if (!targetToken || !currencyToken) return;
       const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
       const route = new Route([pair], currencyToken);
@@ -68,8 +65,6 @@ const Details = ({ pairAddress }) => {
       const c = await getTokenInfo(currencyTokenAddress);
       setTargetToken(t);
       setCurrencyToken(c);
-      console.log(targetToken);
-      console.log(currencyToken);
       let targetTokenBalance = await pool.balanceOf(targetTokenAddress);
       let currencyTokenBalance = await pool.balanceOf(currencyTokenAddress);
       //TODO: Show balance in the detail page.

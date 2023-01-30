@@ -1,20 +1,33 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useWeb3React } from "@web3-react/core";
 import HypexLogo from "../../static/images/logo.png";
 import styles from "../header/style/Header.module.css";
+import { connectWallet } from "../Wallet/connectors";
 import { useRouter } from "next/router";
+import { useChainId } from "../../api/contract";
+import { useWalletContext } from "../../context/wallet";
+import { ethers } from "ethers";
 if (typeof window !== "undefined") {
   var jazzicon = require("jazzicon");
 }
 const Header = () => {
   const router = useRouter();
-  const { account } = useWeb3React();
   const avatarRef = useRef();
+  const { account, setAccount } = useWalletContext();
   const useToHome = () => {
     router.push("/");
   };
+
   useEffect(() => {
-    console.log(`account:${account}`);
+    async function connect() {
+      const address = await connectWallet();
+      setAccount(address);
+    }
+    if (account != null) return;
+    connect();
+  });
+
+  useEffect(() => {
+    if (!account) return;
     const element = avatarRef.current;
     if (element && account) {
       const addr = account.slice(2, 10);

@@ -5,19 +5,19 @@ const WalletContext = React.createContext(undefined);
 WalletContext.displayName = "WalletContext";
 
 export const WalletProvider = ({ children }) => {
-  const [walletAddress, setWalletAddress] = useState(null);
-
+  const [account, setAccount] = useState(null);
+  const [chainId, setChainId] = useState(null);
   useEffect(() => {
-    if (walletAddress) {
-      localStorage.setItem("__HYPEX_walletAddress", walletAddress);
+    if (account) {
+      localStorage.setItem("__HYPEX_walletAddress", account);
     }
-  }, [walletAddress]);
+  }, [account]);
 
   return (
     <WalletContext.Provider
       value={{
-        walletAddress,
-        setWalletAddress,
+        account,
+        setAccount,
       }}
     >
       {children}

@@ -1,7 +1,6 @@
 import styles from "./style/SwapList.module.css";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
-import { useWeb3React, Web3ReactProvider } from "@web3-react/core";
+import React from "react";
 import Avatar from "@mui/material/Avatar";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -13,12 +12,9 @@ import { withStyles } from "@mui/styles";
 import { styled } from "@mui/material/styles";
 import clonex from "../../static/images/clonex.jpg";
 import eth from "../../static/images/eth.png";
-import Pagination from '@mui/material/Pagination';
-import Stack from '@mui/material/Stack';
-import { ChainId, Token, WETH, Fetcher, Route, Trade, TokenAmount, TradeType, Percent } from '@uniswap/sdk'
-import { createBrowserExtensionProvider, sendTransactionViaExtension, MAX_FEE_PER_GAS, MAX_PRIORITY_FEE_PER_GAS, V3_SWAP_ROUTER_ADDRESS } from "../pool/contract/poolContract";
+import Pagination from "@mui/material/Pagination";
+import Stack from "@mui/material/Stack";
 
-import Web3 from "web3";
 const TableCell = withStyles({
   root: {
     borderBottom: "2px solid rgba(31, 25, 39, 1);",
@@ -193,7 +189,20 @@ export default function SwapList() {
         </Table>
       </Paper>
       <Stack spacing={2}>
-        <Pagination className={styles.pagination} count={5} sx={{ button: { color: '#ffffff', borderColor: 'rgba(255, 255, 255, 0.1)', borderRadius: '10px' } }} variant="outlined" shape="rounded" color='primary' />
+        <Pagination
+          className={styles.pagination}
+          count={5}
+          sx={{
+            button: {
+              color: "#ffffff",
+              borderColor: "rgba(255, 255, 255, 0.1)",
+              borderRadius: "10px",
+            },
+          }}
+          variant="outlined"
+          shape="rounded"
+          color="primary"
+        />
       </Stack>
     </div>
   );
