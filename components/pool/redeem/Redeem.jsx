@@ -104,35 +104,6 @@ const Redeem = ({ address }) => {
           )}
         </Grid>
       </div>
-      {redeemDone && (
-        <div className={styles.redeemDone}>
-          <img
-            src={pool.src}
-            alt="pool-logo"
-            style={{ width: 300, height: 350, borderRadius: 10 }}
-          />
-          <div className={styles.redeemDetails}>
-            <div>
-              <p>YOU WIN THE ACTION</p>
-              <p>NFT ACB 2123 is yours！</p>
-            </div>
-            <div>
-              <p>cost</p>
-              <p>0.9 wnABC</p>
-              <p>0.05 ETH</p>
-              <Button
-                sx={{ marginTop: 2, height: 60 }}
-                variant="contained"
-                size="large"
-                fullWidth
-                onClick={checkUserNFTs}
-              >
-                Check Your NFTs
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
     </Grid>
   );
 };
