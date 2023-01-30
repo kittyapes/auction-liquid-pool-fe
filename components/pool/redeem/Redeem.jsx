@@ -7,7 +7,7 @@ import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import { Button } from "@mui/material";
 import dynamic from "next/dynamic";
 import { redeemNFT } from "../contract/poolContract";
-import { useWeb3React } from "@web3-react/core";
+import { useWalletContext } from "../../../context/wallet";
 import {
   getAllowance,
   increaseAllowance,
