@@ -1,6 +1,14 @@
 {
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
+  "/api/hello": "pages/api/hello.js",
+  "/auction/[address]": "pages/auction/[address].html",
+  "/details/[address]": "pages/details/[address].html",
+  "/": "pages/index.html",
+  "/list_project": "pages/list_project.html",
+  "/redeem/[address]": "pages/redeem/[address].html",
+  "/swap": "pages/swap.html",
+  "/swap/[address]": "pages/swap/[address].html",
   "/_document": "pages/_document.js",
-  "/details/[address]": "pages/details/[address].js"
+  "/404": "pages/404.html"
 }

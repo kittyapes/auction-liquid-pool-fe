@@ -51,7 +51,6 @@ export const getIsLinear = () =>{
 export const getDelta = () =>{
   return getTokenContract().methods.delta().call();
 }
-
 export const redeemNFT = (account, amount) => {
   return getTokenContract().methods.redeem(amount).send({
     from: account,

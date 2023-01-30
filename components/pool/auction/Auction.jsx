@@ -20,7 +20,7 @@ import {
 } from "../contract/poolContract";
 const ApexCharts = dynamic(() => import("react-apexcharts"), { ssr: false });
 
-const char = {
+const chart = {
   series: [
     {
       name: "Desktops",
@@ -68,7 +68,7 @@ const char = {
 };
 
 const Auction = ({ address }) => {
-    const { account } = useWeb3React();
+    const { account } = useWalletContext();
     const Ref = useRef(null);
     const [auctionDone, setAuctionDone] = useState(false);
     const [bidInfo, setBidInfo] = useState({
@@ -176,8 +176,6 @@ const Auction = ({ address }) => {
         }, 1000)
         Ref.current = id;
     }
-
-
   useEffect(() => {
     getAuctions();
   });
