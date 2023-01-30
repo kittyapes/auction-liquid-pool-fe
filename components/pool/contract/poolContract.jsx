@@ -44,8 +44,12 @@ export const getBids = (tokenId) =>{
   return getTokenContract().methods.auctions(tokenId).call();
 }
 
-export const isLinear = () =>{
+export const getIsLinear = () =>{
   return getTokenContract().methods.isLinear().call();
+}
+
+export const getDelta = () =>{
+  return getTokenContract().methods.delta().call();
 }
 
 export const redeemNFT = (account, amount) => {
