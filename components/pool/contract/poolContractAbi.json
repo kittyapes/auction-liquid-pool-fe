@@ -3,17 +3,17 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "coordinator",
+                "name": "have",
                 "type": "address"
             },
             {
                 "internalType": "address",
-                "name": "link",
+                "name": "want",
                 "type": "address"
             }
         ],
-        "stateMutability": "nonpayable",
-        "type": "constructor"
+        "name": "OnlyCoordinatorCanFulfill",
+        "type": "error"
     },
     {
         "anonymous": false,
@@ -58,9 +58,9 @@
             },
             {
                 "indexed": false,
-                "internalType": "bytes32[]",
-                "name": "requestIds",
-                "type": "bytes32[]"
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
             }
         ],
         "name": "RedeemRequested",
@@ -77,15 +77,15 @@
             },
             {
                 "indexed": false,
-                "internalType": "bytes32",
+                "internalType": "uint256",
                 "name": "requestId",
-                "type": "bytes32"
+                "type": "uint256"
             },
             {
                 "indexed": false,
-                "internalType": "uint256",
-                "name": "tokenId",
-                "type": "uint256"
+                "internalType": "uint256[]",
+                "name": "tokenIds",
+                "type": "uint256[]"
             }
         ],
         "name": "Redeemed",
@@ -108,9 +108,9 @@
             },
             {
                 "indexed": false,
-                "internalType": "bytes32",
+                "internalType": "uint256",
                 "name": "requestId",
-                "type": "bytes32"
+                "type": "uint256"
             }
         ],
         "name": "SwapRequested",
@@ -127,9 +127,9 @@
             },
             {
                 "indexed": false,
-                "internalType": "bytes32",
+                "internalType": "uint256",
                 "name": "requestId",
-                "type": "bytes32"
+                "type": "uint256"
             },
             {
                 "indexed": false,
@@ -198,12 +198,32 @@
     },
     {
         "inputs": [],
+        "name": "cancelSubscription",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "amount",
+                "type": "uint256"
+            }
+        ],
+        "name": "chargeLINK",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "createdAt",
         "outputs": [
             {
-                "internalType": "uint256",
+                "internalType": "uint64",
                 "name": "",
-                "type": "uint256"
+                "type": "uint64"
             }
         ],
         "stateMutability": "view",
@@ -224,12 +244,25 @@
     },
     {
         "inputs": [],
+        "name": "dexToken",
+        "outputs": [
+            {
+                "internalType": "address",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
         "name": "duration",
         "outputs": [
             {
-                "internalType": "uint256",
+                "internalType": "uint64",
                 "name": "",
-                "type": "uint256"
+                "type": "uint64"
             }
         ],
         "stateMutability": "view",
@@ -249,6 +282,44 @@
         "type": "function"
     },
     {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "feeTypes",
+        "outputs": [
+            {
+                "internalType": "enum IBaseAuctionLiquidPool.FeeType",
+                "name": "",
+                "type": "uint8"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "uint256",
+                "name": "",
+                "type": "uint256"
+            }
+        ],
+        "name": "feeValues",
+        "outputs": [
+            {
+                "internalType": "uint16",
+                "name": "",
+                "type": "uint16"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
         "inputs": [],
         "name": "getTokenIds",
         "outputs": [
@@ -264,7 +335,27 @@
     {
         "inputs": [
             {
+                "internalType": "address",
+                "name": "coordinator",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "token",
+                "type": "address"
+            },
+            {
+                "internalType": "address",
+                "name": "mToken",
+                "type": "address"
+            },
+            {
                 "components": [
+                    {
+                        "internalType": "string",
+                        "name": "name",
+                        "type": "string"
+                    },
                     {
                         "internalType": "address",
                         "name": "owner",
@@ -276,14 +367,14 @@
                         "type": "address"
                     },
                     {
-                        "internalType": "uint256",
+                        "internalType": "uint64",
                         "name": "lockPeriod",
-                        "type": "uint256"
+                        "type": "uint64"
                     },
                     {
-                        "internalType": "uint256",
+                        "internalType": "uint64",
                         "name": "duration",
-                        "type": "uint256"
+                        "type": "uint64"
                     },
                     {
                         "internalType": "uint256[]",
@@ -306,22 +397,32 @@
                         "type": "uint256"
                     },
                     {
-                        "internalType": "uint256",
+                        "internalType": "uint16",
                         "name": "randomFee",
-                        "type": "uint256"
+                        "type": "uint16"
                     },
                     {
-                        "internalType": "uint256",
+                        "internalType": "uint16",
                         "name": "tradingFee",
-                        "type": "uint256"
+                        "type": "uint16"
                     },
                     {
                         "internalType": "uint256",
                         "name": "startPrice",
                         "type": "uint256"
+                    },
+                    {
+                        "internalType": "enum IBaseAuctionLiquidPool.FeeType[]",
+                        "name": "feeTypes",
+                        "type": "uint8[]"
+                    },
+                    {
+                        "internalType": "uint16[]",
+                        "name": "feeValues",
+                        "type": "uint16[]"
                     }
                 ],
-                "internalType": "struct PoolParams",
+                "internalType": "struct IBaseAuctionLiquidPool.PoolParams",
                 "name": "params",
                 "type": "tuple"
             }
@@ -349,9 +450,9 @@
         "name": "lockPeriod",
         "outputs": [
             {
-                "internalType": "uint256",
+                "internalType": "uint64",
                 "name": "",
-                "type": "uint256"
+                "type": "uint64"
             }
         ],
         "stateMutability": "view",
@@ -363,6 +464,19 @@
         "outputs": [
             {
                 "internalType": "contract IAuctionLiquidPoolManager",
+                "name": "",
+                "type": "address"
+            }
+        ],
+        "stateMutability": "view",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "mappingToken",
+        "outputs": [
+            {
+                "internalType": "address",
                 "name": "",
                 "type": "address"
             }
@@ -435,9 +549,9 @@
         "name": "randomFee",
         "outputs": [
             {
-                "internalType": "uint256",
+                "internalType": "uint16",
                 "name": "",
-                "type": "uint256"
+                "type": "uint16"
             }
         ],
         "stateMutability": "view",
@@ -459,17 +573,17 @@
     {
         "inputs": [
             {
-                "internalType": "bytes32",
+                "internalType": "uint256",
                 "name": "requestId",
-                "type": "bytes32"
+                "type": "uint256"
             },
             {
-                "internalType": "uint256",
-                "name": "randomness",
-                "type": "uint256"
+                "internalType": "uint256[]",
+                "name": "randomWords",
+                "type": "uint256[]"
             }
         ],
-        "name": "rawFulfillRandomness",
+        "name": "rawFulfillRandomWords",
         "outputs": [],
         "stateMutability": "nonpayable",
         "type": "function"
@@ -491,7 +605,7 @@
     {
         "inputs": [
             {
-                "internalType": "contract IERC20Upgradeable",
+                "internalType": "contract IERC20",
                 "name": "token",
                 "type": "address"
             }
@@ -504,17 +618,17 @@
     {
         "inputs": [
             {
-                "internalType": "uint256",
+                "internalType": "uint32",
                 "name": "count",
-                "type": "uint256"
+                "type": "uint32"
             }
         ],
         "name": "redeem",
         "outputs": [
             {
-                "internalType": "bytes32[]",
-                "name": "requestIds",
-                "type": "bytes32[]"
+                "internalType": "uint256",
+                "name": "requestId",
+                "type": "uint256"
             }
         ],
         "stateMutability": "nonpayable",
@@ -523,9 +637,9 @@
     {
         "inputs": [
             {
-                "internalType": "bytes32",
+                "internalType": "uint256",
                 "name": "",
-                "type": "bytes32"
+                "type": "uint256"
             }
         ],
         "name": "redeemers",
@@ -544,6 +658,19 @@
         "name": "renounceOwnership",
         "outputs": [],
         "stateMutability": "nonpayable",
+        "type": "function"
+    },
+    {
+        "inputs": [],
+        "name": "s_subscriptionId",
+        "outputs": [
+            {
+                "internalType": "uint64",
+                "name": "",
+                "type": "uint64"
+            }
+        ],
+        "stateMutability": "view",
         "type": "function"
     },
     {
@@ -583,9 +710,9 @@
         "name": "swap",
         "outputs": [
             {
-                "internalType": "bytes32",
+                "internalType": "uint256",
                 "name": "requestId",
-                "type": "bytes32"
+                "type": "uint256"
             }
         ],
         "stateMutability": "nonpayable",
@@ -594,9 +721,9 @@
     {
         "inputs": [
             {
-                "internalType": "bytes32",
+                "internalType": "uint256",
                 "name": "",
-                "type": "bytes32"
+                "type": "uint256"
             }
         ],
         "name": "swapper",
@@ -613,9 +740,9 @@
     {
         "inputs": [
             {
-                "internalType": "bytes32",
+                "internalType": "uint256",
                 "name": "",
-                "type": "bytes32"
+                "type": "uint256"
             }
         ],
         "name": "swaps",
@@ -634,9 +761,9 @@
         "name": "tradingFee",
         "outputs": [
             {
-                "internalType": "uint256",
+                "internalType": "uint16",
                 "name": "",
-                "type": "uint256"
+                "type": "uint16"
             }
         ],
         "stateMutability": "view",
