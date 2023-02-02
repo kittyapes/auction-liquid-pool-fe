@@ -6,17 +6,23 @@ import { useRouter } from "next/router";
 import { useChainId } from "../../api/contract";
 import { useWalletContext } from "../../context/wallet";
 import { ethers } from "ethers";
+import ConnectButton from "./ConnectButton";
+import AccountModal from "./AccountModal";
 if (typeof window !== "undefined") {
   var jazzicon = require("jazzicon");
 }
 const Header = () => {
   const router = useRouter();
-  const avatarRef = useRef();
+  const [accountModalOpen, setAccountModalOpen] = useState(false);
   const { account, setAccount } = useWalletContext();
   const useToHome = () => {
     router.push("/");
   };
 
+  const clickConnectButton = () => {
+    console.log(accountModalOpen);
+    setAccountModalOpen(true);
+  };
   useEffect(() => {
     async function connect() {
       const address = await connectWallet();
@@ -26,22 +32,6 @@ const Header = () => {
     connect();
   });
 
-  useEffect(() => {
-    if (!account) return;
-    const element = avatarRef.current;
-    if (element && account) {
-      const addr = account.slice(2, 10);
-      const seed = parseInt(addr, 16);
-      const icon = jazzicon(20, seed); //generates a size 20 icon
-      if (element.firstChild) {
-        element.removeChild(element.firstChild);
-      }
-      element.appendChild(icon);
-    }
-  }, [account, avatarRef]);
-  const abbreviateWalletAddress = (address) => {
-    return address.slice(0, 5) + "..." + address.slice(-4);
-  };
   return (
     <div className={styles.container}>
       <div>
@@ -51,8 +41,10 @@ const Header = () => {
       </div>
       {account && (
         <div className={styles.right}>
-          <div ref={avatarRef}></div>
-          <div>{abbreviateWalletAddress(account)}</div>
+          <ConnectButton handleOpenModal={clickConnectButton} />
+          {accountModalOpen && (
+            <AccountModal setAccountModalOpen={setAccountModalOpen} />
+          )}
         </div>
       )}
     </div>

@@ -10,6 +10,7 @@ import { useWalletContext } from "../../../../../context/wallet";
 import IUniswapV2Router01 from "@uniswap/v2-periphery/build/IUniswapV2Router01.json";
 import {
   getProvider,
+  getContract,
   V2_SWAP_ROUTER_ADDRESS,
 } from "../../../../pool/contract/poolContract";
 import ERC20_ABI from "../../../../pool/contract/ERC20Abi.json";
@@ -68,6 +69,9 @@ export default function TradeToken({
     useState(0);
   const [liquidityCurrencyTokenNumber, setLiquidityCurrencyTokenNumber] =
     useState(0);
+  const [targetTokenBalance, setTargetTokenBalance] = useState(0);
+  const [currencyTokenBalance, setCurrencyTokenBalance] = useState(0);
+
   const changeBuyTargetTokenNumber = (event) => {
     setBuyTargetTokenNumber(event.target.value);
   };
@@ -95,6 +99,20 @@ export default function TradeToken({
       setErrorMsg(e.message);
     }
   };
+
+  async function fetchUserWalletTargetTokenBalance() {
+    const tokenContract = getContract(targetToken.address);
+    const balance = await tokenContract.balanceOf(account);
+    setTargetTokenBalance(Math.floor(ethers.utils.formatUnits(balance)));
+    console.log(ethers.utils.formatUnits(balance));
+  }
+
+  async function fetchUserWalletCurrencyTokenBalance() {
+    const tokenContract = getContract(currencyToken.address);
+    const balance = await tokenContract.balanceOf(account);
+    setCurrencyTokenBalance(ethers.utils.formatUnits(balance));
+    console.log(ethers.utils.formatUnits(balance));
+  }
 
   /// Update the number of currency token users need to pay when
   /// users change the number of target token users want to buy.
@@ -162,6 +180,8 @@ export default function TradeToken({
       console.log(e);
       setErrorMsg(e.message);
     }
+    fetchUserWalletTargetTokenBalance();
+    fetchUserWalletCurrencyTokenBalance();
   };
 
   const sellTargetToken = async () => {
@@ -212,6 +232,8 @@ export default function TradeToken({
       console.log(e);
       setErrorMsg(e.message);
     }
+    fetchUserWalletTargetTokenBalance();
+    fetchUserWalletCurrencyTokenBalance();
     fetchTargetTokenPrice();
   };
 
@@ -262,13 +284,17 @@ export default function TradeToken({
       console.log(e);
       setErrorMsg(e.message);
     }
+    fetchUserWalletTargetTokenBalance();
+    fetchUserWalletCurrencyTokenBalance();
     fetchTargetTokenPrice();
   };
 
   useEffect(() => {
+    fetchUserWalletTargetTokenBalance();
+    fetchUserWalletCurrencyTokenBalance();
     fetchTargetTokenPrice();
   }, []);
-
+  const formatFloatNumber = (x) => Number.parseFloat(x).toFixed(0);
   return (
     <Box sx={{ flexGrow: 1 }} className={styles.container}>
       <Grid container spacing={2}>
@@ -316,6 +342,10 @@ export default function TradeToken({
                 type="number"
               />
             </div>
+            Max:{" "}
+            {currencyTokenBalance && targetToCurrencyRatio
+              ? Math.floor(currencyTokenBalance / targetToCurrencyRatio)
+              : 0}
             <Box sx={{ height: 60, marginTop: 1 }}></Box>
             <Box
               sx={{
@@ -385,6 +415,7 @@ export default function TradeToken({
                 type="number"
               />
             </div>
+            Max: {targetTokenBalance}
             <Box sx={{ height: 60, marginTop: 1 }}></Box>
             <Box
               sx={{
@@ -450,6 +481,7 @@ export default function TradeToken({
                 value={liquidityTargetTokenNumber}
                 onChange={changeLiquidityTargetTokenNumber}
               />
+              Max: {targetTokenBalance}
             </div>
             <div
               className={styles.placeholder}
@@ -469,6 +501,7 @@ export default function TradeToken({
                 value={liquidityCurrencyTokenNumber}
                 onChange={changeLiquidityCurrencyTokenNumber}
               />
+              Max: {Math.floor(currencyTokenBalance)}
             </div>
             <Box
               sx={{

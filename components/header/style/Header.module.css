@@ -4,45 +4,45 @@
 }
 
 .title {
-    font-weight: 700;
-    font-size: 48px;
-    color: white;
+  font-weight: 700;
+  font-size: 48px;
+  color: white;
 }
 
 .subtitle {
-    font-weight: 700;
-    font-size: 30px;
-    color: #8B42FF;
+  font-weight: 700;
+  font-size: 30px;
+  color: #8b42ff;
 }
 
 .subcontent {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .data {
-    padding: 10px;
-    margin: 20px;
-    background-color: black;
-    color: #FFFFFF66;
-    border-radius: 5px;
+  padding: 10px;
+  margin: 20px;
+  background-color: black;
+  color: #ffffff66;
+  border-radius: 5px;
 }
 
 .button {
-    margin: 20px;
-    border-radius: 5px;
-    border: 0;
-    height: 90px;
-    width: 360px;
-    font-size: 26px;
-    font-weight: 700;
-    color: white;
-    background-color: #514761;
+  margin: 20px;
+  border-radius: 5px;
+  border: 0;
+  height: 90px;
+  width: 360px;
+  font-size: 26px;
+  font-weight: 700;
+  color: white;
+  background-color: #514761;
 }
 
 .purple {
-    background: #7924FF;
+  background: #7924ff;
 }
 
 .logo {
@@ -64,26 +64,43 @@
 }
 
 .logo img {
-    height: auto;
-    width: 128px;
+  height: auto;
+  width: 128px;
 }
 
 .right {
-    margin-right: 1%;
-    display: flex;
-    color: grey;
-    float: right;
+  margin-right: 1%;
+  display: flex;
+  color: grey;
+  float: right;
 }
 
 .container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 96px;
-    background: rgba(255, 255, 255, 0.03);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    z-index: 999;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 96px;
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 999;
+}
+
+.ConnectButton {
+  height: 40px;
+  color: white;
+  border: 1px solid transparent;
+  border-radius: 20px;
+  background-color: transparent;
+}
+
+.ConnectButton:hover {
+  cursor: pointer;
+  border: 1px solid white;
+}
+
+.accountAddress {
+  margin: 8px;
 }

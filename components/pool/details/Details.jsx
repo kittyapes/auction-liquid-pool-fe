@@ -43,8 +43,8 @@ const Details = ({ pairAddress }) => {
   };
 
   useEffect(() => {
+    if (!targetToken || !currencyToken) return;
     async function fetchCurrencyTokenPrice() {
-      if (!targetToken || !currencyToken) return;
       const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
       const route = new Route([pair], currencyToken);
       setCurrencyTokenPrice(route.midPrice.toSignificant(6));
