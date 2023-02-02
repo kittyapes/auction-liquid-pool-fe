@@ -165,8 +165,8 @@ export default function TradeToken({
       await UniswapV2Router01.addLiquidity(
         targetToken.address,
         currencyToken.address,
-        ethers.utils.parseUnits(liquidityTargetTokenNumber.toString()),
-        ethers.utils.parseUnits(liquidityCurrencyTokenNumber.toString()),
+        bigNumberLiquidityTargetTokenNumber,
+        bigNumberLiquidityCurrencyTokenNumber,
         0,
         0,
         account,
@@ -176,12 +176,14 @@ export default function TradeToken({
           gasPrice: MAX_PRIORITY_FEE_PER_GAS,
         }
       );
+      setTargetTokenBalance(targetTokenBalance - liquidityTargetTokenNumber);
+      setCurrencyTokenBalance(
+        currencyTokenBalance - liquidityCurrencyTokenNumber
+      );
     } catch (e) {
       console.log(e);
       setErrorMsg(e.message);
     }
-    fetchUserWalletTargetTokenBalance();
-    fetchUserWalletCurrencyTokenBalance();
   };
 
   const sellTargetToken = async () => {
@@ -228,12 +230,12 @@ export default function TradeToken({
           gasPrice: MAX_PRIORITY_FEE_PER_GAS,
         }
       );
+      setTargetTokenBalance(targetTokenBalance - amountIn);
     } catch (e) {
       console.log(e);
       setErrorMsg(e.message);
     }
-    fetchUserWalletTargetTokenBalance();
-    fetchUserWalletCurrencyTokenBalance();
+
     fetchTargetTokenPrice();
   };
 
@@ -280,12 +282,11 @@ export default function TradeToken({
           gasPrice: MAX_PRIORITY_FEE_PER_GAS,
         }
       );
+      setTargetTokenBalance(targetTokenBalance + amountOut);
     } catch (e) {
       console.log(e);
       setErrorMsg(e.message);
     }
-    fetchUserWalletTargetTokenBalance();
-    fetchUserWalletCurrencyTokenBalance();
     fetchTargetTokenPrice();
   };
 
