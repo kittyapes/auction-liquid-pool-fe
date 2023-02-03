@@ -44,13 +44,13 @@ export const getBids = (tokenId) => {
   return getTokenContract().methods.auctions(tokenId).call();
 };
 
-export const getIsLinear = () =>{
+export const getIsLinear = () => {
   return getTokenContract().methods.isLinear().call();
 };
 
-export const getDelta = () =>{
+export const getDelta = () => {
   return getTokenContract().methods.delta().call();
-}
+};
 export const redeemNFT = (account, amount) => {
   return getTokenContract().methods.redeem(amount).send({
     from: account,

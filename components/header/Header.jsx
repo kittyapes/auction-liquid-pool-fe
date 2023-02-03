@@ -18,7 +18,7 @@ const Header = () => {
   const useToHome = () => {
     router.push("/");
   };
-
+  console.log(`account:${account}`);
   const clickConnectButton = () => {
     console.log(accountModalOpen);
     setAccountModalOpen(true);
@@ -31,7 +31,7 @@ const Header = () => {
     if (account != null) return;
     connect();
   });
-
+  console.log("from header");
   return (
     <div className={styles.container}>
       <div>

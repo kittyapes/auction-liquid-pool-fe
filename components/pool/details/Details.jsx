@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../details/style/Details.module.css";
 import Azuki from "../../../static/images/azuki.jpeg";
 import eth from "../../../static/images/eth.png";
@@ -15,6 +15,7 @@ import {
   getTokenInfo,
   dexTokenAddress,
 } from "../../pool/contract/poolContract";
+import { useWalletContext } from "../../../context/wallet";
 import { ethers } from "ethers";
 import { ChainId, Token, Fetcher, Route } from "@uniswap/sdk";
 import Alert from "@mui/material/Alert";
@@ -32,6 +33,7 @@ const Details = ({ pairAddress }) => {
   pairAddress = "0x0aE03567Bc0C8cFD3e3A174B21e3678d06Cb9A88";
   const provider = getProvider();
   const router = useRouter();
+  const { account } = useWalletContext();
   const [collection, setCollection] = useState({});
   const [currencyTokenPrice, setCurrencyTokenPrice] = useState(0);
   const [cardDatas, setCardDatas] = useState([]);
@@ -69,8 +71,9 @@ const Details = ({ pairAddress }) => {
       let currencyTokenBalance = await pool.balanceOf(currencyTokenAddress);
       //TODO: Show balance in the detail page.
     }
+    if (!account) return;
     fetchUniswapLiquidityPoolInfo();
-  }, []);
+  }, [account]);
 
   useEffect(() => {
     const fetch = async () => {
