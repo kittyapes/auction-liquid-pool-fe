@@ -104,3 +104,19 @@
 .accountAddress {
   margin: 8px;
 }
+
+.smallButton {
+  height: 33px;
+  width: 33px;
+  margin: 10px;
+  border: 1px solid transparent;
+  border-radius: 12.5px;
+  background-color: lightblue;
+}
+.smallbutton:hover {
+  cursor: pointer;
+}
+
+.smallIcon {
+  font-size: 20px;
+}

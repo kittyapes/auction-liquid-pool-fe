@@ -7,6 +7,8 @@ export const connectWallet = async () => {
   );
   await provider.send("eth_requestAccounts", []);
   const signer = provider.getSigner();
+
+  console.log("here??");
   const walletAddress = await signer.getAddress();
   return walletAddress;
 };
