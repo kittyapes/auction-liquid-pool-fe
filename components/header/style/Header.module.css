@@ -94,6 +94,9 @@
   border: 1px solid transparent;
   border-radius: 20px;
   background-color: transparent;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
 }
 
 .ConnectButton:hover {
@@ -119,4 +122,5 @@
 
 .smallIcon {
   font-size: 20px;
+  padding: 2px;
 }

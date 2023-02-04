@@ -7,6 +7,8 @@ WalletContext.displayName = "WalletContext";
 export const WalletProvider = ({ children }) => {
   const [account, setAccount] = useState(null);
   const [chainId, setChainId] = useState(null);
+  const [pendingTxs, setPendingTxs] = useState(new Set([]));
+
   useEffect(() => {
     if (account) {
       localStorage.setItem("__HYPEX_walletAddress", account);
@@ -18,6 +20,8 @@ export const WalletProvider = ({ children }) => {
       value={{
         account,
         setAccount,
+        pendingTxs,
+        setPendingTxs,
       }}
     >
       {children}

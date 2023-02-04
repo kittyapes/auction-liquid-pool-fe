@@ -14,7 +14,7 @@ if (typeof window !== "undefined") {
 const Header = () => {
   const router = useRouter();
   const [accountModalOpen, setAccountModalOpen] = useState(false);
-  const { account, setAccount } = useWalletContext();
+  const { account, setAccount, pendingTxs, setPendingTxs } = useWalletContext();
   const useToHome = () => {
     router.push("/");
   };
@@ -31,6 +31,11 @@ const Header = () => {
     if (account != null) return;
     connect();
   });
+
+  useEffect(() => {
+    console.log(pendingTxs);
+  }, [pendingTxs]);
+
   console.log("from header");
   return (
     <div className={styles.container}>

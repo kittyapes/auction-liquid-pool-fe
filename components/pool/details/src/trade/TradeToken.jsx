@@ -61,7 +61,7 @@ export default function TradeToken({
   if (!targetToken || !currencyToken) return;
   const provider = getProvider();
   const webSocket = getWebSocket();
-  const { account } = useWalletContext();
+  const { account, pendingTxs, setPendingTxs } = useWalletContext();
   const [buyTargetTokenNumber, setBuyTargetTokenNumber] = useState(0);
   const [sellTargetTokenNumber, setSellTargetTokenNumber] = useState(0);
   const [buyCurrencyTokenNumber, setBuyCurrencyTokenNumber] = useState(0);
@@ -73,7 +73,6 @@ export default function TradeToken({
     useState(0);
   const [targetTokenBalance, setTargetTokenBalance] = useState(0);
   const [currencyTokenBalance, setCurrencyTokenBalance] = useState(0);
-  const [pendingTxs, setPendingTxs] = useState(new Set([]));
 
   const changeBuyTargetTokenNumber = (event) => {
     setBuyTargetTokenNumber(event.target.value);

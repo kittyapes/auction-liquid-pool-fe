@@ -25,7 +25,7 @@ export default function AccountModal({ setAccountModalOpen }) {
   const provider = getProvider();
   const handleOpen = () => setAccountModalOpen(true);
   const handleClose = () => setAccountModalOpen(false);
-  const { account } = useWalletContext();
+  const { account, pendingTxs } = useWalletContext();
   const [ethBalance, setEthBalance] = useState(0);
   useEffect(() => {
     async function fetchUserWalletETHBalance() {
@@ -68,13 +68,21 @@ export default function AccountModal({ setAccountModalOpen }) {
             ETH Balance: {ethBalance}
           </Typography>
           <Button
-            sx={{ marginTop: 2, height: 60 }}
+            sx={{ marginTop: 2, height: 55 }}
             variant="contained"
             size="large"
             fullWidth
           >
             View and Sell NFT/TOKEN <ChevronRightIcon />
           </Button>
+          {pendingTxs.size != 0 && (
+            <div>
+              <p>Pending transactions:</p>
+              {[...pendingTxs].map((tx) => (
+                <p>{tx}</p>
+              ))}
+            </div>
+          )}
         </Box>
       </Modal>
     </div>
