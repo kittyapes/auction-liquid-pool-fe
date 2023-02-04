@@ -11,6 +11,7 @@ import IUniswapV2Router01 from "@uniswap/v2-periphery/build/IUniswapV2Router01.j
 import {
   getProvider,
   getContract,
+  getWebSocket,
   V2_SWAP_ROUTER_ADDRESS,
 } from "../../../../pool/contract/poolContract";
 import ERC20_ABI from "../../../../pool/contract/ERC20Abi.json";
@@ -59,6 +60,7 @@ export default function TradeToken({
 }) {
   if (!targetToken || !currencyToken) return;
   const provider = getProvider();
+  const webSocket = getWebSocket();
   const { account } = useWalletContext();
   const [buyTargetTokenNumber, setBuyTargetTokenNumber] = useState(0);
   const [sellTargetTokenNumber, setSellTargetTokenNumber] = useState(0);
@@ -71,6 +73,7 @@ export default function TradeToken({
     useState(0);
   const [targetTokenBalance, setTargetTokenBalance] = useState(0);
   const [currencyTokenBalance, setCurrencyTokenBalance] = useState(0);
+  const [pendingTxs, setPendingTxs] = useState(new Set([]));
 
   const changeBuyTargetTokenNumber = (event) => {
     setBuyTargetTokenNumber(event.target.value);
@@ -95,6 +98,7 @@ export default function TradeToken({
       const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
       const route = new Route([pair], currencyToken);
       setTargetToCurrencyRatio(route.midPrice.invert().toSignificant(6));
+      console.log(`Get new ratio: ${targetToCurrencyRatio}`);
     } catch (e) {
       setErrorMsg(e.message);
     }
@@ -104,14 +108,14 @@ export default function TradeToken({
     const tokenContract = getContract(targetToken.address);
     const balance = await tokenContract.balanceOf(account);
     setTargetTokenBalance(Math.floor(ethers.utils.formatUnits(balance)));
-    console.log(ethers.utils.formatUnits(balance));
+    console.log(`Get user mapping T balance:${targetTokenBalance}`);
   }
 
   async function fetchUserWalletCurrencyTokenBalance() {
     const tokenContract = getContract(currencyToken.address);
     const balance = await tokenContract.balanceOf(account);
     setCurrencyTokenBalance(ethers.utils.formatUnits(balance));
-    console.log(ethers.utils.formatUnits(balance));
+    console.log(`Get user dex balance:${currencyTokenBalance}`);
   }
 
   /// Update the number of currency token users need to pay when
@@ -123,7 +127,7 @@ export default function TradeToken({
     setSellCurrencyTokenNumber(
       (sellTargetTokenNumber * targetToCurrencyRatio).toFixed(3)
     );
-  }, [buyTargetTokenNumber, sellTargetTokenNumber]);
+  }, [buyTargetTokenNumber, sellTargetTokenNumber, targetToCurrencyRatio]);
 
   const addLiquidity = async () => {
     try {
@@ -162,7 +166,7 @@ export default function TradeToken({
       const route = new Route([pair], currencyToken);
       setTargetToCurrencyRatio(route.midPrice.invert().toSignificant(6));
 
-      await UniswapV2Router01.addLiquidity(
+      const transaction = await UniswapV2Router01.addLiquidity(
         targetToken.address,
         currencyToken.address,
         bigNumberLiquidityTargetTokenNumber,
@@ -176,10 +180,9 @@ export default function TradeToken({
           gasPrice: MAX_PRIORITY_FEE_PER_GAS,
         }
       );
-      setTargetTokenBalance(targetTokenBalance - liquidityTargetTokenNumber);
-      setCurrencyTokenBalance(
-        currencyTokenBalance - liquidityCurrencyTokenNumber
-      );
+      // Append current tx into pending tx list.
+      setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
+      getTransactionStatus(webSocket, transaction.hash);
     } catch (e) {
       console.log(e);
       setErrorMsg(e.message);
@@ -219,7 +222,7 @@ export default function TradeToken({
         V2_SWAP_ROUTER_ADDRESS,
         bigNumberAmountIn
       );
-      await UniswapV2Router01.swapExactTokensForTokens(
+      const transaction = await UniswapV2Router01.swapExactTokensForTokens(
         bigNumberAmountIn,
         0, // bigNumberAmountOutMin, //amountOutMin
         path,
@@ -230,13 +233,13 @@ export default function TradeToken({
           gasPrice: MAX_PRIORITY_FEE_PER_GAS,
         }
       );
-      setTargetTokenBalance(targetTokenBalance - amountIn);
+      // Append current tx into pending tx list.
+      setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
+      getTransactionStatus(webSocket, transaction.hash);
     } catch (e) {
       console.log(e);
       setErrorMsg(e.message);
     }
-
-    fetchTargetTokenPrice();
   };
 
   const buyTargetToken = async () => {
@@ -271,7 +274,7 @@ export default function TradeToken({
         V2_SWAP_ROUTER_ADDRESS,
         bigNumberAmountInMax
       );
-      await UniswapV2Router01.swapTokensForExactTokens(
+      let transactionHash = await UniswapV2Router01.swapTokensForExactTokens(
         bigNumberAmountOut,
         bigNumberAmountInMax, // bigNumberAmountOutMin, //amountOutMin
         path,
@@ -282,13 +285,34 @@ export default function TradeToken({
           gasPrice: MAX_PRIORITY_FEE_PER_GAS,
         }
       );
-      setTargetTokenBalance(targetTokenBalance + amountOut);
+      // Append current tx into pending tx list.
+      setPendingTxs(new Set([transactionHash.hash, ...pendingTxs]));
+      getTransactionStatus(webSocket, transactionHash.hash);
     } catch (e) {
       console.log(e);
       setErrorMsg(e.message);
     }
-    fetchTargetTokenPrice();
   };
+
+  // Keep calling getTransactionReceipt for current tx.
+  // Update all token/currency inforamtion after the tx is finished.
+  async function getTransactionStatus(provider, transactionHash) {
+    var isDone = false;
+    while (!isDone) {
+      await new Promise((r) => setTimeout(r, 2000));
+      let pendingTx = await provider.getTransactionReceipt(transactionHash);
+      if (pendingTx) {
+        isDone = true;
+        // Wait for data getting update on Chain.
+        await new Promise((r) => setTimeout(r, 3000));
+        pendingTxs.delete(transactionHash.hash);
+        setPendingTxs(new Set([...pendingTxs]));
+        await fetchTargetTokenPrice();
+        await fetchUserWalletTargetTokenBalance();
+        await fetchUserWalletCurrencyTokenBalance();
+      }
+    }
+  }
 
   useEffect(() => {
     fetchUserWalletTargetTokenBalance();

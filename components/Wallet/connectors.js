@@ -2,16 +2,15 @@ import { InjectedConnector } from "@web3-react/injected-connector";
 import { ethers } from "ethers";
 
 export const connectWallet = async () => {
+  if (!window["ethereum"] && (!window.web3 || !window.web3.currentProvider)) {
+    console.log("no web3 access!!");
+    return;
+  }
   const provider = new ethers.providers.Web3Provider(
     window["ethereum"] || window.web3.currentProvider
   );
-  console.log("0");
   await provider.send("eth_requestAccounts", []);
-  console.log("123");
   const signer = provider.getSigner();
-  console.log("12");
-
-  console.log("here??");
   const walletAddress = await signer.getAddress();
   return walletAddress;
 };

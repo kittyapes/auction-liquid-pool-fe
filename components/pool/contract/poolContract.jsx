@@ -243,3 +243,8 @@ export const API = {
     }
   },
 };
+
+export const getWebSocket = () =>
+  new ethers.providers.WebSocketProvider(
+    "wss://goerli.infura.io/ws/v3/8d5bc85320a64c5ca0e25c4ce8d8120e"
+  );

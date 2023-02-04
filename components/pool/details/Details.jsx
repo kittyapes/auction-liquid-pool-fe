@@ -1,3 +1,7 @@
+// Permission. -> Allowance.  Use timestamp
+// Transction Status.
+// Supporting Chain ID.
+
 import React, { useEffect, useState } from "react";
 import styles from "../details/style/Details.module.css";
 import Azuki from "../../../static/images/azuki.jpeg";
