@@ -148,6 +148,6 @@
 }
 
 .hoverButton {
-  margin-right: 15px;
+  justify-content: space-between;
   width: 50px;
 }

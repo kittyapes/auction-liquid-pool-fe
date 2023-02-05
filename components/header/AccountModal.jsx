@@ -20,6 +20,7 @@ const style = {
   bgcolor: "background.paper",
   border: "2px solid transparent",
   p: 2,
+  borderRadius: 2,
 };
 
 export default function AccountModal({ setAccountModalOpen }) {
@@ -29,10 +30,11 @@ export default function AccountModal({ setAccountModalOpen }) {
   const { account, pendingTxs } = useWalletContext();
   const [ethBalance, setEthBalance] = useState(0);
   const [copyLabel, setCopyLabel] = useState("copy");
+  const formatFloatNumber = (x) => Number.parseFloat(x).toFixed(3);
   useEffect(() => {
     async function fetchUserWalletETHBalance() {
       const balance = await provider.getBalance(account);
-      setEthBalance(ethers.utils.formatEther(balance));
+      setEthBalance(formatFloatNumber(ethers.utils.formatEther(balance)));
     }
 
     fetchUserWalletETHBalance();
@@ -67,7 +69,12 @@ export default function AccountModal({ setAccountModalOpen }) {
             }}
           >
             <div
-              style={{ display: "flex", alignItems: "center", height: "30px" }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                height: "30px",
+                paddingBottom: "15px",
+              }}
             >
               <Identicon />
               <p className={styles.accountAddress}>
@@ -100,14 +107,14 @@ export default function AccountModal({ setAccountModalOpen }) {
           <Typography id="modal-modal-title" variant="h6" component="h2">
             ETH Balance: {ethBalance}
           </Typography>
-          <Button
+          {/* <Button
             sx={{ marginTop: 2, height: 55 }}
             variant="contained"
             size="large"
             fullWidth
           >
             View and Sell NFT/TOKEN <ChevronRightIcon />
-          </Button>
+          </Button> */}
           {pendingTxs.size != 0 && (
             <div>
               <p>Pending transactions:</p>
