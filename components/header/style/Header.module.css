@@ -109,13 +109,14 @@
 }
 
 .smallButton {
+  margin-top: 5px;
   height: 33px;
   width: 33px;
-  margin: 10px;
   border: 1px solid transparent;
   border-radius: 12.5px;
   background-color: lightblue;
 }
+
 .smallbutton:hover {
   cursor: pointer;
 }
@@ -123,4 +124,30 @@
 .smallIcon {
   font-size: 20px;
   padding: 2px;
+}
+
+.copyHidden {
+  visibility: hidden;
+  font-size: 14px;
+}
+.exploreHidden {
+  visibility: hidden;
+  font-size: 14px;
+}
+
+#copy:hover + div.copyHidden {
+  visibility: visible;
+}
+
+#explore:hover + div.exploreHidden {
+  visibility: visible;
+}
+
+.icons {
+  display: flex;
+}
+
+.hoverButton {
+  margin-right: 15px;
+  width: 50px;
 }

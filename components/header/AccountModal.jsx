@@ -9,6 +9,7 @@ import styles from "../header/style/Header.module.css";
 import { useWalletContext } from "../../context/wallet";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
+import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { getProvider } from "../pool/contract/poolContract";
 const style = {
@@ -27,6 +28,7 @@ export default function AccountModal({ setAccountModalOpen }) {
   const handleClose = () => setAccountModalOpen(false);
   const { account, pendingTxs } = useWalletContext();
   const [ethBalance, setEthBalance] = useState(0);
+  const [copyLabel, setCopyLabel] = useState("copy");
   useEffect(() => {
     async function fetchUserWalletETHBalance() {
       const balance = await provider.getBalance(account);
@@ -38,6 +40,11 @@ export default function AccountModal({ setAccountModalOpen }) {
 
   const copy = () => {
     navigator.clipboard.writeText(account);
+    setCopyLabel("copied!");
+  };
+
+  const explore = () => {
+    window.open(`https://goerli.etherscan.io/address/${account}`, "_blank");
   };
 
   const logout = async () => {
@@ -52,17 +59,43 @@ export default function AccountModal({ setAccountModalOpen }) {
     <div>
       <Modal open={true} onClose={handleClose}>
         <Box sx={style}>
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <Identicon />
-            <p className={styles.accountAddress}>
-              {account.slice(0, 5) + "..." + account.slice(-4)}
-            </p>
-            <button className={styles.smallButton} onClick={copy}>
-              <ContentCopyIcon className={styles.smallIcon} />
-            </button>
-            <button className={styles.smallButton} onClick={logout}>
-              <PowerSettingsNewIcon className={styles.smallIcon} />
-            </button>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <div
+              style={{ display: "flex", alignItems: "center", height: "30px" }}
+            >
+              <Identicon />
+              <p className={styles.accountAddress}>
+                {account.slice(0, 5) + "..." + account.slice(-4)}
+              </p>
+            </div>
+            <div className={styles.icons}>
+              <div className={styles.hoverButton}>
+                <button
+                  className={styles.smallButton}
+                  id={styles.copy}
+                  onClick={copy}
+                >
+                  <ContentCopyIcon className={styles.smallIcon} />
+                </button>
+                <div className={styles.copyHidden}>{copyLabel}</div>
+              </div>
+              <div className={styles.hoverButton}>
+                <button
+                  className={styles.smallButton}
+                  id={styles.explore}
+                  onClick={explore}
+                >
+                  <ArrowOutwardIcon className={styles.smallIcon} />
+                </button>
+                <div className={styles.exploreHidden}>explore</div>
+              </div>
+            </div>
           </div>
           <Typography id="modal-modal-title" variant="h6" component="h2">
             ETH Balance: {ethBalance}
