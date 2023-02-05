@@ -366,10 +366,12 @@ export default function TradeToken({
                 type="number"
               />
             </div>
-            Max:{" "}
-            {currencyTokenBalance && targetToCurrencyRatio
-              ? Math.floor(currencyTokenBalance / targetToCurrencyRatio)
-              : 0}
+            {`Max ${targetToken.name} you can buy:
+            ${
+              currencyTokenBalance && targetToCurrencyRatio
+                ? Math.floor(currencyTokenBalance / targetToCurrencyRatio)
+                : 0
+            }`}
             <Box sx={{ height: 60, marginTop: 1 }}></Box>
             <Box
               sx={{
@@ -381,7 +383,7 @@ export default function TradeToken({
                 fontWeight: "700",
               }}
             >
-              {buyCurrencyTokenNumber} {currencyToken.name}
+              Cost: {buyCurrencyTokenNumber} {currencyToken.name}
             </Box>
             <Button
               sx={{ marginTop: 2, height: 60 }}
@@ -439,7 +441,7 @@ export default function TradeToken({
                 type="number"
               />
             </div>
-            Max: {targetTokenBalance}
+            {`Max ${targetToken.name} you can sell: ${targetTokenBalance}`}
             <Box sx={{ height: 60, marginTop: 1 }}></Box>
             <Box
               sx={{
@@ -451,7 +453,7 @@ export default function TradeToken({
                 fontWeight: "700",
               }}
             >
-              {sellCurrencyTokenNumber} {currencyToken.name}
+              Get: {sellCurrencyTokenNumber} {currencyToken.name}
             </Box>
             <Button
               sx={{ marginTop: 2, height: 60 }}
@@ -536,9 +538,7 @@ export default function TradeToken({
                 fontSize: "0.7rem",
                 fontWeight: "700",
               }}
-            >
-              {"0.3% Interest Rate"}
-            </Box>
+            ></Box>
             <Button
               sx={{ marginTop: 2, height: 60 }}
               variant="contained"
