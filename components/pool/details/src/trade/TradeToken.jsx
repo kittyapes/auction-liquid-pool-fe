@@ -26,6 +26,7 @@ import {
   TradeType,
   Percent,
   IERC20,
+  InsufficientInputAmountError,
 } from "@uniswap/sdk";
 
 import {
@@ -66,7 +67,7 @@ export default function TradeToken({
   const [sellTargetTokenNumber, setSellTargetTokenNumber] = useState(0);
   const [buyCurrencyTokenNumber, setBuyCurrencyTokenNumber] = useState(0);
   const [sellCurrencyTokenNumber, setSellCurrencyTokenNumber] = useState(0);
-  const [targetToCurrencyRatio, setTargetToCurrencyRatio] = useState(-1);
+  const [targetToCurrencyRatio, setTargetToCurrencyRatio] = useState(0);
   const [liquidityTargetTokenNumber, setLiquidityTargetTokenNumber] =
     useState(0);
   const [liquidityCurrencyTokenNumber, setLiquidityCurrencyTokenNumber] =
@@ -97,7 +98,7 @@ export default function TradeToken({
       const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
       const route = new Route([pair], currencyToken);
       setTargetToCurrencyRatio(route.midPrice.invert().toSignificant(6));
-      console.log(`Get new ratio: ${targetToCurrencyRatio}`);
+      console.log(`Get new ratio: ${route.midPrice.invert().toSignificant(6)}`);
     } catch (e) {
       setErrorMsg(e.message);
     }
@@ -107,14 +108,18 @@ export default function TradeToken({
     const tokenContract = getContract(targetToken.address);
     const balance = await tokenContract.balanceOf(account);
     setTargetTokenBalance(Math.floor(ethers.utils.formatUnits(balance)));
-    console.log(`Get user mapping T balance:${targetTokenBalance}`);
+    console.log(
+      `Get user mapping T balance:${Math.floor(
+        ethers.utils.formatUnits(balance)
+      )}`
+    );
   }
 
   async function fetchUserWalletCurrencyTokenBalance() {
     const tokenContract = getContract(currencyToken.address);
     const balance = await tokenContract.balanceOf(account);
     setCurrencyTokenBalance(ethers.utils.formatUnits(balance));
-    console.log(`Get user dex balance:${currencyTokenBalance}`);
+    console.log(`Get user dex balance:${ethers.utils.formatUnits(balance)}`);
   }
 
   /// Update the number of currency token users need to pay when
@@ -303,12 +308,12 @@ export default function TradeToken({
       if (pendingTx) {
         isDone = true;
         // Wait for data getting update on Chain.
-        await new Promise((r) => setTimeout(r, 3000));
-        pendingTxs.delete(transactionHash.hash);
-        setPendingTxs(new Set([...pendingTxs]));
+        await new Promise((r) => setTimeout(r, 5000));
         await fetchTargetTokenPrice();
         await fetchUserWalletTargetTokenBalance();
         await fetchUserWalletCurrencyTokenBalance();
+        pendingTxs.delete(transactionHash.hash);
+        setPendingTxs(new Set([...pendingTxs]));
       }
     }
   }
@@ -390,9 +395,16 @@ export default function TradeToken({
               variant="contained"
               size="large"
               fullWidth
+              disabled={
+                buyTargetTokenNumber * targetToCurrencyRatio >
+                currencyTokenBalance
+              }
               onClick={buyTargetToken}
             >
-              Buy
+              {buyTargetTokenNumber * targetToCurrencyRatio >
+              currencyTokenBalance
+                ? "Insufficient Balance"
+                : "Buy"}
             </Button>
           </Box>
         </Grid>
@@ -459,10 +471,13 @@ export default function TradeToken({
               sx={{ marginTop: 2, height: 60 }}
               variant="contained"
               size="large"
+              disabled={sellTargetTokenNumber > targetTokenBalance}
               fullWidth
               onClick={sellTargetToken}
             >
-              Sell
+              {sellTargetTokenNumber > targetTokenBalance
+                ? "Insufficient Balance"
+                : "Sell"}
             </Button>
           </Box>
         </Grid>
@@ -544,9 +559,17 @@ export default function TradeToken({
               variant="contained"
               size="large"
               fullWidth
+              disabled={
+                liquidityTargetTokenNumber > targetTokenBalance ||
+                liquidityCurrencyTokenNumber > currencyTokenBalance
+              }
               onClick={addLiquidity}
             >
-              Stake
+              {liquidityTargetTokenNumber > targetTokenBalance
+                ? `Insufficient ${targetToken.name} token balance`
+                : liquidityCurrencyTokenNumber > currencyTokenBalance
+                ? `Insufficient ${currencyToken.name} Balance`
+                : "Stake"}
             </Button>
           </Box>
         </Grid>

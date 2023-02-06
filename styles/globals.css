@@ -51,3 +51,7 @@ a {
 .MuiModal-root .MuiModal-backdrop {
   background-color: rgb(0, 0, 0, 0);
 }
+
+.Mui-disabled {
+  background-color: lightgrey !important;
+}
