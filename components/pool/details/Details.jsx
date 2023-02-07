@@ -26,7 +26,7 @@ import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
 import "reactjs-popup/dist/index.css";
 import Popup from "reactjs-popup";
-
+import UserBanalce from "./UserBalance";
 let pool = {
   src: Azuki.src,
   address: "0x9117808F6ebEAeaE94DBcC2255C13db607f00F22",
@@ -195,6 +195,8 @@ const Details = ({ pairAddress }) => {
           })}
         </Grid>
       </Grid>
+      <Divider className={styles.dividerFull} variant="middle" />
+      <UserBanalce targetToken={targetToken} currencyToken={currencyToken} />
       <Grid xs={12} className={styles.user_actions}>
         <UserActions
           pool={pool}

@@ -77,7 +77,7 @@ export default function AccountModal({ setAccountModalOpen }) {
               }}
             >
               <Identicon />
-              <p className={styles.accountAddress}>
+              <p className={styles.accountModalText}>
                 {account.slice(0, 5) + "..." + account.slice(-4)}
               </p>
             </div>
@@ -105,7 +105,7 @@ export default function AccountModal({ setAccountModalOpen }) {
             </div>
           </div>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            ETH Balance: {ethBalance}
+            <p className={styles.accountModalText}>ETH Balance: {ethBalance}</p>
           </Typography>
           {/* <Button
             sx={{ marginTop: 2, height: 55 }}

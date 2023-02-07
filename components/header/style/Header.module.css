@@ -108,6 +108,10 @@
   margin: 8px;
 }
 
+.accountModalText {
+  color: black;
+}
+
 .smallButton {
   margin-top: 5px;
   height: 33px;
