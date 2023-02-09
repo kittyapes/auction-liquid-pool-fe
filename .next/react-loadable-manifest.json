@@ -1,8 +1,18 @@
 {
-  "../components/pool/details/src/user_actions/UserActions.jsx -> ../trade/TradeToken": {
-    "id": "../components/pool/details/src/user_actions/UserActions.jsx -> ../trade/TradeToken",
+  "../components/pool/auction/Auction.jsx -> react-apexcharts": {
+    "id": 7229,
     "files": [
-      "static/chunks/components_pool_details_src_trade_TradeToken_jsx.js"
+      "static/chunks/6c44d60f.7e974501e1f6188c.js",
+      "static/chunks/229.e2af736d503f1927.js"
+    ]
+  },
+  "../components/pool/details/src/user_actions/UserActions.jsx -> ../trade/TradeToken": {
+    "id": 2202,
+    "files": [
+      "static/chunks/191-ccdc5cc402c379be.js",
+      "static/chunks/588.a1cad217c8c6e377.js",
+      "static/css/0015d2e518431a0a.css",
+      "static/chunks/202.c91423e55d1c4c59.js"
     ]
   }
 }

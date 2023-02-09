@@ -44,7 +44,9 @@ const Header = () => {
   useEffect(() => {
     if (account != null) {
       window.ethereum.on("networkChanged", function (networkId) {
-        setChainId(networkId);
+        if (chainId != networkId) {
+          setChainId(networkId);
+        }
       });
     }
   }, [account]);
