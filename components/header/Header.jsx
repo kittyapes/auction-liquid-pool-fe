@@ -3,22 +3,29 @@ import HypexLogo from "../../static/images/logo.png";
 import styles from "../header/style/Header.module.css";
 import { connectWallet } from "../Wallet/connectors";
 import { useRouter } from "next/router";
-import { useChainId } from "../../api/contract";
+import { useChainId, checkChainId } from "../../api/contract";
 import { useWalletContext } from "../../context/wallet";
 import { ethers } from "ethers";
 import ConnectButton from "./ConnectButton";
 import AccountModal from "./AccountModal";
+import { getProvider } from "../pool/contract/poolContract";
 if (typeof window !== "undefined") {
   var jazzicon = require("jazzicon");
 }
 const Header = () => {
   const router = useRouter();
   const [accountModalOpen, setAccountModalOpen] = useState(false);
-  const { account, setAccount, pendingTxs, setPendingTxs } = useWalletContext();
+  const {
+    account,
+    setAccount,
+    pendingTxs,
+    setPendingTxs,
+    chainId,
+    setChainId,
+  } = useWalletContext();
   const useToHome = () => {
     router.push("/");
   };
-  console.log(`account:${account}`);
   const clickConnectButton = () => {
     console.log(accountModalOpen);
     setAccountModalOpen(true);
@@ -28,9 +35,19 @@ const Header = () => {
       const address = await connectWallet();
       setAccount(address);
     }
-    if (account != null) return;
-    connect();
+    if (account == null) {
+      connect();
+    }
+    checkChainId(setChainId);
   });
+
+  useEffect(() => {
+    if (account != null) {
+      window.ethereum.on("networkChanged", function (networkId) {
+        setChainId(networkId);
+      });
+    }
+  }, [account]);
 
   useEffect(() => {
     console.log(pendingTxs);

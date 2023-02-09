@@ -116,3 +116,9 @@
   display: flex;
   justify-content: space-between;
 }
+
+.banner {
+  color: white;
+  font-size: 48px;
+  text-align: center;
+}

@@ -22,6 +22,8 @@ export const WalletProvider = ({ children }) => {
         setAccount,
         pendingTxs,
         setPendingTxs,
+        chainId,
+        setChainId,
       }}
     >
       {children}

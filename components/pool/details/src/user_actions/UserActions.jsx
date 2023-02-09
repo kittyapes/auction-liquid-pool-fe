@@ -8,6 +8,7 @@ import { Button, Box, Divider } from "@mui/material";
 import styles from "../user_actions/style/UserActions.module.css";
 import Collection from "../collection/Collection";
 import dynamic from "next/dynamic";
+import Azuki from "../../../../../static/images/azuki.jpeg";
 import { API, getTokenIds } from "../../../contract/poolContract";
 const TradeToken = dynamic(() => import("../trade/TradeToken"), { ssr: false });
 

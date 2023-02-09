@@ -13,12 +13,7 @@ import { useRouter } from "next/router";
 import Divider from "@mui/material/Divider";
 import { API } from "../contract/poolContract";
 import uniswapLiquidityPoolAbi from "../../../contracts/uniswapLiquidityPoolAbi.json";
-import {
-  getProvider,
-  getContract,
-  getTokenInfo,
-  dexTokenAddress,
-} from "../../pool/contract/poolContract";
+import { getProvider, getTokenInfo } from "../../pool/contract/poolContract";
 import { useWalletContext } from "../../../context/wallet";
 import { ethers } from "ethers";
 import { ChainId, Token, Fetcher, Route } from "@uniswap/sdk";
@@ -37,7 +32,7 @@ const Details = ({ pairAddress }) => {
   pairAddress = "0x0aE03567Bc0C8cFD3e3A174B21e3678d06Cb9A88";
   const provider = getProvider();
   const router = useRouter();
-  const { account } = useWalletContext();
+  const { account, chainId } = useWalletContext();
   const [collection, setCollection] = useState({});
   const [currencyTokenPrice, setCurrencyTokenPrice] = useState(0);
   const [cardDatas, setCardDatas] = useState([]);
@@ -75,9 +70,9 @@ const Details = ({ pairAddress }) => {
       let currencyTokenBalance = await pool.balanceOf(currencyTokenAddress);
       //TODO: Show balance in the detail page.
     }
-    if (!account) return;
+    if (!account || chainId != ChainId.GÖRLI) return;
     fetchUniswapLiquidityPoolInfo();
-  }, [account]);
+  }, [account, chainId]);
 
   useEffect(() => {
     const fetch = async () => {
@@ -152,7 +147,11 @@ const Details = ({ pairAddress }) => {
     setCardDatas(cardDatas);
   }, [collection, currencyTokenPrice]);
 
-  return (
+  return account == null ? (
+    <p className={styles.banner}>Connect Wallet</p>
+  ) : chainId != ChainId.GÖRLI ? (
+    <p className={styles.banner}>Please switch to Goerli Testnet</p>
+  ) : (
     <Grid container className={styles.container}>
       <Grid container className={styles.upper_detail}>
         <Grid container className={styles.detail_intro}>
