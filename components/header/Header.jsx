@@ -27,23 +27,25 @@ const Header = () => {
     router.push("/");
   };
   const clickConnectButton = () => {
-    console.log(accountModalOpen);
-    setAccountModalOpen(true);
+    console.log("here");
+    if (!account) {
+      connect();
+    } else {
+      setAccountModalOpen(true);
+    }
   };
+  async function connect() {
+    console.log("here!!");
+    const address = await connectWallet();
+    setAccount(address);
+  }
+
   useEffect(() => {
     window.ethereum.on("accountsChanged", function (accounts) {
       if (accounts[0] == undefined) {
         setAccount(null);
       }
     });
-
-    async function connect() {
-      const address = await connectWallet();
-      setAccount(address);
-    }
-    if (account == null) {
-      connect();
-    }
     checkChainId(setChainId);
   });
 
@@ -69,14 +71,12 @@ const Header = () => {
           <img src={HypexLogo.src} alt="hypex-logo" />
         </div>
       </div>
-      {account && (
-        <div className={styles.right}>
-          <ConnectButton handleOpenModal={clickConnectButton} />
-          {accountModalOpen && (
-            <AccountModal setAccountModalOpen={setAccountModalOpen} />
-          )}
-        </div>
-      )}
+      <div className={styles.right}>
+        <ConnectButton handleOnClick={clickConnectButton} />
+        {accountModalOpen && (
+          <AccountModal setAccountModalOpen={setAccountModalOpen} />
+        )}
+      </div>
     </div>
   );
 };

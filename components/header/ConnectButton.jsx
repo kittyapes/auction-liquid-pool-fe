@@ -17,20 +17,20 @@ const theme = createTheme({
   },
 });
 
-const ConnectButton = ({ handleOpenModal }) => {
+const ConnectButton = ({ handleOnClick }) => {
   const { account, pendingTxs } = useWalletContext();
   return account ? (
     pendingTxs.size != 0 ? (
       <button
         className={styles.ConnectButton}
         style={{ display: "flex" }}
-        onClick={handleOpenModal}
+        onClick={handleOnClick}
       >
         <CircularProgress sx={{ p: 1 }} size={40} />{" "}
         <span>Transaction Pending...</span>
       </button>
     ) : (
-      <button className={styles.ConnectButton} onClick={handleOpenModal}>
+      <button className={styles.ConnectButton} onClick={handleOnClick}>
         <div style={{ display: "flex", alignItems: "center" }}>
           <Identicon />
           <p className={styles.accountAddress}>
@@ -41,7 +41,9 @@ const ConnectButton = ({ handleOpenModal }) => {
       </button>
     )
   ) : (
-    <button>Connect to a wallet</button>
+    <button className={styles.ConnectButton} onClick={handleOnClick}>
+      Connect to your wallet
+    </button>
   );
 };
 
