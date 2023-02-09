@@ -31,6 +31,12 @@ const Header = () => {
     setAccountModalOpen(true);
   };
   useEffect(() => {
+    window.ethereum.on("accountsChanged", function (accounts) {
+      if (accounts[0] == undefined) {
+        setAccount(null);
+      }
+    });
+
     async function connect() {
       const address = await connectWallet();
       setAccount(address);
