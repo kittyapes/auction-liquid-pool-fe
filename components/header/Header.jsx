@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import HypexLogo from "../../static/images/logo.png";
 import styles from "../header/style/Header.module.css";
-import { connectWallet } from "../Wallet/connectors";
+import { connectWallet, readWallet } from "../Wallet/connectors";
 import { useRouter } from "next/router";
 import { useChainId, checkChainId } from "../../api/contract";
 import { useWalletContext } from "../../context/wallet";
@@ -42,6 +42,11 @@ const Header = () => {
         setAccount(accounts[0]);
       }
     });
+    async function readExistingWalletAddress() {
+      let address = await readWallet();
+      if (address) setAccount(address);
+    }
+    readExistingWalletAddress();
     checkChainId(setChainId);
   });
 
