@@ -26,24 +26,20 @@ const Header = () => {
   const useToHome = () => {
     router.push("/");
   };
-  const clickConnectButton = () => {
-    console.log("here");
+  const clickConnectButton = async () => {
     if (!account) {
-      connect();
+      await connectWallet();
     } else {
       setAccountModalOpen(true);
     }
   };
-  async function connect() {
-    console.log("here!!");
-    const address = await connectWallet();
-    setAccount(address);
-  }
 
   useEffect(() => {
     window.ethereum.on("accountsChanged", function (accounts) {
       if (accounts[0] == undefined) {
         setAccount(null);
+      } else {
+        setAccount(accounts[0]);
       }
     });
     checkChainId(setChainId);
@@ -59,11 +55,6 @@ const Header = () => {
     }
   }, [account]);
 
-  useEffect(() => {
-    console.log(pendingTxs);
-  }, [pendingTxs]);
-
-  console.log("from header");
   return (
     <div className={styles.container}>
       <div>
