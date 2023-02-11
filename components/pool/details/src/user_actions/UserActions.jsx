@@ -9,12 +9,15 @@ import styles from "../user_actions/style/UserActions.module.css";
 import Collection from "../collection/Collection";
 import dynamic from "next/dynamic";
 import Azuki from "../../../../../static/images/azuki.jpeg";
-import { API, getTokenIds } from "../../../contract/poolContract";
+import {
+  API,
+  getTokenIds,
+  getNFTTokenIdsFromPoolAddress,
+} from "../../../contract/poolContract";
 const TradeToken = dynamic(() => import("../trade/TradeToken"), { ssr: false });
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
-
   return (
     <div
       className={styles.tab_panel}
@@ -46,17 +49,6 @@ function a11yProps(index) {
   };
 }
 
-const getNTFs = async () => {
-  getTokenIds().then((e) => {
-    nfts = [];
-    console.log(e);
-    e.map((item) => {
-      nfts.push({
-        tokenId: item,
-      });
-    });
-  });
-};
 export default function UserActions({
   pool,
   targetToken,
@@ -65,10 +57,6 @@ export default function UserActions({
 }) {
   const [value, setValue] = React.useState(0);
   const router = useRouter();
-
-  useEffect(() => {
-    getNTFs();
-  });
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -100,7 +88,7 @@ export default function UserActions({
         />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <Collection pool={pool} nfts={nfts} type={"Auction"} />
+        <Collection pool={pool} type={"Auction"} />
         <Divider className={styles.divider} variant="middle" />
         <div className={styles.redeem}>
           <Button
@@ -116,10 +104,8 @@ export default function UserActions({
         </div>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <Collection pool={pool} nfts={nfts} type={"Swap"} />
+        <Collection pool={pool} type={"Swap"} />
       </TabPanel>
     </Box>
   );
 }
-
-let nfts = [];

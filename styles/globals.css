@@ -27,13 +27,13 @@ a {
 }
 
 .MuiTab-textColorInherit {
-  color: #ffffff66;
+  color: #ffffff66 !important;
   font-size: 20px;
   font-weight: 700;
 }
 
 .Mui-selected {
-  color: white;
+  color: white !important;
   font-size: 20px;
   font-weight: 700;
 }

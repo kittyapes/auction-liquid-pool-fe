@@ -31,3 +31,7 @@
 .purple {
   background: #7924ff;
 }
+.placeholder {
+  height: 300px;
+  width: 100%;
+}

@@ -1,7 +1,5 @@
 // Permission. -> Allowance.  Use timestamp
-// Transction Status.
-// Supporting Chain ID.
-
+// Update token balance after transactoin finish.
 import React, { useEffect, useState } from "react";
 import styles from "../details/style/Details.module.css";
 import Azuki from "../../../static/images/azuki.jpeg";
@@ -13,7 +11,11 @@ import { useRouter } from "next/router";
 import Divider from "@mui/material/Divider";
 import { API } from "../contract/poolContract";
 import uniswapLiquidityPoolAbi from "../../../contracts/uniswapLiquidityPoolAbi.json";
-import { getProvider, getTokenInfo } from "../../pool/contract/poolContract";
+import {
+  getProvider,
+  getTokenInfo,
+  fetchPoolInfo,
+} from "../../pool/contract/poolContract";
 import { useWalletContext } from "../../../context/wallet";
 import { ethers } from "ethers";
 import { ChainId, Token, Fetcher, Route } from "@uniswap/sdk";
@@ -24,7 +26,7 @@ import Popup from "reactjs-popup";
 import UserBanalce from "./UserBalance";
 let pool = {
   src: Azuki.src,
-  address: "0x9117808F6ebEAeaE94DBcC2255C13db607f00F22",
+  address: "0x69a8fB7aB0672693C70a4a4DC31f51fCb22258Fb",
   name: "Azuki",
 };
 
@@ -39,6 +41,7 @@ const Details = ({ pairAddress }) => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [targetToken, setTargetToken] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
+  const [poolInfo, setPoolInfo] = useState({});
   const useToHome = () => {
     router.push("/");
   };
@@ -81,7 +84,15 @@ const Details = ({ pairAddress }) => {
       if (!data || !data.collection) return;
       setCollection(data.collection);
     };
+
+    const poolInfo = async (poolAddress) => {
+      let poolInfo = await fetchPoolInfo(poolAddress);
+      poolInfo["name"] = "Test pool";
+      setPoolInfo(poolInfo);
+      console.log(poolInfo);
+    };
     fetch();
+    poolInfo(pool.address);
   }, []);
 
   useEffect(() => {
@@ -198,7 +209,7 @@ const Details = ({ pairAddress }) => {
       <UserBanalce targetToken={targetToken} currencyToken={currencyToken} />
       <Grid xs={12} className={styles.user_actions}>
         <UserActions
-          pool={pool}
+          pool={poolInfo}
           targetToken={targetToken}
           currencyToken={currencyToken}
           setErrorMsg={setErrorMsg}

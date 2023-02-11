@@ -36,21 +36,6 @@ export const getTokenIds = () => {
   return getTokenContract().methods.getTokenIds().call();
 };
 
-export const getDuration = () => {
-  return getTokenContract().methods.duration().call();
-};
-
-export const getBids = (tokenId) => {
-  return getTokenContract().methods.auctions(tokenId).call();
-};
-
-export const getIsLinear = () => {
-  return getTokenContract().methods.isLinear().call();
-};
-
-export const getDelta = () => {
-  return getTokenContract().methods.delta().call();
-};
 export const redeemNFT = (account, amount) => {
   return getTokenContract().methods.redeem(amount).send({
     from: account,
@@ -248,3 +233,57 @@ export const getWebSocket = () =>
   new ethers.providers.WebSocketProvider(
     "wss://goerli.infura.io/ws/v3/8d5bc85320a64c5ca0e25c4ce8d8120e"
   );
+
+export const fetchNFTTokenIdsFromPoolAddress = async (poolAddress) => {
+  const web3 = new Web3(window.ethereum);
+  const contract = new web3.eth.Contract(tokenAbi, poolAddress);
+  const tokenIds = await contract.methods.getTokenIds().call();
+  return tokenIds;
+};
+
+export const fetchNFTAuctionInfoFromTokenId = async (poolAddress, tokenId) => {
+  const web3 = new Web3(window.ethereum);
+  const contract = new web3.eth.Contract(tokenAbi, poolAddress);
+  const nftAuctionInfo = await contract.methods.auctions(tokenId).call();
+  return nftAuctionInfo;
+};
+
+export const fetchPoolInfo = async (poolAddress) => {
+  const web3 = new Web3(window.ethereum);
+  const contract = new web3.eth.Contract(tokenAbi, poolAddress);
+  console.log(poolAddress);
+  console.log(contract);
+  const duration = await contract.methods.duration().call();
+  const isLinear = await contract.methods.isLinear().call();
+  let delta;
+  let ratio;
+  if (isLinear) {
+    delta = await contract.methods.delta().call();
+  } else {
+    ratio = await contract.methods.ratio().call();
+  }
+
+  return {
+    address: poolAddress,
+    duration: duration,
+    isLinear: isLinear,
+    delta: delta,
+    ratio: ratio,
+  };
+};
+
+export const getDuration = () => {
+  return getTokenContract().methods.duration().call();
+};
+
+export const getBids = (tokenId) => {
+  return getTokenContract().methods.auctions(tokenId).call();
+};
+
+export const getIsLinear = () => {
+  return getTokenContract().methods.isLinear().call();
+};
+
+export const getDelta = () => {
+  return getTokenContract().methods.delta().call();
+};
