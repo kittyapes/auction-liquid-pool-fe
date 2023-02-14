@@ -16,7 +16,7 @@ import {
   getIsLinear,
 } from "../contract/poolContract";
 import { fetchPoolInfo } from "../contract/poolContract";
-import { Status, getDeadTime } from "./utils";
+import { Status, getDeadTime, startTimer } from "./utils";
 import { ethers } from "ethers";
 import { useWalletContext } from "../../../context/wallet";
 const ApexCharts = dynamic(() => import("react-apexcharts"), { ssr: false });
@@ -333,40 +333,3 @@ const Auction = ({ address }) => {
 };
 
 export default Auction;
-
-const startTimer = (e) => {
-  let { total, hours, minutes, seconds } = getTimeRemaining(e);
-  if (total >= 0) {
-    return (
-      (hours > 9 ? hours : "0" + hours) +
-      ":" +
-      (minutes > 9 ? minutes : "0" + minutes) +
-      ":" +
-      (seconds > 9 ? seconds : "0" + seconds)
-    );
-    // // update the timer
-    // // check if less than 10 then we need to
-    // // add '0' at the beginning of the variable
-    // setTimer(
-    //   (hours > 9 ? hours : "0" + hours) +
-    //     ":" +
-    //     (minutes > 9 ? minutes : "0" + minutes) +
-    //     ":" +
-    //     (seconds > 9 ? seconds : "0" + seconds)
-    // );
-  }
-  return "Over";
-};
-
-const getTimeRemaining = (e) => {
-  const total = Date.parse(e) - Date.parse(new Date());
-  const seconds = Math.floor((total / 1000) % 60);
-  const minutes = Math.floor((total / 1000 / 60) % 60);
-  const hours = Math.floor((total / 1000 / 60 / 60) % 24);
-  return {
-    total,
-    hours,
-    minutes,
-    seconds,
-  };
-};
