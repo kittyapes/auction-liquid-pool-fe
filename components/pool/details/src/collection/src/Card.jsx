@@ -28,6 +28,7 @@ const Card = ({ nft, type, pool }) => {
 
   useEffect(() => {
     async function fetchNftInfo() {
+      // TODO(peter): the auction info is incorrect. startAt>0 but winnder is noone.
       const auctionInfo = await fetchNFTAuctionInfoFromTokenId(
         pool.address,
         nft.tokenId
@@ -55,7 +56,11 @@ const Card = ({ nft, type, pool }) => {
         setButtonLabel("Start Auction");
       }
     }
-    fetchNftInfo();
+    console.log(type);
+    if (type == "Auction") fetchNftInfo();
+    else {
+      setButtonLabel("Swap");
+    }
   }, []);
 
   return (

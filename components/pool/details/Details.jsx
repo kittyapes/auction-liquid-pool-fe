@@ -30,6 +30,7 @@ let pool = {
   name: "Azuki",
 };
 
+const nftPoolAddress = "0x22D5dc826145166f7cbDfBf14CFE9a43dA02Ea25";
 const Details = ({ pairAddress }) => {
   pairAddress = "0x0aE03567Bc0C8cFD3e3A174B21e3678d06Cb9A88";
   const provider = getProvider();
@@ -78,21 +79,20 @@ const Details = ({ pairAddress }) => {
   }, [account, chainId]);
 
   useEffect(() => {
-    const fetch = async () => {
+    const fetchNFTPoolStats = async () => {
       let res = await API.GetCollectionStats();
       let data = res.data;
       if (!data || !data.collection) return;
       setCollection(data.collection);
     };
 
-    const poolInfo = async (poolAddress) => {
+    const fetchNFTPoolInfo = async (poolAddress) => {
       let poolInfo = await fetchPoolInfo(poolAddress);
       poolInfo["name"] = "Test pool";
       setPoolInfo(poolInfo);
-      console.log(poolInfo);
     };
-    fetch();
-    poolInfo(pool.address);
+    fetchNFTPoolStats();
+    fetchNFTPoolInfo(nftPoolAddress);
   }, []);
 
   useEffect(() => {

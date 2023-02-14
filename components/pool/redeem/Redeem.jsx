@@ -12,9 +12,14 @@ import {
   getAllowance,
   increaseAllowance,
 } from "../contract/mappingTokenContract";
-const Redeem = ({ nftPoolAddress, mappingTokenAddress }) => {
+const Redeem = ({ address }) => {
   const { account } = useWalletContext();
   const [redeemNumber, setRedeemNumber] = useState(0);
+
+  // TODO(peter): we need to use uniswap pair address to get
+  // nft pool address and mapping token address.
+  const nftPoolAddress = "0x69a8fB7aB0672693C70a4a4DC31f51fCb22258Fb";
+  const mappingTokenAddress = "0x236F15243BF5750e491a1B41649251268e240DcC";
 
   // TODO(peter): make sure this function work properly.
   const placeRedemption = async () => {

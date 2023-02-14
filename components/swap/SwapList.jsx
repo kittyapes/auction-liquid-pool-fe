@@ -37,6 +37,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   },
 }));
 
+//TODO(peter): need to get uniswap pair addresses dynamically.
 const rows = [
   {
     id: 1,
