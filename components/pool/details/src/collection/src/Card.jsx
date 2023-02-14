@@ -3,16 +3,11 @@ import { useRouter } from "next/router";
 import styles from "../style/Collection.module.css";
 import { Button, Box, Divider } from "@mui/material";
 import { fetchNFTAuctionInfoFromTokenId } from "../../../../contract/poolContract";
-const Status = {
-  NOT_ACTIVATED: "NOT_ACTIVIATED",
-  ACTIVATED: "ACTIVIATED",
-  SOLD: "SOLD",
-};
-
+import { Status } from "../../../../auction/utils";
 const Card = ({ nft, type, pool }) => {
   // Three type: not activated, activated, sold.
   const router = useRouter();
-  const [auctionInfo, setAuctionInfo] = useState(false);
+  const [auctionInfo, setAuctionInfo] = useState({});
   const [status, setStatus] = useState(Status.NOT_ACTIVATED);
   const [buttonLabel, setButtonLabel] = useState("Auction");
   const auction = () => {
@@ -44,7 +39,7 @@ const Card = ({ nft, type, pool }) => {
         setButtonLabel(`Place Next Bid: ${auctionInfo.nextBidAmount}`);
       } else {
         setStatus(Status.NOT_ACTIVATED);
-        setButtonLabel("Start New Auction");
+        setButtonLabel("Start Auction");
       }
     }
     fetchNftInfo();
@@ -57,7 +52,6 @@ const Card = ({ nft, type, pool }) => {
       </div>
       <Button
         sx={{ marginTop: 2, height: 60 }}
-        variant="contained"
         size="large"
         disabled={status == Status.SOLD}
         className={`${styles.button} ${styles.purple}`}

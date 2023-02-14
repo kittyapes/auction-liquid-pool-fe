@@ -5,17 +5,42 @@ import Grid from "@mui/material/Grid";
 import { useRouter } from "next/router";
 import { Button } from "@mui/material";
 import dynamic from "next/dynamic";
-import congrats from "../../../static/animation/congrats.json";
+import { withStyles } from "@mui/styles";
+import TextField from "@mui/material/TextField";
 import {
   placeBid,
+  fetchNFTAuctionInfoFromTokenId,
   getDuration,
   getBids,
   getDelta,
   getIsLinear,
 } from "../contract/poolContract";
+import { fetchPoolInfo } from "../contract/poolContract";
+import { Status, getDeadTime } from "./utils";
 import { ethers } from "ethers";
 import { useWalletContext } from "../../../context/wallet";
 const ApexCharts = dynamic(() => import("react-apexcharts"), { ssr: false });
+
+const CssTextField = withStyles({
+  root: {
+    "& .MuiOutlinedInput-root": {
+      "& fieldset": {
+        borderColor: "rgba(255, 255, 255, 0.3);",
+        borderWidth: "2px",
+      },
+      "&:hover fieldset": {
+        borderColor: "rgba(255, 255, 255, 0.3);",
+      },
+      "&.Mui-focused fieldset": {
+        borderColor: "rgba(255, 255, 255, 0.3);",
+      },
+      "&.Mui-disabled fieldset": {
+        backgroundColor: "rgba(255, 255, 255, 1);",
+        borderWidth: "2px",
+      },
+    },
+  },
+})(TextField);
 
 const chart = {
   series: [
@@ -65,23 +90,54 @@ const chart = {
 };
 
 const Auction = ({ address }) => {
+  const [status, setStatus] = useState(null);
+  const [auctionInfo, setAuctionInfo] = useState({});
+  const [timer, setTimer] = useState("00:00:00");
   const { account } = useWalletContext();
   const Ref = useRef(null);
-  const [auctionDone, setAuctionDone] = useState(false);
-  const [bidInfo, setBidInfo] = useState({
-    noAuction: true,
-    bidAmount: 0,
-    winner: "0x0000000000000000000000000000000000000000",
-    startedAt: 0,
-    nextMinimumBidAmount: 0,
-  });
-  let pool = {
-    src: src.src,
-    address: address,
-    name: "Azuki",
-  };
   const router = useRouter();
   const item = router.query;
+  const tokenId = item.id;
+
+  useEffect(() => {
+    async function fetchNftInfo() {
+      console.log(router.query.id);
+      if (!tokenId) return;
+      console.log(`ididi:${tokenId}`);
+      const auctionInfo = await fetchNFTAuctionInfoFromTokenId(
+        address,
+        Number(tokenId)
+      );
+      const poolInfo = await fetchPoolInfo(address);
+      const bidAmount = Number(auctionInfo.bidAmount);
+      const isLinear = poolInfo.isLinear;
+      let nextBid;
+      if (isLinear) {
+        nextBid = bidAmount + Number(poolInfo.delta);
+        console.log(poolInfo.delta);
+        console.log(bidAmount);
+        console.log(nextBid);
+      } else {
+        nextBid = bidAmount * (Number(poolInfo.ratio) + 1);
+      }
+      auctionInfo.nextBidAmount = nextBid;
+      console.log(auctionInfo.nextBidAmount);
+      setAuctionInfo(auctionInfo);
+      if (auctionInfo.winner != "0x0000000000000000000000000000000000000000") {
+        setStatus(Status.SOLD);
+      } else if (auctionInfo.startedAt != 0) {
+        setStatus(Status.ACTIVATED);
+      } else {
+        setStatus(Status.NOT_ACTIVATED);
+      }
+      if (status == Status.ACTIVATED) {
+        let timestamp =
+          Number(auctionInfo.startedAt) + Number(poolInfo.duration);
+        clearTimer(getDeadTime(timestamp));
+      }
+    }
+    fetchNftInfo();
+  }, []);
 
   const placeAuction = () => {
     placeBid(0.05, item.id, account)
@@ -96,66 +152,6 @@ const Auction = ({ address }) => {
       });
   };
 
-  const getAuctionsInfo = async () => {
-    let result = await getBids(item.id);
-    let isLinear = await getIsLinear();
-    let delta = await getDelta();
-    let duration = await getDuration();
-    setBidInfo({
-      noAuction: result.winner === "0x0000000000000000000000000000000000000000",
-      bidAmount: result.bidAmount,
-      winner: result.winner,
-      startedAt: result.startedAt,
-      nextMinimumBidAmount: Number(result.bidAmount) + Number(delta),
-      duration: duration,
-    });
-    let timestamp = Number(result.startedAt) + Number(duration);
-    clearTimer(getDeadTime(timestamp));
-  };
-
-  useEffect(() => {
-    getAuctionsInfo();
-  }, []);
-
-  const [timer, setTimer] = useState("00:00:00");
-
-  const getTimeRemaining = (e) => {
-    const total = Date.parse(e) - Date.parse(new Date());
-    const seconds = Math.floor((total / 1000) % 60);
-    const minutes = Math.floor((total / 1000 / 60) % 60);
-    const hours = Math.floor((total / 1000 / 60 / 60) % 24);
-    return {
-      total,
-      hours,
-      minutes,
-      seconds,
-    };
-  };
-
-  const startTimer = (e) => {
-    let { total, hours, minutes, seconds } = getTimeRemaining(e);
-    if (total >= 0) {
-      // update the timer
-      // check if less than 10 then we need to
-      // add '0' at the beginning of the variable
-      setTimer(
-        (hours > 9 ? hours : "0" + hours) +
-          ":" +
-          (minutes > 9 ? minutes : "0" + minutes) +
-          ":" +
-          (seconds > 9 ? seconds : "0" + seconds)
-      );
-    }
-  };
-  const getDeadTime = (timestamp) => {
-    console.log(timestamp);
-    let deadline = new Date(timestamp * 1000);
-    console.log(deadline);
-    // This is where you need to adjust if
-    // you entend to add more time
-    deadline.setSeconds(deadline.getSeconds() + 10);
-    return deadline;
-  };
   const clearTimer = (e) => {
     // If you adjust it you should also need to
     // adjust the Endtime formula we are about
@@ -167,7 +163,8 @@ const Auction = ({ address }) => {
     // after 1000ms or 1sec
     if (Ref.current) clearInterval(Ref.current);
     const id = setInterval(() => {
-      startTimer(e);
+      let time = startTimer(e);
+      setTimer(time);
     }, 1000);
     Ref.current = id;
   };
@@ -199,15 +196,26 @@ const Auction = ({ address }) => {
         <Grid container className={styles.upper_detail}>
           <Grid container className={styles.detail_intro}>
             <img
-              src={pool.src}
+              src={src.src}
               alt="pool-logo"
               style={{ width: 300, height: 350, borderRadius: 10 }}
             />
-            {bidInfo.noAuction && (
+            {status == Status.NOT_ACTIVATED && (
               <div className={styles.details}>
                 <div>
                   <div>
-                    <p className={styles.subtitle}>No Bids</p>
+                    <p className={styles.subtitle} style={{ marginTop: "0" }}>
+                      New auction start price:
+                    </p>
+                  </div>
+                  <div>
+                    <span
+                      className={`${styles.mappingToken} ${styles.space}`}
+                    >{`1 MT`}</span>
+                    <span className={styles.currencyToken}>
+                      {ethers.utils.formatUnits(auctionInfo.bidAmount)}
+                      DEX
+                    </span>
                   </div>
                 </div>
                 <Button
@@ -217,27 +225,32 @@ const Auction = ({ address }) => {
                   fullWidth
                   onClick={placeAuction}
                 >
-                  PLACE THE NEXT BID
+                  Start auction
                 </Button>
               </div>
             )}
-            {!bidInfo.noAuction && !auctionDone && (
+            {status == Status.ACTIVATED && (
               <div className={styles.details}>
                 <div>
                   <div>
-                    <p className={styles.subtitle}>Auction Ends In:</p>
+                    <p className={styles.subtitle} style={{ marginTop: "0" }}>
+                      Auction Ends In:
+                    </p>
                   </div>
-                  <div>
-                    <p>{timer}</p>
+                  <div className={styles.timer}>
+                    <p style={{ margin: "0" }}>{timer}</p>
                   </div>
                   <div>
                     <p className={styles.subtitle}>Current Highest Bid:</p>
                   </div>
                   <div>
-                    <p>
-                      {ethers.utils.formatEther(bidInfo.bidAmount)}
-                      ETH
-                    </p>
+                    <span
+                      className={`${styles.mappingToken} ${styles.space}`}
+                    >{`1 MT`}</span>
+                    <span className={styles.currencyToken}>
+                      {ethers.utils.formatUnits(auctionInfo.bidAmount)}
+                      DEX
+                    </span>
                   </div>
                 </div>
                 <div>
@@ -245,20 +258,39 @@ const Auction = ({ address }) => {
                     <p className={styles.subtitle}>Next Minimum Bid</p>
                   </div>
                   <div>
-                    <p>
-                      {ethers.utils.formatEther(bidInfo.nextMinimumBidAmount)}{" "}
-                      ETH
-                    </p>
+                    <span
+                      className={`${styles.mappingToken} ${styles.space}`}
+                    >{`1 MT`}</span>
+                    <span className={styles.currencyToken}>
+                      {ethers.utils.formatUnits(auctionInfo.nextBidAmount)}
+                      DEX
+                    </span>
                   </div>
                 </div>
                 <div>
                   <p className={styles.subtitle}>Next Bid:</p>
-                  <input
-                    placeholder={ethers.utils.formatEther(
-                      bidInfo.nextMinimumBidAmount
-                    )}
-                  />{" "}
-                  ETH
+                  <div className={styles.nextBidBox}>
+                    <span className={`${styles.mappingToken} ${styles.space}`}>
+                      1 MT
+                    </span>
+                    <CssTextField
+                      sx={{
+                        marginTop: 2,
+                        display: "flex",
+                        fontSize: "1rem",
+                        fontWeight: "700",
+                        input: { color: "white" },
+                        width: "60%",
+                      }}
+                      id="outlined-basic"
+                      variant="outlined"
+                      placeholder={ethers.utils.formatEther(
+                        auctionInfo.nextBidAmount
+                      )}
+                      type="number"
+                    />
+                    <span className={styles.currencyToken}>DEX</span>
+                  </div>
                 </div>
                 <Button
                   sx={{ marginTop: 2, height: 60 }}
@@ -271,7 +303,7 @@ const Auction = ({ address }) => {
                 </Button>
               </div>
             )}
-            {!bidInfo.noAuction && auctionDone && (
+            {status == Status.SOLD && (
               <div className={styles.auctionDone}>
                 <div>
                   <p>YOU WIN THE ACTION</p>
@@ -301,3 +333,40 @@ const Auction = ({ address }) => {
 };
 
 export default Auction;
+
+const startTimer = (e) => {
+  let { total, hours, minutes, seconds } = getTimeRemaining(e);
+  if (total >= 0) {
+    return (
+      (hours > 9 ? hours : "0" + hours) +
+      ":" +
+      (minutes > 9 ? minutes : "0" + minutes) +
+      ":" +
+      (seconds > 9 ? seconds : "0" + seconds)
+    );
+    // // update the timer
+    // // check if less than 10 then we need to
+    // // add '0' at the beginning of the variable
+    // setTimer(
+    //   (hours > 9 ? hours : "0" + hours) +
+    //     ":" +
+    //     (minutes > 9 ? minutes : "0" + minutes) +
+    //     ":" +
+    //     (seconds > 9 ? seconds : "0" + seconds)
+    // );
+  }
+  return "Over";
+};
+
+const getTimeRemaining = (e) => {
+  const total = Date.parse(e) - Date.parse(new Date());
+  const seconds = Math.floor((total / 1000) % 60);
+  const minutes = Math.floor((total / 1000 / 60) % 60);
+  const hours = Math.floor((total / 1000 / 60 / 60) % 24);
+  return {
+    total,
+    hours,
+    minutes,
+    seconds,
+  };
+};

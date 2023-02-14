@@ -14,7 +14,7 @@
   color: #ffffff99;
   font-weight: 600;
   font-size: 16px;
-  margin-top: 0px;
+  margin-bottom: 0px;
 }
 .compress {
   margin-bottom: 0px;
@@ -34,4 +34,28 @@
 .auctionDone {
   margin-left: 75px;
   text-align: center;
+}
+.timer,
+.currencyToken {
+  font-size: 24px;
+  font-weight: 600;
+  color: #00ffc2;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+.mappingToken {
+  font-size: 24px;
+  font-weight: 600;
+  color: #fff500;
+  margin-left: 8px;
+  margin-right: 8px;
+}
+
+.space {
+  margin-right: 10px;
+}
+
+.nextBidBox {
+  display: flex;
+  align-items: center;
 }

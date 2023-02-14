@@ -6,8 +6,6 @@ import { useRouter } from "next/router";
 import { fetchNFTTokenIdsFromPoolAddress } from "../../../contract/poolContract";
 const Collection = ({ pool, type }) => {
   const [nfts, setNfts] = useState([]);
-  const router = useRouter();
-  const [cards, setCards] = useState();
   useEffect(() => {
     async function fetch() {
       const tokenIds = await fetchNFTTokenIdsFromPoolAddress(pool.address);
