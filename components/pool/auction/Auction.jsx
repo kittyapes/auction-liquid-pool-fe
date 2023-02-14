@@ -16,7 +16,7 @@ import {
   getIsLinear,
 } from "../contract/poolContract";
 import { fetchPoolInfo } from "../contract/poolContract";
-import { Status, getDeadTime, startTimer } from "./utils";
+import { Status, TxStatus, getDeadTime, startTimer } from "./utils";
 import { ethers } from "ethers";
 import { useWalletContext } from "../../../context/wallet";
 const ApexCharts = dynamic(() => import("react-apexcharts"), { ssr: false });
@@ -42,6 +42,8 @@ const CssTextField = withStyles({
   },
 })(TextField);
 
+// TODO(peter): This chart is just a placehoder, it should indicate the price change of
+// each bid. Need to connect the subgraph and then get the data.
 const chart = {
   series: [
     {
@@ -93,17 +95,18 @@ const Auction = ({ address }) => {
   const [status, setStatus] = useState(null);
   const [auctionInfo, setAuctionInfo] = useState({});
   const [timer, setTimer] = useState("00:00:00");
-  const { account } = useWalletContext();
+  const { account, pendingTxs } = useWalletContext();
+  const [tx, setTx] = useState(null);
   const Ref = useRef(null);
   const router = useRouter();
   const item = router.query;
   const tokenId = item.id;
 
+  const [txStatus, setTxStatus] = useState(TxStatus.NONE);
+
   useEffect(() => {
     async function fetchNftInfo() {
-      console.log(router.query.id);
-      if (!tokenId) return;
-      console.log(`ididi:${tokenId}`);
+      if (!tokenId || txStatus == TxStatus.PENDING) return;
       const auctionInfo = await fetchNFTAuctionInfoFromTokenId(
         address,
         Number(tokenId)
@@ -114,14 +117,10 @@ const Auction = ({ address }) => {
       let nextBid;
       if (isLinear) {
         nextBid = bidAmount + Number(poolInfo.delta);
-        console.log(poolInfo.delta);
-        console.log(bidAmount);
-        console.log(nextBid);
       } else {
         nextBid = bidAmount * (Number(poolInfo.ratio) + 1);
       }
       auctionInfo.nextBidAmount = nextBid;
-      console.log(auctionInfo.nextBidAmount);
       setAuctionInfo(auctionInfo);
       if (auctionInfo.winner != "0x0000000000000000000000000000000000000000") {
         setStatus(Status.SOLD);
@@ -137,20 +136,21 @@ const Auction = ({ address }) => {
       }
     }
     fetchNftInfo();
-  }, []);
+  }, [txStatus]);
 
-  const placeAuction = () => {
-    placeBid(0.05, item.id, account)
-      .on("transactionHash", () => {
-        console.log("e");
-      })
-      .on("receipt", () => {
-        setAuctionDone(true);
-      })
-      .on("error", () => {
-        setAuctionDone(true);
-      });
+  // TODO(peter): make sure this function work properly.
+  const placeAuction = async () => {
+    const transaction = await placeBid(0.05, item.id, account);
+    setTx(transaction.hash);
+    setTxStatus(TxStatus.PENDING);
+    setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
   };
+
+  useEffect(() => {
+    if (tx != null && !pendingTxs.has(tx)) {
+      setTxStatus(TxStatus.DONE);
+    }
+  }, [pendingTxs]);
 
   const clearTimer = (e) => {
     // If you adjust it you should also need to

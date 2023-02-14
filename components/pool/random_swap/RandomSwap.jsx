@@ -19,13 +19,17 @@ const RandomSwap = ({ address, tokenId }) => {
     name: "Azuki",
   };
   const item = router.query;
+
+  // TODO(peter): make sure this function work properly.
   const placeSwap = async () => {
     randomSwap(item.id, account);
     // setSwapDone(true);
   };
+
   const checkUserNFTs = () => {
     // todo
   };
+
   return (
     <Grid container className={styles.container}>
       <div>

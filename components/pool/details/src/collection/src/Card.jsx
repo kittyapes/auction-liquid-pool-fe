@@ -11,7 +11,7 @@ const Card = ({ nft, type, pool }) => {
   const Ref = useRef(null);
   const [auctionInfo, setAuctionInfo] = useState({});
   const [status, setStatus] = useState(Status.NOT_ACTIVATED);
-  const [buttonLabel, setButtonLabel] = useState("Auction");
+  const [buttonLabel, setButtonLabel] = useState(null);
   const auction = () => {
     router.push(`/${type.toLowerCase()}/${pool.address}?id=${nft.tokenId}`);
   };
@@ -71,6 +71,7 @@ const Card = ({ nft, type, pool }) => {
       <Button
         sx={{ marginTop: 2, height: 60 }}
         size="large"
+        variant="contained"
         disabled={status == Status.SOLD}
         className={`${styles.button} ${styles.purple}`}
         onClick={auction}

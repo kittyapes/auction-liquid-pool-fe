@@ -38,3 +38,9 @@ export const Status = {
   ACTIVATED: "ACTIVIATED",
   SOLD: "SOLD",
 };
+
+export const TxStatus = {
+  DONE: "DONE",
+  PENDING: "PENDING",
+  NONE: "NONE",
+};

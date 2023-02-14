@@ -66,4 +66,5 @@
 }
 .redeemBox {
   margin: auto;
+  justify-content: space-between;
 }
