@@ -7,10 +7,20 @@ const getContract = (address) => {
   return new web3.eth.Contract(tokenAbi, address);
 };
 
-export const getAllowance = (account, nftPoolAddress, mappingTokenAddress) => {
-  return getContract(mappingTokenAddress)
+export const getAllowance = async (
+  account,
+  nftPoolAddress,
+  mappingTokenAddress
+) => {
+  await getContract(mappingTokenAddress)
     .methods.allowance(account, nftPoolAddress)
     .call();
+};
+
+export const mappingTokenInfo = async (address) => {
+  const contract = getContract(address);
+  const mappingTokenAddress = await contract.methods.mappingToken().call();
+  return mappingTokenAddress;
 };
 
 export const increaseAllowance = (
@@ -18,7 +28,7 @@ export const increaseAllowance = (
   nftPoolAddress,
   mappingTokenAddress
 ) => {
-  return getContract(mappingTokenAddress)
+  await getContract(mappingTokenAddress)
     .methods.increaseAllowance(account, nftPoolAddress)
     .send({
       from: account,

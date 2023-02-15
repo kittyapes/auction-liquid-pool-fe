@@ -11,6 +11,7 @@ import IUniswapV2Router01 from "@uniswap/v2-periphery/build/IUniswapV2Router01.j
 import {
   getProvider,
   getContract,
+  getTransactionStatus,
   getWebSocket,
   V2_SWAP_ROUTER_ADDRESS,
 } from "../../../../pool/contract/poolContract";
@@ -186,7 +187,14 @@ export default function TradeToken({
       );
       // Append current tx into pending tx list.
       setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
-      getTransactionStatus(webSocket, transaction.hash);
+      getTransactionStatus(transaction.hash, async () => {
+        await new Promise((r) => setTimeout(r, 5000));
+        await fetchTargetTokenPrice();
+        await fetchUserWalletTargetTokenBalance();
+        await fetchUserWalletCurrencyTokenBalance();
+        pendingTxs.delete(transaction.hash);
+        setPendingTxs(new Set([...pendingTxs]));
+      });
     } catch (e) {
       console.log(e);
       setErrorMsg(e.message);
@@ -239,7 +247,14 @@ export default function TradeToken({
       );
       // Append current tx into pending tx list.
       setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
-      getTransactionStatus(webSocket, transaction.hash);
+      getTransactionStatus(transaction.hash, async () => {
+        await new Promise((r) => setTimeout(r, 5000));
+        await fetchTargetTokenPrice();
+        await fetchUserWalletTargetTokenBalance();
+        await fetchUserWalletCurrencyTokenBalance();
+        pendingTxs.delete(transaction.hash);
+        setPendingTxs(new Set([...pendingTxs]));
+      });
     } catch (e) {
       console.log(e);
       setErrorMsg(e.message);
@@ -291,7 +306,14 @@ export default function TradeToken({
       );
       // Append current tx into pending tx list.
       setPendingTxs(new Set([transactionHash.hash, ...pendingTxs]));
-      getTransactionStatus(webSocket, transactionHash.hash);
+      getTransactionStatus(transactionHash.hash, async () => {
+        await new Promise((r) => setTimeout(r, 5000));
+        await fetchTargetTokenPrice();
+        await fetchUserWalletTargetTokenBalance();
+        await fetchUserWalletCurrencyTokenBalance();
+        pendingTxs.delete(transactionHash.hash);
+        setPendingTxs(new Set([...pendingTxs]));
+      });
     } catch (e) {
       console.log(e);
       setErrorMsg(e.message);
@@ -300,23 +322,23 @@ export default function TradeToken({
 
   // Keep calling getTransactionReceipt for current tx.
   // Update all token/currency inforamtion after the tx is finished.
-  async function getTransactionStatus(provider, transactionHash) {
-    var isDone = false;
-    while (!isDone) {
-      await new Promise((r) => setTimeout(r, 2000));
-      let pendingTx = await provider.getTransactionReceipt(transactionHash);
-      if (pendingTx) {
-        isDone = true;
-        // Wait for data getting update on Chain.
-        await new Promise((r) => setTimeout(r, 5000));
-        await fetchTargetTokenPrice();
-        await fetchUserWalletTargetTokenBalance();
-        await fetchUserWalletCurrencyTokenBalance();
-        pendingTxs.delete(transactionHash.hash);
-        setPendingTxs(new Set([...pendingTxs]));
-      }
-    }
-  }
+  // async function getTransactionStatus(provider, transactionHash) {
+  //   var isDone = false;
+  //   while (!isDone) {
+  //     await new Promise((r) => setTimeout(r, 2000));
+  //     let pendingTx = await provider.getTransactionReceipt(transactionHash);
+  //     if (pendingTx) {
+  //       isDone = true;
+  //       // Wait for data getting update on Chain.
+  //       await new Promise((r) => setTimeout(r, 5000));
+  //       await fetchTargetTokenPrice();
+  //       await fetchUserWalletTargetTokenBalance();
+  //       await fetchUserWalletCurrencyTokenBalance();
+  //       pendingTxs.delete(transactionHash.hash);
+  //       setPendingTxs(new Set([...pendingTxs]));
+  //     }
+  //   }
+  // }
 
   useEffect(() => {
     fetchUserWalletTargetTokenBalance();

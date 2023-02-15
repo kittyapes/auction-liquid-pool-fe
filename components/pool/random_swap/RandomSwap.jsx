@@ -3,27 +3,32 @@ import styles from "../random_swap/style/RandomSwap.module.css";
 import src from "../../../static/images/src.jpeg";
 import Grid from "@mui/material/Grid";
 import { useRouter } from "next/router";
+import { getTransactionStatus } from "../contract/poolContract";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import { Button } from "@mui/material";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
-import dynamic from "next/dynamic";
 import { randomSwap } from "../contract/poolContract";
 import { useWalletContext } from "../../../context/wallet";
 const RandomSwap = ({ nftPoolAddress }) => {
-  const { account } = useWalletContext();
+  const { account, pendingTxs, setPendingTxs } = useWalletContext();
   const [swapDone, setSwapDone] = useState(false);
   const router = useRouter();
-  let pool = {
-    src: src.src,
-    address: nftPoolAddress,
-    name: "Azuki",
-  };
   const item = router.query;
-  const tokenId = item.id;
 
   // TODO(peter): make sure this function work properly.
   const placeSwap = async () => {
-    randomSwap(item.id, account, nftPoolAddress);
+    if (item.id == null) {
+      console.log("id does not exist!!");
+      return;
+    }
+    const transaction = await randomSwap(item.id, account, nftPoolAddress);
+    // Append current tx into pending tx list.
+    setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
+    getTransactionStatus(transaction.hash, async () => {
+      pendingTxs.delete(transaction.hash);
+      setPendingTxs(new Set([...pendingTxs]));
+      // TODO(Peter): How to get the new NFT that user get from swap.
+    });
   };
 
   const checkUserNFTs = () => {
@@ -44,7 +49,7 @@ const RandomSwap = ({ nftPoolAddress }) => {
           <Grid container className={styles.swapBox}>
             <div className={styles.swapPartLeft}>
               <img
-                src={pool.src}
+                src={src.src}
                 alt="pool-logo"
                 style={{ width: 300, height: 350, borderRadius: 10 }}
               />
@@ -54,7 +59,7 @@ const RandomSwap = ({ nftPoolAddress }) => {
             <div className={styles.swapPartRight}>
               {swapDone ? (
                 <img
-                  src={pool.src}
+                  src={src.src}
                   alt="pool-logo"
                   style={{ width: 300, height: 350, borderRadius: 10 }}
                 />

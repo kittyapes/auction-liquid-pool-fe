@@ -10,7 +10,7 @@ import TextField from "@mui/material/TextField";
 import {
   placeBid,
   fetchNFTAuctionInfoFromTokenId,
-  getDuration,
+  getTransactionStatus,
   getBids,
   getDelta,
   getIsLinear,
@@ -96,7 +96,6 @@ const Auction = ({ address }) => {
   const [auctionInfo, setAuctionInfo] = useState({});
   const [timer, setTimer] = useState("00:00:00");
   const { account, pendingTxs } = useWalletContext();
-  const [tx, setTx] = useState(null);
   const Ref = useRef(null);
   const router = useRouter();
   const item = router.query;
@@ -146,13 +145,12 @@ const Auction = ({ address }) => {
     setTx(transaction.hash);
     setTxStatus(TxStatus.PENDING);
     setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
-  };
-
-  useEffect(() => {
-    if (tx != null && !pendingTxs.has(tx)) {
+    getTransactionStatus(transaction.hash, async () => {
+      pendingTxs.delete(transaction.hash);
+      setPendingTxs(new Set([...pendingTxs]));
       setTxStatus(TxStatus.DONE);
-    }
-  }, [pendingTxs]);
+    });
+  };
 
   const clearTimer = (e) => {
     // If you adjust it you should also need to

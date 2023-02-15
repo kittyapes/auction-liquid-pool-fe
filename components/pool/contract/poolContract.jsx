@@ -41,7 +41,7 @@ export const getTokenIds = () => {
   return getTokenContract().methods.getTokenIds().call();
 };
 
-export const redeemNFT = (account, amount) => {
+export const redeemNFT = async (account, amount) => {
   return getTokenContract().methods.redeem(amount).send({
     from: account,
     to: baseAddress,
@@ -51,7 +51,7 @@ export const redeemNFT = (account, amount) => {
   });
 };
 
-export const placeBid = (bidAmount, tokenId, account) => {
+export const placeBid = async (bidAmount, tokenId, account) => {
   return getTokenContract()
     .methods.bid(tokenId)
     .send({
@@ -63,7 +63,7 @@ export const placeBid = (bidAmount, tokenId, account) => {
     });
 };
 
-export const randomSwap = (tokenId, account, nftPoolAddress) => {
+export const randomSwap = async (tokenId, account, nftPoolAddress) => {
   return getNftPoolContract(nftPoolAddress).methods.swap(tokenId).send({
     from: account,
     type: "0x2",
@@ -291,4 +291,17 @@ export const getIsLinear = () => {
 
 export const getDelta = () => {
   return getTokenContract().methods.delta().call();
+};
+
+export const getTransactionStatus = async (transactionHash, callback) => {
+  const provider = getWebSocket();
+  var isDone = false;
+  while (!isDone) {
+    await new Promise((r) => setTimeout(r, 2000));
+    let pendingTx = await provider.getTransactionReceipt(transactionHash);
+    if (pendingTx) {
+      isDone = true;
+      await callback();
+    }
+  }
 };

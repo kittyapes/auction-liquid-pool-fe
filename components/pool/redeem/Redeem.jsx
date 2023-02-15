@@ -6,26 +6,36 @@ import { useRouter } from "next/router";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import { Button } from "@mui/material";
 import dynamic from "next/dynamic";
-import { redeemNFT } from "../contract/poolContract";
+import { redeemNFT, getTransactionStatus } from "../contract/poolContract";
 import { useWalletContext } from "../../../context/wallet";
 import {
   getAllowance,
   increaseAllowance,
+  mappingTokenInfo,
 } from "../contract/mappingTokenContract";
 const Redeem = ({ address }) => {
   const { account } = useWalletContext();
   const [redeemNumber, setRedeemNumber] = useState(0);
-
-  // TODO(peter): we need to use uniswap pair address to get
-  // nft pool address and mapping token address.
-  const nftPoolAddress = "0x69a8fB7aB0672693C70a4a4DC31f51fCb22258Fb";
-  const mappingTokenAddress = "0x236F15243BF5750e491a1B41649251268e240DcC";
+  const [mappingTokenAddress, setMappingTokenAddress] = useState(null);
+  useEffect(() => {
+    async function fetchMappingTokenAddress() {
+      const mappingTokenAddress = await mappingTokenInfo();
+      setMappingTokenAddress(mappingTokenAddress);
+    }
+  });
 
   // TODO(peter): make sure this function work properly.
   const placeRedemption = async () => {
-    if (redeemNumber == 0) return;
-    await getAllowance(account, nftPoolAddress, mappingTokenAddress);
-    redeemNFT(account, redeemNumber);
+    if (redeemNumber == 0 || mappingTokenAddress == null) return;
+    await getAllowance(account, address, mappingTokenAddress);
+    const c = await redeemNFT(account, redeemNumber);
+    // Append current tx into pending tx list.
+    setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
+    getTransactionStatus(transaction.hash, async () => {
+      pendingTxs.delete(transaction.hash);
+      setPendingTxs(new Set([...pendingTxs]));
+      // TODO(Peter): How to get the new NFT that user get from redeem.
+    });
   };
 
   const checkUserNFTs = () => {
