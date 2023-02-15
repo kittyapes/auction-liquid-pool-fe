@@ -6,8 +6,9 @@ import { useRouter } from "next/router";
 import { fetchNFTTokenIdsFromPoolAddress } from "../../../contract/poolContract";
 const Collection = ({ pool, type }) => {
   const [nfts, setNfts] = useState([]);
+
   useEffect(() => {
-    async function fetch() {
+    async function fetchNFTInfos() {
       const tokenIds = await fetchNFTTokenIdsFromPoolAddress(pool.address);
       let tempList = [];
       tokenIds.forEach((id) => {
@@ -18,7 +19,16 @@ const Collection = ({ pool, type }) => {
       setNfts(tempList);
       console.log(tempList);
     }
-    fetch();
+
+    async function fetchMyNfts() {
+      // TODO(Peter): fetch all nfts that under my wallet in this nft pool. I didn't
+      // see function like tokensOfOwner.
+    }
+    if (type == "Auction") {
+      fetchNFTInfos();
+    } else if (type == "Swap") {
+      fetchMyNfts();
+    }
   }, []);
   return (
     <Grid container className={styles.collection}>

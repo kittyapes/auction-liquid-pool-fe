@@ -21,6 +21,11 @@ const getTokenContract = () => {
   return new web3.eth.Contract(tokenAbi, baseAddress);
 };
 
+const getNftPoolContract = (address) => {
+  const web3 = new Web3(window.ethereum);
+  return new web3.eth.Contract(tokenAbi, address);
+};
+
 export const getContract = (tokenAddress) => {
   return new ethers.Contract(tokenAddress, ERC20_ABI, browserExtensionProvider);
 };
@@ -58,8 +63,8 @@ export const placeBid = (bidAmount, tokenId, account) => {
     });
 };
 
-export const randomSwap = (tokenId, account) => {
-  return getTokenContract().methods.swap(tokenId).send({
+export const randomSwap = (tokenId, account, nftPoolAddress) => {
+  return getNftPoolContract(nftPoolAddress).methods.swap(tokenId).send({
     from: account,
     type: "0x2",
     maxFeePerGas: MAX_FEE_PER_GAS,

@@ -29,11 +29,6 @@
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/details/[address].js"
-    ],
-    "/swap/[address]": [
-      "static/chunks/webpack.js",
-      "static/chunks/main.js",
-      "static/chunks/pages/swap/[address].js"
     ]
   },
   "ampFirstPages": []
