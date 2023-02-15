@@ -50,7 +50,7 @@ function a11yProps(index) {
 }
 
 export default function UserActions({
-  pool,
+  nftPoolInfo,
   targetToken,
   currencyToken,
   setErrorMsg,
@@ -63,7 +63,7 @@ export default function UserActions({
   };
 
   const randomRedeem = () => {
-    router.push(`/redeem/${pool.address}`);
+    router.push(`/redeem/${nftPoolInfo.address}`);
   };
 
   return (
@@ -75,9 +75,9 @@ export default function UserActions({
           onChange={handleChange}
           aria-label="basic tabs example"
         >
-          <Tab label={`Trade $${pool.name}`} {...a11yProps(0)} />
+          <Tab label={`Trade $${nftPoolInfo.name}`} {...a11yProps(0)} />
           <Tab label="Buy NFTs" {...a11yProps(1)} />
-          <Tab label={`Your ${pool.name}`} {...a11yProps(2)} />
+          <Tab label={`Your ${nftPoolInfo.name}`} {...a11yProps(2)} />
         </Tabs>
       </Box>
       <TabPanel value={value} index={0}>
@@ -88,7 +88,7 @@ export default function UserActions({
         />
       </TabPanel>
       <TabPanel value={value} index={1}>
-        <Collection pool={pool} type={"Auction"} />
+        <Collection nftPoolInfo={nftPoolInfo} type={"Auction"} />
         <Divider className={styles.divider} variant="middle" />
         <div className={styles.redeem}>
           <Button
@@ -104,7 +104,7 @@ export default function UserActions({
         </div>
       </TabPanel>
       <TabPanel value={value} index={2}>
-        <Collection pool={pool} type={"Swap"} />
+        <Collection nftPoolInfo={nftPoolInfo} type={"Swap"} />
       </TabPanel>
     </Box>
   );

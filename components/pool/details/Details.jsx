@@ -24,15 +24,12 @@ import AlertTitle from "@mui/material/AlertTitle";
 import "reactjs-popup/dist/index.css";
 import Popup from "reactjs-popup";
 import UserBanalce from "./UserBalance";
-let pool = {
-  src: Azuki.src,
-  address: "0x69a8fB7aB0672693C70a4a4DC31f51fCb22258Fb",
-  name: "Azuki",
-};
 
-const nftPoolAddress = "0x22D5dc826145166f7cbDfBf14CFE9a43dA02Ea25";
-const Details = ({ pairAddress }) => {
-  pairAddress = "0x0aE03567Bc0C8cFD3e3A174B21e3678d06Cb9A88";
+const Details = ({ nftPoolAddress }) => {
+  nftPoolAddress = "0x22D5dc826145166f7cbDfBf14CFE9a43dA02Ea25";
+
+  // TODO(Peter): Add uniswap pair address into NFT Pool contract.
+  const pairAddress = "0x0aE03567Bc0C8cFD3e3A174B21e3678d06Cb9A88";
   const provider = getProvider();
   const router = useRouter();
   const { account, chainId } = useWalletContext();
@@ -42,7 +39,7 @@ const Details = ({ pairAddress }) => {
   const [errorMsg, setErrorMsg] = useState(null);
   const [targetToken, setTargetToken] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
-  const [poolInfo, setPoolInfo] = useState({});
+  const [nftPoolInfo, setNFTPoolInfo] = useState({});
   const useToHome = () => {
     router.push("/");
   };
@@ -86,10 +83,10 @@ const Details = ({ pairAddress }) => {
       setCollection(data.collection);
     };
 
-    const fetchNFTPoolInfo = async (poolAddress) => {
-      let poolInfo = await fetchPoolInfo(poolAddress);
-      poolInfo["name"] = "Test pool";
-      setPoolInfo(poolInfo);
+    const fetchNFTPoolInfo = async (nftPoolAddress) => {
+      let nftPoolInfo = await fetchPoolInfo(nftPoolAddress);
+      nftPoolInfo["name"] = "Test pool";
+      setNFTPoolInfo(nftPoolInfo);
     };
     fetchNFTPoolStats();
     fetchNFTPoolInfo(nftPoolAddress);
@@ -209,7 +206,7 @@ const Details = ({ pairAddress }) => {
       <UserBanalce targetToken={targetToken} currencyToken={currencyToken} />
       <Grid xs={12} className={styles.user_actions}>
         <UserActions
-          pool={poolInfo}
+          nftPoolInfo={nftPoolInfo}
           targetToken={targetToken}
           currencyToken={currencyToken}
           setErrorMsg={setErrorMsg}

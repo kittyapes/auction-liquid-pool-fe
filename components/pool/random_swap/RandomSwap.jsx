@@ -9,21 +9,17 @@ import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import dynamic from "next/dynamic";
 import { randomSwap } from "../contract/poolContract";
 import { useWalletContext } from "../../../context/wallet";
-const RandomSwap = ({ address }) => {
+const RandomSwap = ({ nftPoolAddress }) => {
   const { account } = useWalletContext();
   const [swapDone, setSwapDone] = useState(false);
   const router = useRouter();
   let pool = {
     src: src.src,
-    address: address,
+    address: nftPoolAddress,
     name: "Azuki",
   };
   const item = router.query;
   const tokenId = item.id;
-
-  // TODO(peter): we need to use uniswap pair address [address] to get
-  // nft pool address.
-  const nftPoolAddress = "0x69a8fB7aB0672693C70a4a4DC31f51fCb22258Fb";
 
   // TODO(peter): make sure this function work properly.
   const placeSwap = async () => {

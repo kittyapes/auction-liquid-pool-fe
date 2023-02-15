@@ -121,19 +121,21 @@ const Auction = ({ address }) => {
         nextBid = bidAmount * (Number(poolInfo.ratio) + 1);
       }
       auctionInfo.nextBidAmount = nextBid;
+
       setAuctionInfo(auctionInfo);
-      if (auctionInfo.winner != "0x0000000000000000000000000000000000000000") {
-        setStatus(Status.SOLD);
-      } else if (auctionInfo.startedAt != 0) {
-        setStatus(Status.ACTIVATED);
-      } else {
+      if (Number(auctionInfo.startedAt) == 0) {
         setStatus(Status.NOT_ACTIVATED);
-      }
-      if (status == Status.ACTIVATED) {
+      } else {
         let timestamp =
           Number(auctionInfo.startedAt) + Number(poolInfo.duration);
-        clearTimer(getDeadTime(timestamp));
-      }
+        let deadTime = getDeadTime(timestamp);
+        if (deadTime < Date.now()) {
+          setStatus(Status.SOLD);
+        } else {
+          setStatus(Status.ACTIVATED);
+          clearTimer(deadTime);
+        }
+      } //auctionInfo.winner != "0x0000000000000000000000000000000000000000"
     }
     fetchNftInfo();
   }, [txStatus]);
@@ -242,6 +244,9 @@ const Auction = ({ address }) => {
                   </div>
                   <div>
                     <p className={styles.subtitle}>Current Highest Bid:</p>
+                    {account == auctionInfo.winner && (
+                      <p> Your are the highest bid!</p>
+                    )}
                   </div>
                   <div>
                     <span
@@ -305,24 +310,35 @@ const Auction = ({ address }) => {
             )}
             {status == Status.SOLD && (
               <div className={styles.auctionDone}>
-                <div>
-                  <p>YOU WIN THE ACTION</p>
-                  <p>NFT ACB 2123 is yours！</p>
-                </div>
-                <div>
-                  <p>cost</p>
-                  <p>0.9 wnABC</p>
-                  <p>0.05 ETH</p>
-                  <Button
-                    sx={{ marginTop: 2, height: 60 }}
-                    variant="contained"
-                    size="large"
-                    fullWidth
-                    onClick={placeAuction}
-                  >
-                    Check Your NFTs
-                  </Button>
-                </div>
+                {account == auctionInfo.winner ? (
+                  <div>
+                    <div>
+                      <p>YOU WIN THE ACTION</p>
+                      <p>NFT ACB 2123 is yours！</p>
+                    </div>
+                    <div>
+                      <p>cost</p>
+                      <p>0.9 wnABC</p>
+                      <p>0.05 ETH</p>
+                      <Button
+                        sx={{ marginTop: 2, height: 60 }}
+                        variant="contained"
+                        size="large"
+                        fullWidth
+                        onClick={placeAuction}
+                      >
+                        Check Your NFTs
+                      </Button>
+                    </div>
+                  </div>
+                ) : (
+                  <div>
+                    <p className={styles.subtitle} style={{ marginTop: "0" }}>
+                      NFT was sold to:
+                    </p>
+                    <p style={{ margin: "0" }}>{auctionInfo.winner}</p>
+                  </div>
+                )}
               </div>
             )}
           </Grid>

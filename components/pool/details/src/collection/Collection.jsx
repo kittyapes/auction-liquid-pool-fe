@@ -4,12 +4,16 @@ import Grid from "@mui/material/Grid";
 import Card from "./src/Card";
 import { useRouter } from "next/router";
 import { fetchNFTTokenIdsFromPoolAddress } from "../../../contract/poolContract";
-const Collection = ({ pool, type }) => {
+
+const Collection = ({ nftPoolInfo, type }) => {
   const [nfts, setNfts] = useState([]);
+  const [ownedNfts, setOwnedNfts] = useState([]);
 
   useEffect(() => {
     async function fetchNFTInfos() {
-      const tokenIds = await fetchNFTTokenIdsFromPoolAddress(pool.address);
+      const tokenIds = await fetchNFTTokenIdsFromPoolAddress(
+        nftPoolInfo.address
+      );
       let tempList = [];
       tokenIds.forEach((id) => {
         tempList.push({
@@ -37,10 +41,10 @@ const Collection = ({ pool, type }) => {
       ) : (
         <div></div>
       )}
-      {nfts.map((nft) => {
+      {(type == "Auction" ? nfts : ownedNfts).map((nft) => {
         return (
           <Card
-            pool={pool}
+            pool={nftPoolInfo}
             nft={nft}
             key={nft.address}
             type={type}

@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 
 export default function Home() {
   const router = useRouter();
+  // NFT Pool address
   const { address } = router.query;
   return (
     <div className={styles.container}>
