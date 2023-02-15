@@ -43,6 +43,7 @@ const Card = ({ nft, type, pool }) => {
       }
       auctionInfo["nextBidAmount"] = nextBid;
       setAuctionInfo(auctionInfo);
+      // TODO(Neil): If the NFT is sold, then the token will not show up in pool.
       if (auctionInfo.winner != "0x0000000000000000000000000000000000000000") {
         setStatus(Status.SOLD);
         setButtonLabel("Sold");

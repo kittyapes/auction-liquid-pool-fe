@@ -28,7 +28,7 @@ export const increaseAllowance = (
   nftPoolAddress,
   mappingTokenAddress
 ) => {
-  await getContract(mappingTokenAddress)
+  getContract(mappingTokenAddress)
     .methods.increaseAllowance(account, nftPoolAddress)
     .send({
       from: account,

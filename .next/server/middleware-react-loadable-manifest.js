@@ -1,1 +1,1 @@
-self.__REACT_LOADABLE_MANIFEST={"../components/pool/auction/Auction.jsx -> react-apexcharts":{"id":"../components/pool/auction/Auction.jsx -> react-apexcharts","files":["static/chunks/node_modules_react-apexcharts_dist_react-apexcharts_min_js.js"]},"../components/pool/details/src/user_actions/UserActions.jsx -> ../trade/TradeToken":{"id":"../components/pool/details/src/user_actions/UserActions.jsx -> ../trade/TradeToken","files":["static/chunks/components_pool_details_src_trade_TradeToken_jsx.js"]}}
+self.__REACT_LOADABLE_MANIFEST={}

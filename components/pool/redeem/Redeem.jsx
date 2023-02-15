@@ -22,6 +22,7 @@ const Redeem = ({ address }) => {
       const mappingTokenAddress = await mappingTokenInfo();
       setMappingTokenAddress(mappingTokenAddress);
     }
+    fetchMappingTokenAddress();
   });
 
   // TODO(peter): make sure this function work properly.

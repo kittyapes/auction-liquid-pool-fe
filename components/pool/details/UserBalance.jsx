@@ -27,7 +27,7 @@ export default function UserBanalce({ targetToken, currencyToken }) {
   useEffect(() => {
     fetchUserWalletTargetTokenBalance();
     fetchUserWalletCurrencyTokenBalance();
-  }, []);
+  }, [pendingTxs]);
 
   return (
     <div className={styles.userBalance}>
