@@ -7,6 +7,11 @@ const getContract = (address) => {
   return new web3.eth.Contract(tokenAbi, address);
 };
 
+export const getUniswapPairAddress = async (mappingTokenAddress) => {
+  const contract = getContract(mappingTokenAddress);
+  return await contract.methods.uniswapPool().call();
+};
+
 export const getAllowance = async (
   account,
   nftPoolAddress,

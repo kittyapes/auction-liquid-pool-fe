@@ -36,7 +36,7 @@ export const getDeadTime = (timestamp) => {
 export const Status = {
   NOT_ACTIVATED: "NOT_ACTIVIATED",
   ACTIVATED: "ACTIVIATED",
-  SOLD: "SOLD",
+  END: "END",
 };
 
 export const TxStatus = {

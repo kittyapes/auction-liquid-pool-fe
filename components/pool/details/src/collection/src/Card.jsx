@@ -43,18 +43,21 @@ const Card = ({ nft, type, pool }) => {
       }
       auctionInfo["nextBidAmount"] = nextBid;
       setAuctionInfo(auctionInfo);
-      // TODO(Neil): If the NFT is sold, then the token will not show up in pool.
-      if (auctionInfo.winner != "0x0000000000000000000000000000000000000000") {
-        setStatus(Status.SOLD);
-        setButtonLabel("Sold");
-      } else if (auctionInfo.startedAt != 0) {
-        setStatus(Status.ACTIVATED);
-        setButtonLabel(`Place Next Bid: ${auctionInfo.nextBidAmount}`);
-        let timestamp = Number(auctionInfo.startedAt) + Number(pool.duration);
-        clearTimer(getDeadTime(timestamp));
-      } else {
+      if (Number(auctionInfo.startedAt) == 0) {
         setStatus(Status.NOT_ACTIVATED);
         setButtonLabel("Start Auction");
+      } else {
+        let timestamp =
+          Number(auctionInfo.startedAt) + Number(poolInfo.duration);
+        let deadTime = getDeadTime(timestamp);
+        if (deadTime < Date.now()) {
+          setStatus(Status.END);
+          setButtonLabel("Auction Ended");
+        } else {
+          setStatus(Status.ACTIVATED);
+          clearTimer(deadTime);
+          setButtonLabel(`Place Next Bid: ${auctionInfo.nextBidAmount}`);
+        }
       }
     }
     console.log(type);
@@ -78,7 +81,7 @@ const Card = ({ nft, type, pool }) => {
         sx={{ marginTop: 2, height: 60 }}
         size="large"
         variant="contained"
-        disabled={status == Status.SOLD}
+        disabled={status == Status.END}
         className={`${styles.button} ${styles.purple}`}
         onClick={auction}
       >

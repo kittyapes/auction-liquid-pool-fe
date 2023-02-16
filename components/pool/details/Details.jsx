@@ -15,7 +15,9 @@ import {
   getProvider,
   getTokenInfo,
   fetchPoolInfo,
+  getMappingTokenAddress,
 } from "../../pool/contract/poolContract";
+import { getUniswapPairAddress } from "../../pool/contract/mappingTokenContract";
 import { useWalletContext } from "../../../context/wallet";
 import { ethers } from "ethers";
 import { ChainId, Token, Fetcher, Route } from "@uniswap/sdk";
@@ -27,9 +29,6 @@ import UserBanalce from "./UserBalance";
 
 const Details = ({ nftPoolAddress }) => {
   nftPoolAddress = "0x22D5dc826145166f7cbDfBf14CFE9a43dA02Ea25";
-
-  // TODO(Peter): Add uniswap pair address into NFT Pool contract.
-  const pairAddress = "0x0aE03567Bc0C8cFD3e3A174B21e3678d06Cb9A88";
   const provider = getProvider();
   const router = useRouter();
   const { account, chainId } = useWalletContext();
@@ -40,6 +39,7 @@ const Details = ({ nftPoolAddress }) => {
   const [targetToken, setTargetToken] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
   const [nftPoolInfo, setNFTPoolInfo] = useState({});
+  const [uniswapPairAddress, setUniswapPairAddress] = useState(null);
   const useToHome = () => {
     router.push("/");
   };
@@ -57,7 +57,7 @@ const Details = ({ nftPoolAddress }) => {
   useEffect(() => {
     async function fetchUniswapLiquidityPoolInfo() {
       const pool = new ethers.Contract(
-        pairAddress,
+        uniswapPairAddress,
         uniswapLiquidityPoolAbi,
         provider.getSigner()
       );
@@ -71,9 +71,9 @@ const Details = ({ nftPoolAddress }) => {
       let currencyTokenBalance = await pool.balanceOf(currencyTokenAddress);
       //TODO: Show balance in the detail page.
     }
-    if (!account || chainId != ChainId.GÖRLI) return;
+    if (!account || chainId != ChainId.GÖRLI || !uniswapPairAddress) return;
     fetchUniswapLiquidityPoolInfo();
-  }, [account, chainId]);
+  }, [account, chainId, uniswapPairAddress]);
 
   useEffect(() => {
     const fetchNFTPoolStats = async () => {
@@ -88,8 +88,15 @@ const Details = ({ nftPoolAddress }) => {
       nftPoolInfo["name"] = "Test pool";
       setNFTPoolInfo(nftPoolInfo);
     };
+
+    async function fetchUniswapPairAddress() {
+      const mappingTokenAddress = await getMappingTokenAddress(nftPoolAddress);
+      const address = await getUniswapPairAddress(mappingTokenAddress);
+      setUniswapPairAddress(address);
+    }
     fetchNFTPoolStats();
     fetchNFTPoolInfo(nftPoolAddress);
+    fetchUniswapPairAddress();
   }, []);
 
   useEffect(() => {
@@ -184,7 +191,7 @@ const Details = ({ nftPoolAddress }) => {
                 <p className={styles.text}>NFT Contract Address:</p>
               </div>
               <div>
-                <p>{pairAddress}</p>
+                <p>{uniswapPairAddress}</p>
               </div>
             </div>
           </Grid>

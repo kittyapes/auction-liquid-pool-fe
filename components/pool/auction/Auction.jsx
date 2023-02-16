@@ -129,7 +129,7 @@ const Auction = ({ address }) => {
           Number(auctionInfo.startedAt) + Number(poolInfo.duration);
         let deadTime = getDeadTime(timestamp);
         if (deadTime < Date.now()) {
-          setStatus(Status.SOLD);
+          setStatus(Status.END);
         } else {
           setStatus(Status.ACTIVATED);
           clearTimer(deadTime);
@@ -306,7 +306,7 @@ const Auction = ({ address }) => {
                 </Button>
               </div>
             )}
-            {status == Status.SOLD && (
+            {status == Status.END && (
               <div className={styles.auctionDone}>
                 {account == auctionInfo.winner ? (
                   <div>
@@ -332,7 +332,7 @@ const Auction = ({ address }) => {
                 ) : (
                   <div>
                     <p className={styles.subtitle} style={{ marginTop: "0" }}>
-                      NFT was sold to:
+                      Auction winner is:
                     </p>
                     <p style={{ margin: "0" }}>{auctionInfo.winner}</p>
                   </div>

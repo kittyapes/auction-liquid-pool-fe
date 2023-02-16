@@ -25,10 +25,10 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/swap": [
+    "/details/[address]": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/swap.js"
+      "static/chunks/pages/details/[address].js"
     ]
   },
   "ampFirstPages": []

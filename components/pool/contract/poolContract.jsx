@@ -26,6 +26,11 @@ const getNftPoolContract = (address) => {
   return new web3.eth.Contract(tokenAbi, address);
 };
 
+export const getMappingTokenAddress = async (nftPoolAddress) => {
+  const contract = getNftPoolContract(nftPoolAddress);
+  return await contract.methods.mappingToken().call();
+};
+
 export const getContract = (tokenAddress) => {
   return new ethers.Contract(tokenAddress, ERC20_ABI, browserExtensionProvider);
 };
