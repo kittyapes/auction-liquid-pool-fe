@@ -189,7 +189,7 @@ export default function SwapList() {
           </TableBody>
         </Table>
       </Paper>
-      <Stack spacing={2}>
+      {/* <Stack spacing={2}>
         <Pagination
           className={styles.pagination}
           count={5}
@@ -204,7 +204,7 @@ export default function SwapList() {
           shape="rounded"
           color="primary"
         />
-      </Stack>
+      </Stack> */}
     </div>
   );
 }

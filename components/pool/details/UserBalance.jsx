@@ -4,7 +4,7 @@ import { useWalletContext } from "../../../context/wallet";
 import { ethers } from "ethers";
 import styles from "./style/Details.module.css";
 
-export default function UserBanalce({ targetToken, currencyToken }) {
+export default function UserBanalce({ targetToken, currencyToken, refresh }) {
   if (!targetToken || !currencyToken) return;
   const provider = getProvider();
   const { account, pendingTxs, setPendingTxs } = useWalletContext();
@@ -27,7 +27,7 @@ export default function UserBanalce({ targetToken, currencyToken }) {
   useEffect(() => {
     fetchUserWalletTargetTokenBalance();
     fetchUserWalletCurrencyTokenBalance();
-  }, [pendingTxs]);
+  }, [pendingTxs, refresh]);
 
   return (
     <div className={styles.userBalance}>

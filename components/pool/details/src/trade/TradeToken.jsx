@@ -59,6 +59,8 @@ export default function TradeToken({
   targetToken,
   currencyToken,
   setErrorMsg,
+  setSuccessMsg,
+  refresh,
 }) {
   if (!targetToken || !currencyToken) return;
   const provider = getProvider();
@@ -101,7 +103,8 @@ export default function TradeToken({
       setTargetToCurrencyRatio(route.midPrice.invert().toSignificant(6));
       console.log(`Get new ratio: ${route.midPrice.invert().toSignificant(6)}`);
     } catch (e) {
-      setErrorMsg(e.message);
+      console.log(e);
+      // setErrorMsg(e.message);
     }
   };
 
@@ -188,6 +191,7 @@ export default function TradeToken({
       // Append current tx into pending tx list.
       setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
       getTransactionStatus(transaction.hash, async () => {
+        setSuccessMsg(`Transction successded! hash:${transaction.hash}`);
         pendingTxs.delete(transaction.hash);
         setPendingTxs(new Set([...pendingTxs]));
       });
@@ -244,6 +248,7 @@ export default function TradeToken({
       // Append current tx into pending tx list.
       setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
       getTransactionStatus(transaction.hash, async () => {
+        setSuccessMsg(`Transction successded! hash:${transaction.hash}`);
         pendingTxs.delete(transaction.hash);
         setPendingTxs(new Set([...pendingTxs]));
       });
@@ -299,6 +304,7 @@ export default function TradeToken({
       // Append current tx into pending tx list.
       setPendingTxs(new Set([transactionHash.hash, ...pendingTxs]));
       getTransactionStatus(transactionHash.hash, async () => {
+        setSuccessMsg(`Transction successded! hash:${transactionHash.hash}`);
         pendingTxs.delete(transactionHash.hash);
         setPendingTxs(new Set([...pendingTxs]));
       });
@@ -312,7 +318,7 @@ export default function TradeToken({
     fetchUserWalletTargetTokenBalance();
     fetchUserWalletCurrencyTokenBalance();
     fetchTargetTokenPrice();
-  }, [pendingTxs]);
+  }, [pendingTxs, refresh]);
   const formatFloatNumber = (x) => Number.parseFloat(x).toFixed(0);
   return (
     <Box sx={{ flexGrow: 1 }} className={styles.container}>

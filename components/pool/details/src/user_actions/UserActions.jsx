@@ -54,6 +54,8 @@ export default function UserActions({
   targetToken,
   currencyToken,
   setErrorMsg,
+  setSuccessMsg,
+  refresh,
 }) {
   const [value, setValue] = React.useState(0);
   const router = useRouter();
@@ -85,6 +87,8 @@ export default function UserActions({
           targetToken={targetToken}
           currencyToken={currencyToken}
           setErrorMsg={setErrorMsg}
+          setSuccessMsg={setSuccessMsg}
+          refresh={refresh}
         />
       </TabPanel>
       <TabPanel value={value} index={1}>

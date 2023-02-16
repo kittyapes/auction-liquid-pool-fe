@@ -36,6 +36,8 @@ const Details = ({ nftPoolAddress }) => {
   const [currencyTokenPrice, setCurrencyTokenPrice] = useState(0);
   const [cardDatas, setCardDatas] = useState([]);
   const [errorMsg, setErrorMsg] = useState(null);
+  const [successMsg, setSuccessMsg] = useState(null);
+  const [refresh, setRefresh] = useState(0);
   const [targetToken, setTargetToken] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
   const [nftPoolInfo, setNFTPoolInfo] = useState({});
@@ -210,13 +212,19 @@ const Details = ({ nftPoolAddress }) => {
         </Grid>
       </Grid>
       <Divider className={styles.dividerFull} variant="middle" />
-      <UserBanalce targetToken={targetToken} currencyToken={currencyToken} />
+      <UserBanalce
+        targetToken={targetToken}
+        currencyToken={currencyToken}
+        refresh={refresh}
+      />
       <Grid xs={12} className={styles.user_actions}>
         <UserActions
           nftPoolInfo={nftPoolInfo}
           targetToken={targetToken}
           currencyToken={currencyToken}
           setErrorMsg={setErrorMsg}
+          setSuccessMsg={setSuccessMsg}
+          refresh={refresh}
         />
       </Grid>
       <Popup
@@ -224,13 +232,22 @@ const Details = ({ nftPoolAddress }) => {
         closeOnDocumentClick={true}
         onClose={() => {
           setErrorMsg(null);
+          setSuccessMsg(null);
+          setRefresh(refresh + 1);
         }}
         position="center"
       >
-        <Alert severity="error">
-          <AlertTitle>Error</AlertTitle>
-          {errorMsg}
-        </Alert>
+        {successMsg == null ? (
+          <Alert severity="error">
+            <AlertTitle>Error</AlertTitle>
+            {errorMsg}
+          </Alert>
+        ) : (
+          <Alert severity="success">
+            <AlertTitle>Success</AlertTitle>
+            {successMsg}
+          </Alert>
+        )}
       </Popup>
     </Grid>
   );
