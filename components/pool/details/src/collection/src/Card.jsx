@@ -47,8 +47,7 @@ const Card = ({ nft, type, pool }) => {
         setStatus(Status.NOT_ACTIVATED);
         setButtonLabel("Start Auction");
       } else {
-        let timestamp =
-          Number(auctionInfo.startedAt) + Number(poolInfo.duration);
+        let timestamp = Number(auctionInfo.startedAt) + Number(pool.duration);
         let deadTime = getDeadTime(timestamp);
         if (deadTime < Date.now()) {
           setStatus(Status.END);
