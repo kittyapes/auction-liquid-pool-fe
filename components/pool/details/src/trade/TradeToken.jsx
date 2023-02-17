@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, Suspense } from "react";
 import Box from "@mui/material/Box";
 import styles from "./style/Trade.module.css";
 import Grid from "@mui/material/Grid";
@@ -15,6 +15,7 @@ import {
   getWebSocket,
   V2_SWAP_ROUTER_ADDRESS,
 } from "../../../../pool/contract/poolContract";
+import Skeleton from "@mui/material/Skeleton";
 import ERC20_ABI from "../../../../pool/contract/ERC20Abi.json";
 import {
   ChainId,
@@ -65,6 +66,7 @@ export default function TradeToken({
   if (!targetToken || !currencyToken) return;
   const provider = getProvider();
   const webSocket = getWebSocket();
+  const [loading, setLoading] = useState(true);
   const { account, pendingTxs, setPendingTxs } = useWalletContext();
   const [buyTargetTokenNumber, setBuyTargetTokenNumber] = useState(0);
   const [sellTargetTokenNumber, setSellTargetTokenNumber] = useState(0);
@@ -316,9 +318,14 @@ export default function TradeToken({
   };
 
   useEffect(() => {
-    fetchUserWalletTargetTokenBalance();
-    fetchUserWalletCurrencyTokenBalance();
-    fetchTargetTokenPrice();
+    setLoading(true);
+    Promise.all([
+      fetchUserWalletTargetTokenBalance(),
+      fetchUserWalletCurrencyTokenBalance(),
+      fetchTargetTokenPrice(),
+    ]).then((_) => {
+      setLoading(false);
+    });
   }, [pendingTxs, refresh]);
   const formatFloatNumber = (x) => Number.parseFloat(x).toFixed(0);
   return (
@@ -368,12 +375,23 @@ export default function TradeToken({
                 type="number"
               />
             </div>
-            {`Max ${targetToken.name} you can buy:
-            ${
-              currencyTokenBalance && targetToCurrencyRatio
-                ? Math.floor(currencyTokenBalance / targetToCurrencyRatio)
-                : 0
-            }`}
+            <div style={{ display: "flex" }}>
+              <span style={{ marginRight: "8px" }}>Max:</span>
+              {loading ? (
+                <Skeleton
+                  variant="text"
+                  sx={{
+                    display: "flex",
+                    bgcolor: "white",
+                    width: "20px",
+                  }}
+                />
+              ) : currencyTokenBalance && targetToCurrencyRatio ? (
+                Math.floor(currencyTokenBalance / targetToCurrencyRatio)
+              ) : (
+                0
+              )}
+            </div>
             <Box sx={{ height: 60, marginTop: 1 }}></Box>
             <Box
               sx={{
@@ -450,7 +468,21 @@ export default function TradeToken({
                 type="number"
               />
             </div>
-            {`Max ${targetToken.name} you can sell: ${targetTokenBalance}`}
+            <div style={{ display: "flex" }}>
+              <span style={{ marginRight: "8px" }}>Max:</span>
+              {loading ? (
+                <Skeleton
+                  variant="text"
+                  sx={{
+                    display: "flex",
+                    bgcolor: "white",
+                    width: "20px",
+                  }}
+                />
+              ) : (
+                targetTokenBalance
+              )}
+            </div>
             <Box sx={{ height: 60, marginTop: 1 }}></Box>
             <Box
               sx={{
@@ -519,7 +551,21 @@ export default function TradeToken({
                 value={liquidityTargetTokenNumber}
                 onChange={changeLiquidityTargetTokenNumber}
               />
-              Max: {targetTokenBalance}
+              <div style={{ display: "flex" }}>
+                <span style={{ marginRight: "8px" }}>Max:</span>
+                {loading ? (
+                  <Skeleton
+                    variant="text"
+                    sx={{
+                      display: "flex",
+                      bgcolor: "white",
+                      width: "20px",
+                    }}
+                  />
+                ) : (
+                  targetTokenBalance
+                )}
+              </div>
             </div>
             <div
               className={styles.placeholder}
@@ -539,7 +585,21 @@ export default function TradeToken({
                 value={liquidityCurrencyTokenNumber}
                 onChange={changeLiquidityCurrencyTokenNumber}
               />
-              Max: {Math.floor(currencyTokenBalance)}
+              <div style={{ display: "flex" }}>
+                <span style={{ marginRight: "8px" }}>Max:</span>
+                {loading ? (
+                  <Skeleton
+                    variant="text"
+                    sx={{
+                      display: "flex",
+                      bgcolor: "white",
+                      width: "20px",
+                    }}
+                  />
+                ) : (
+                  Math.floor(currencyTokenBalance)
+                )}
+              </div>
             </div>
             <Box
               sx={{

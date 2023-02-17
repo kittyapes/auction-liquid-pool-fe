@@ -3,10 +3,12 @@ import { getProvider, getContract } from "../contract/poolContract";
 import { useWalletContext } from "../../../context/wallet";
 import { ethers } from "ethers";
 import styles from "./style/Details.module.css";
+import Skeleton from "@mui/material/Skeleton";
 
 export default function UserBanalce({ targetToken, currencyToken, refresh }) {
   if (!targetToken || !currencyToken) return;
   const provider = getProvider();
+  const [loading, setLoading] = useState(true);
   const { account, pendingTxs, setPendingTxs } = useWalletContext();
   const [targetTokenBalance, setTargetTokenBalance] = useState(0);
   const [currencyTokenBalance, setCurrencyTokenBalance] = useState(0);
@@ -25,19 +27,55 @@ export default function UserBanalce({ targetToken, currencyToken, refresh }) {
   }
 
   useEffect(() => {
-    fetchUserWalletTargetTokenBalance();
-    fetchUserWalletCurrencyTokenBalance();
+    setLoading(true);
+    Promise.all([
+      fetchUserWalletTargetTokenBalance(),
+      fetchUserWalletCurrencyTokenBalance(),
+    ]).then((_) => {
+      setLoading(false);
+    });
   }, [pendingTxs, refresh]);
 
   return (
     <div className={styles.userBalance}>
-      <p> Tokens in your wallet</p>
+      <p> Tokens in your wallet:</p>
       <div className={styles.balance}>
-        <p>{`${targetToken.name} balance:`}</p> <p>{targetTokenBalance}</p>
+        <div style={{ display: "flex", margin: "10px" }}>
+          <span
+            style={{ marginRight: "8px" }}
+          >{`${targetToken.name} balance:`}</span>
+          {loading ? (
+            <Skeleton
+              variant="text"
+              sx={{
+                display: "flex",
+                bgcolor: "white",
+                width: "40px",
+              }}
+            />
+          ) : (
+            targetTokenBalance
+          )}
+        </div>
       </div>
       <div className={styles.balance}>
-        <p>{`${currencyToken.name} balance:`}</p>
-        <p> {currencyTokenBalance}</p>
+        <div style={{ display: "flex", marginTop: "4px", margin: "10px" }}>
+          <span
+            style={{ marginRight: "8px" }}
+          >{`${currencyToken.name} balance:`}</span>
+          {loading ? (
+            <Skeleton
+              variant="text"
+              sx={{
+                display: "flex",
+                bgcolor: "white",
+                width: "40px",
+              }}
+            />
+          ) : (
+            currencyTokenBalance
+          )}
+        </div>
       </div>
     </div>
   );

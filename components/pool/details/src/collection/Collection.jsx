@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from "react";
 import styles from "./style/Collection.module.css";
 import Grid from "@mui/material/Grid";
 import Card from "./src/Card";
-import { useRouter } from "next/router";
 import { fetchNFTTokenIdsFromPoolAddress } from "../../../contract/poolContract";
 
 const Collection = ({ nftPoolInfo, type }) => {
