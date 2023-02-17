@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import { fetchNFTTokenIdsFromPoolAddress } from "../../../contract/poolContract";
 
 const Collection = ({ nftPoolInfo, type }) => {
-  const [nfts, setNfts] = useState([]);
+  const [nfts, setNfts] = useState(null);
   const [ownedNfts, setOwnedNfts] = useState([]);
 
   useEffect(() => {
@@ -36,12 +36,12 @@ const Collection = ({ nftPoolInfo, type }) => {
   }, []);
   return (
     <Grid container className={styles.collection}>
-      {nfts.length === 0 ? (
+      {(type == "Auction" ? nfts : ownedNfts) === null ? (
         <div className={styles.placeholder}></div>
       ) : (
         <div></div>
       )}
-      {(type == "Auction" ? nfts : ownedNfts).map((nft) => {
+      {(type == "Auction" ? nfts ?? [] : ownedNfts ?? []).map((nft) => {
         return (
           <Card
             pool={nftPoolInfo}
@@ -52,6 +52,11 @@ const Collection = ({ nftPoolInfo, type }) => {
           />
         );
       })}
+      {type == "Auction"
+        ? nfts != null &&
+          nfts.length == 0 && <p className={styles.banner}>Empty</p>
+        : ownedNfts != null &&
+          ownedNfts.length == 0 && <p className={styles.banner}>Empty</p>}
     </Grid>
   );
 };

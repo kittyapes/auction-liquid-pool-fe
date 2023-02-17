@@ -302,6 +302,7 @@ export default function TradeToken({
         }
       );
       // Append current tx into pending tx list.
+      console.log("setPendingTxs");
       setPendingTxs(new Set([transactionHash.hash, ...pendingTxs]));
       getTransactionStatus(transactionHash.hash, async () => {
         setSuccessMsg(`Transction successded! hash:${transactionHash.hash}`);

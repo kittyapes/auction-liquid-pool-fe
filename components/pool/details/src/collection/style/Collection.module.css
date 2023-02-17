@@ -43,3 +43,10 @@
   top: 35px;
   left: 100px;
 }
+
+p .banner {
+  color: white;
+  font-size: 24px;
+  font-weight: 800;
+  margin: 16px;
+}
