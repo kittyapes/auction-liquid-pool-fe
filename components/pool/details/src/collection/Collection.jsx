@@ -38,7 +38,7 @@ const Collection = ({ nftPoolInfo, type }) => {
       {(type == "Auction" ? nfts : ownedNfts) === null ? (
         <div className={styles.placeholder}></div>
       ) : (
-        <div></div>
+        ""
       )}
       {(type == "Auction" ? nfts ?? [] : ownedNfts ?? []).map((nft) => {
         return (

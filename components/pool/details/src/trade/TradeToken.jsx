@@ -324,9 +324,10 @@ export default function TradeToken({
       fetchUserWalletCurrencyTokenBalance(),
       fetchTargetTokenPrice(),
     ]).then((_) => {
+      console.log("finish all balance fetching!!");
       setLoading(false);
     });
-  }, [pendingTxs, refresh]);
+  }, [refresh]);
   const formatFloatNumber = (x) => Number.parseFloat(x).toFixed(0);
   return (
     <Box sx={{ flexGrow: 1 }} className={styles.container}>

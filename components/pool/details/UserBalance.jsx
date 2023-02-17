@@ -34,7 +34,7 @@ export default function UserBanalce({ targetToken, currencyToken, refresh }) {
     ]).then((_) => {
       setLoading(false);
     });
-  }, [pendingTxs, refresh]);
+  }, [refresh]);
 
   return (
     <div className={styles.userBalance}>

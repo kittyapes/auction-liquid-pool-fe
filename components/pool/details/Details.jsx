@@ -228,7 +228,7 @@ const Details = ({ nftPoolAddress }) => {
         />
       </Grid>
       <Popup
-        open={errorMsg != null}
+        open={errorMsg != null || successMsg != null}
         closeOnDocumentClick={true}
         onClose={() => {
           setErrorMsg(null);
