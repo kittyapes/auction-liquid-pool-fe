@@ -22,8 +22,10 @@ export const getAllowance = async (
     .call();
 };
 
+// Takes in nft pool address.
 export const mappingTokenInfo = async (address) => {
   const contract = getContract(address);
+  console.log(contract);
   const mappingTokenAddress = await contract.methods.mappingToken().call();
   return mappingTokenAddress;
 };

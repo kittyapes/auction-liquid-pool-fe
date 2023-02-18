@@ -85,19 +85,21 @@ const Details = ({ nftPoolAddress }) => {
       setCollection(data.collection);
     };
 
-    const fetchNFTPoolInfo = async (nftPoolAddress) => {
+    const fetchNFTPoolInfo = async () => {
+      if (!nftPoolAddress) return;
       let nftPoolInfo = await fetchPoolInfo(nftPoolAddress);
       nftPoolInfo["name"] = "Test pool";
       setNFTPoolInfo(nftPoolInfo);
     };
 
     async function fetchUniswapPairAddress() {
+      if (!nftPoolAddress) return;
       const mappingTokenAddress = await getMappingTokenAddress(nftPoolAddress);
       const address = await getUniswapPairAddress(mappingTokenAddress);
       setUniswapPairAddress(address);
     }
     fetchNFTPoolStats();
-    fetchNFTPoolInfo(nftPoolAddress);
+    fetchNFTPoolInfo();
     fetchUniswapPairAddress();
   }, []);
 

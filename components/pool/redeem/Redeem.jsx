@@ -6,30 +6,44 @@ import { useRouter } from "next/router";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import { Button } from "@mui/material";
 import dynamic from "next/dynamic";
-import { redeemNFT, getTransactionStatus } from "../contract/poolContract";
+import {
+  redeemNFT,
+  getTransactionStatus,
+  getMappingTokenAddress,
+} from "../contract/poolContract";
 import { useWalletContext } from "../../../context/wallet";
 import {
   getAllowance,
   increaseAllowance,
   mappingTokenInfo,
 } from "../contract/mappingTokenContract";
-const Redeem = ({ address }) => {
+const Redeem = () => {
   const { account } = useWalletContext();
   const [redeemNumber, setRedeemNumber] = useState(0);
   const [mappingTokenAddress, setMappingTokenAddress] = useState(null);
+  const [nftPoolAddress, setNFTPoolAddress] = useState(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (router.isReady) {
+      setNFTPoolAddress(router.query.address);
+    }
+  }, [router.isReady]);
   useEffect(() => {
     async function fetchMappingTokenAddress() {
-      const mappingTokenAddress = await mappingTokenInfo();
+      if (!nftPoolAddress) return;
+      const mappingTokenAddress = await getMappingTokenAddress(nftPoolAddress);
+      console.log(mappingTokenAddress);
       setMappingTokenAddress(mappingTokenAddress);
     }
     fetchMappingTokenAddress();
-  });
+  }, [nftPoolAddress]);
 
   // TODO(peter): make sure this function work properly.
   const placeRedemption = async () => {
     if (redeemNumber == 0 || mappingTokenAddress == null) return;
-    await getAllowance(account, address, mappingTokenAddress);
-    const c = await redeemNFT(account, redeemNumber);
+    await getAllowance(account, nftPoolAddress, mappingTokenAddress);
+    const transaction = await redeemNFT(account, redeemNumber);
     // Append current tx into pending tx list.
     setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
     getTransactionStatus(transaction.hash, async () => {

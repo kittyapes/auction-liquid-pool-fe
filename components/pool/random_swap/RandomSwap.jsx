@@ -9,19 +9,24 @@ import { Button } from "@mui/material";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { randomSwap } from "../contract/poolContract";
 import { useWalletContext } from "../../../context/wallet";
-const RandomSwap = ({ nftPoolAddress }) => {
+const RandomSwap = () => {
   const { account, pendingTxs, setPendingTxs } = useWalletContext();
   const [swapDone, setSwapDone] = useState(false);
+  const [nftPoolAddress, setNFTPoolAddress] = useState(null);
+  const [tokenId, setTokenId] = useState(null);
   const router = useRouter();
-  const item = router.query;
+
+  useEffect(() => {
+    if (router.isReady) {
+      setNFTPoolAddress(router.query.address);
+      setTokenId(router.query.id);
+    }
+  }, [router.isReady]);
 
   // TODO(peter): make sure this function work properly.
   const placeSwap = async () => {
-    if (item.id == null) {
-      console.log("id does not exist!!");
-      return;
-    }
-    const transaction = await randomSwap(item.id, account, nftPoolAddress);
+    if (!tokenId || !nftPoolAddress) return;
+    const transaction = await randomSwap(tokenId, account, nftPoolAddress);
     // Append current tx into pending tx list.
     setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
     getTransactionStatus(transaction.hash, async () => {
