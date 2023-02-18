@@ -9,11 +9,13 @@ import { Button } from "@mui/material";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { randomSwap } from "../contract/poolContract";
 import { useWalletContext } from "../../../context/wallet";
+import CircularProgress from "@mui/material/CircularProgress";
 const RandomSwap = () => {
   const { account, pendingTxs, setPendingTxs } = useWalletContext();
   const [swapDone, setSwapDone] = useState(false);
   const [nftPoolAddress, setNFTPoolAddress] = useState(null);
   const [tokenId, setTokenId] = useState(null);
+  const [loading, setLoading] = useState(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -27,11 +29,13 @@ const RandomSwap = () => {
   const placeSwap = async () => {
     if (!tokenId || !nftPoolAddress) return;
     const transaction = await randomSwap(tokenId, account, nftPoolAddress);
+    setLoading(true);
     // Append current tx into pending tx list.
     setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
     getTransactionStatus(transaction.hash, async () => {
       pendingTxs.delete(transaction.hash);
       setPendingTxs(new Set([...pendingTxs]));
+      setLoading(false);
       // TODO(Peter): How to get the new NFT that user get from swap.
     });
   };
@@ -82,7 +86,16 @@ const RandomSwap = () => {
             size="large"
             onClick={swapDone ? checkUserNFTs : placeSwap}
           >
-            {swapDone ? "check User NFTs" : "PLACE THE RANDOM SWAP"}
+            {loading === null ? (
+              "PLACE THE RANDOM SWAP"
+            ) : loading === true ? (
+              <>
+                <CircularProgress sx={{ p: 1, color: "white" }} size={40} />{" "}
+                <span>Swaping now...</span>
+              </>
+            ) : (
+              "Check your nfts"
+            )}
           </Button>
         </Grid>
       </div>

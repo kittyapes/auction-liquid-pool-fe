@@ -2,7 +2,5 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/redeem/[address]": "pages/redeem/[address].js",
-  "/swap/[address]": "pages/swap/[address].js",
-  "/details/[address]": "pages/details/[address].js"
+  "/redeem/[address]": "pages/redeem/[address].js"
 }

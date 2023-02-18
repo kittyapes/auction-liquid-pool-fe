@@ -17,7 +17,7 @@ export const getAllowance = async (
   nftPoolAddress,
   mappingTokenAddress
 ) => {
-  await getContract(mappingTokenAddress)
+  return await getContract(mappingTokenAddress)
     .methods.allowance(account, nftPoolAddress)
     .call();
 };
