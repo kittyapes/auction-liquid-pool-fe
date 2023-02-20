@@ -17,19 +17,14 @@ import {
   increaseAllowance,
   mappingTokenInfo,
 } from "../contract/mappingTokenContract";
-const Redeem = () => {
+const Redeem = ({ nftPoolAddress }) => {
+  if (!nftPoolAddress) return;
   const { account, pendingTxs, setPendingTxs } = useWalletContext();
   const [redeemNumber, setRedeemNumber] = useState(0);
   const [mappingTokenAddress, setMappingTokenAddress] = useState(null);
-  const [nftPoolAddress, setNFTPoolAddress] = useState(null);
   const [loading, setLoading] = useState(null);
   const router = useRouter();
 
-  useEffect(() => {
-    if (router.isReady) {
-      setNFTPoolAddress(router.query.address);
-    }
-  }, [router.isReady]);
   useEffect(() => {
     async function fetchMappingTokenAddress() {
       if (!nftPoolAddress) return;

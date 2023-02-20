@@ -28,7 +28,7 @@ import Popup from "reactjs-popup";
 import UserBanalce from "./UserBalance";
 
 const Details = ({ nftPoolAddress }) => {
-  nftPoolAddress = "0x22D5dc826145166f7cbDfBf14CFE9a43dA02Ea25";
+  if (!nftPoolAddress) return;
   const provider = getProvider();
   const router = useRouter();
   const { account, chainId } = useWalletContext();

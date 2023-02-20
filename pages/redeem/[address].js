@@ -1,15 +1,21 @@
 import styles from "../../styles/Home.module.css";
 import Redeem from "../../components/pool/redeem/Redeem";
 import { useRouter } from "next/router";
+import React, { useEffect, useState, useRef } from "react";
 
 export default function Home() {
   const router = useRouter();
   // Nft pool address
-  const { address } = router.query;
+  const [nftPoolAddress, setNFTPoolAddress] = useState(null);
+  useEffect(() => {
+    if (router.isReady) {
+      setNFTPoolAddress(router.query.address);
+    }
+  }, [router.isReady]);
   return (
     <div className={styles.container}>
       <main className={styles.main}>
-        <Redeem address={address} />
+        <Redeem nftPoolAddress={nftPoolAddress} />
       </main>
     </div>
   );

@@ -25,10 +25,15 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/redeem/[address]": [
+    "/auction/[address]": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/redeem/[address].js"
+      "static/chunks/pages/auction/[address].js"
+    ],
+    "/swap/[address]": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/swap/[address].js"
     ]
   },
   "ampFirstPages": []

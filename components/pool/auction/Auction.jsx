@@ -91,15 +91,13 @@ const chart = {
   },
 };
 
-const Auction = ({ address }) => {
+const Auction = ({ nftPoolAddress, tokenId }) => {
+  if (!nftPoolAddress || !tokenId) return;
   const [status, setStatus] = useState(null);
   const [auctionInfo, setAuctionInfo] = useState({});
   const [timer, setTimer] = useState("00:00:00");
   const { account, pendingTxs } = useWalletContext();
   const Ref = useRef(null);
-  const router = useRouter();
-  const item = router.query;
-  const tokenId = item.id;
 
   const [txStatus, setTxStatus] = useState(TxStatus.NONE);
 
@@ -107,10 +105,10 @@ const Auction = ({ address }) => {
     async function fetchNftInfo() {
       if (!tokenId || txStatus == TxStatus.PENDING) return;
       const auctionInfo = await fetchNFTAuctionInfoFromTokenId(
-        address,
+        nftPoolAddress,
         Number(tokenId)
       );
-      const poolInfo = await fetchPoolInfo(address);
+      const poolInfo = await fetchPoolInfo(nftPoolAddress);
       const bidAmount = Number(auctionInfo.bidAmount);
       const isLinear = poolInfo.isLinear;
       let nextBid;
@@ -173,7 +171,7 @@ const Auction = ({ address }) => {
     <Grid container className={styles.container}>
       <div>
         <p className={styles.title}>NFT Auction Liquidity Pool:</p>
-        <input className={styles.addressBar} disabled value={address} />
+        <input className={styles.addressBar} disabled value={nftPoolAddress} />
       </div>
       <div>
         <p className={`${styles.title} ${styles.compress}`}>

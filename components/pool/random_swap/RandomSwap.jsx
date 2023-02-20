@@ -10,20 +10,10 @@ import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { randomSwap } from "../contract/poolContract";
 import { useWalletContext } from "../../../context/wallet";
 import CircularProgress from "@mui/material/CircularProgress";
-const RandomSwap = () => {
+const RandomSwap = ({ nftPoolAddress, tokenId }) => {
   const { account, pendingTxs, setPendingTxs } = useWalletContext();
   const [swapDone, setSwapDone] = useState(false);
-  const [nftPoolAddress, setNFTPoolAddress] = useState(null);
-  const [tokenId, setTokenId] = useState(null);
   const [loading, setLoading] = useState(null);
-  const router = useRouter();
-
-  useEffect(() => {
-    if (router.isReady) {
-      setNFTPoolAddress(router.query.address);
-      setTokenId(router.query.id);
-    }
-  }, [router.isReady]);
 
   // TODO(peter): make sure this function work properly.
   const placeSwap = async () => {
