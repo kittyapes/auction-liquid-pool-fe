@@ -11,9 +11,6 @@ import {
   placeBid,
   fetchNFTAuctionInfoFromTokenId,
   getTransactionStatus,
-  getBids,
-  getDelta,
-  getIsLinear,
 } from "../contract/poolContract";
 import { fetchPoolInfo } from "../contract/poolContract";
 import { Status, TxStatus, getDeadTime, startTimer } from "./utils";
@@ -139,7 +136,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
 
   // TODO(peter): make sure this function work properly.
   const placeAuction = async () => {
-    const transaction = await placeBid(0.05, item.id, account);
+    const transaction = await placeBid(nftPoolAddress, 0.05, tokenId, account);
     setTx(transaction.hash);
     setTxStatus(TxStatus.PENDING);
     setPendingTxs(new Set([transaction.hash, ...pendingTxs]));

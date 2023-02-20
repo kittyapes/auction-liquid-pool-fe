@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useState } from "react";
 import styles from "../random_swap/style/RandomSwap.module.css";
 import src from "../../../static/images/src.jpeg";
 import Grid from "@mui/material/Grid";
-import { useRouter } from "next/router";
 import { getTransactionStatus } from "../contract/poolContract";
 import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import { Button } from "@mui/material";

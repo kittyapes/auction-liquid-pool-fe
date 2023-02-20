@@ -4,9 +4,6 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Identicon from "./IdentIcon";
 import styles from "../header/style/Header.module.css";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import LoadingButton from "@mui/lab/LoadingButton";
-import Button from "@mui/material/Button";
-import SaveIcon from "@mui/icons-material/Save";
 import CircularProgress from "@mui/material/CircularProgress";
 const theme = createTheme({
   palette: {

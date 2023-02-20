@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
 import Identicon from "./IdentIcon";
@@ -8,9 +7,7 @@ import { ethers } from "ethers";
 import styles from "../header/style/Header.module.css";
 import { useWalletContext } from "../../context/wallet";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { getProvider } from "../pool/contract/poolContract";
 const style = {
   position: "absolute",

@@ -1,4 +1,3 @@
-import { ethers } from "ethers";
 import Web3 from "web3";
 import tokenAbi from "./mappingTokenAbi.json";
 
@@ -25,7 +24,6 @@ export const getAllowance = async (
 // Takes in nft pool address.
 export const mappingTokenInfo = async (address) => {
   const contract = getContract(address);
-  console.log(contract);
   const mappingTokenAddress = await contract.methods.mappingToken().call();
   return mappingTokenAddress;
 };

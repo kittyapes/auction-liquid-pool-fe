@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import styles from "../redeem/style/Redeem.module.css";
 import src from "../../../static/images/src.jpeg";
 import Grid from "@mui/material/Grid";
@@ -12,11 +12,7 @@ import {
   getMappingTokenAddress,
 } from "../contract/poolContract";
 import { useWalletContext } from "../../../context/wallet";
-import {
-  getAllowance,
-  increaseAllowance,
-  mappingTokenInfo,
-} from "../contract/mappingTokenContract";
+import { getAllowance } from "../contract/mappingTokenContract";
 const Redeem = ({ nftPoolAddress }) => {
   if (!nftPoolAddress) return;
   const { account, pendingTxs, setPendingTxs } = useWalletContext();
@@ -46,7 +42,7 @@ const Redeem = ({ nftPoolAddress }) => {
     if (res == 0) {
       console.log("Error, no more NFTs left!!");
     }
-    const transaction = await redeemNFT(account, redeemNumber);
+    const transaction = await redeemNFT(account, nftPoolAddress, redeemNumber);
     setLoading(true);
     // Append current tx into pending tx list.
     setPendingTxs(new Set([transaction.hash, ...pendingTxs]));

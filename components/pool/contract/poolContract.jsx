@@ -1,5 +1,3 @@
-export const dexTokenAddress = "0x334E2D204EaF5EF89F0AD7b4DaC167Bf8Fcc752e";
-const baseAddress = "0x69a8fB7aB0672693C70a4a4DC31f51fCb22258Fb";
 import tokenAbi from "./poolContractAbi.json";
 import BigNumber from "bignumber.js";
 import { ethers } from "ethers";
@@ -15,11 +13,6 @@ export const V2_SWAP_ROUTER_ADDRESS =
   "0xf164fC0Ec4E93095b804a4795bBe1e041497b92a";
 
 const TOKEN_AMOUNT_TO_APPROVE_FOR_TRANSFER = 1000;
-
-const getTokenContract = () => {
-  const web3 = new Web3(window.ethereum);
-  return new web3.eth.Contract(tokenAbi, baseAddress);
-};
 
 const getNftPoolContract = (address) => {
   const web3 = new Web3(window.ethereum);
@@ -42,22 +35,18 @@ export const getTokenInfo = async (tokenAddress) => {
   return new Token(ChainId.GÖRLI, tokenAddress, decimal, symbol, symbol);
 };
 
-export const getTokenIds = () => {
-  return getTokenContract().methods.getTokenIds().call();
-};
-
-export const redeemNFT = async (account, amount) => {
-  return getTokenContract().methods.redeem(amount).send({
+export const redeemNFT = async (account, nftPoolAddress, amount) => {
+  return getNftPoolContract(nftPoolAddress).methods.redeem(amount).send({
     from: account,
-    to: baseAddress,
+    to: nftPoolAddress,
     type: "0x2",
     maxFeePerGas: MAX_FEE_PER_GAS,
     maxPriorityFeePerGas: MAX_PRIORITY_FEE_PER_GAS,
   });
 };
 
-export const placeBid = async (bidAmount, tokenId, account) => {
-  return getTokenContract()
+export const placeBid = async (nftPoolAddress, bidAmount, tokenId, account) => {
+  return getNftPoolContract(nftPoolAddress)
     .methods.bid(tokenId)
     .send({
       from: account,
@@ -280,22 +269,6 @@ export const fetchPoolInfo = async (poolAddress) => {
     delta: delta,
     ratio: ratio,
   };
-};
-
-export const getDuration = () => {
-  return getTokenContract().methods.duration().call();
-};
-
-export const getBids = (tokenId) => {
-  return getTokenContract().methods.auctions(tokenId).call();
-};
-
-export const getIsLinear = () => {
-  return getTokenContract().methods.isLinear().call();
-};
-
-export const getDelta = () => {
-  return getTokenContract().methods.delta().call();
 };
 
 export const getTransactionStatus = async (transactionHash, callback) => {

@@ -3,12 +3,10 @@ import HypexLogo from "../../static/images/logo.png";
 import styles from "../header/style/Header.module.css";
 import { connectWallet, readWallet } from "../Wallet/connectors";
 import { useRouter } from "next/router";
-import { useChainId, checkChainId } from "../../api/contract";
+import { checkChainId } from "../../api/contract";
 import { useWalletContext } from "../../context/wallet";
-import { ethers } from "ethers";
 import ConnectButton from "./ConnectButton";
 import AccountModal from "./AccountModal";
-import { getProvider } from "../pool/contract/poolContract";
 if (typeof window !== "undefined") {
   var jazzicon = require("jazzicon");
 }
