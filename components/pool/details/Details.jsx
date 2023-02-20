@@ -10,7 +10,7 @@ import UserActions from "./src/user_actions/UserActions";
 import { useRouter } from "next/router";
 import Divider from "@mui/material/Divider";
 import { API } from "../contract/poolContract";
-import uniswapLiquidityPoolAbi from "../../../contracts/uniswapLiquidityPoolAbi.json";
+import uniswapLiquidityPoolAbi from "../../../utils/abis/uniswap-pool.json";
 import {
   getProvider,
   getTokenInfo,
@@ -18,14 +18,14 @@ import {
   getMappingTokenAddress,
 } from "../../pool/contract/poolContract";
 import { getUniswapPairAddress } from "../../pool/contract/mappingTokenContract";
-import { useWalletContext } from "../../../context/wallet";
+import { useWalletContext } from "../../../utils/wallet-context";
 import { ethers } from "ethers";
 import { ChainId, Token, Fetcher, Route } from "@uniswap/sdk";
 import Alert from "@mui/material/Alert";
 import AlertTitle from "@mui/material/AlertTitle";
-import "reactjs-popup/dist/index.css";
 import Popup from "reactjs-popup";
 import UserBanalce from "./UserBalance";
+import "reactjs-popup/dist/index.css";
 
 const Details = ({ nftPoolAddress }) => {
   if (!nftPoolAddress) return;

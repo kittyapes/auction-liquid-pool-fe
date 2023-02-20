@@ -13,9 +13,14 @@ import {
   getTransactionStatus,
 } from "../contract/poolContract";
 import { fetchPoolInfo } from "../contract/poolContract";
-import { Status, TxStatus, getDeadTime, startTimer } from "./utils";
+import {
+  Status,
+  TxStatus,
+  getDeadTime,
+  startTimer,
+} from "../../../utils/helper";
 import { ethers } from "ethers";
-import { useWalletContext } from "../../../context/wallet";
+import { useWalletContext } from "../../../utils/wallet-context";
 const ApexCharts = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const CssTextField = withStyles({

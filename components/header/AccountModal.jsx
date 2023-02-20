@@ -5,7 +5,7 @@ import Modal from "@mui/material/Modal";
 import Identicon from "./IdentIcon";
 import { ethers } from "ethers";
 import styles from "../header/style/Header.module.css";
-import { useWalletContext } from "../../context/wallet";
+import { useWalletContext } from "../../utils/wallet-context";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
 import { getProvider } from "../pool/contract/poolContract";

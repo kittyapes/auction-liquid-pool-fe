@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { getProvider, getContract } from "../contract/poolContract";
-import { useWalletContext } from "../../../context/wallet";
+import { useWalletContext } from "../../../utils/wallet-context";
 import { ethers } from "ethers";
 import styles from "./style/Details.module.css";
 import Skeleton from "@mui/material/Skeleton";

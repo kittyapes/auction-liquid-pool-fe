@@ -4,7 +4,7 @@ import styles from "../header/style/Header.module.css";
 import { connectWallet, readWallet } from "../Wallet/connectors";
 import { useRouter } from "next/router";
 import { checkChainId } from "../../api/contract";
-import { useWalletContext } from "../../context/wallet";
+import { useWalletContext } from "../../utils/wallet-context";
 import ConnectButton from "./ConnectButton";
 import AccountModal from "./AccountModal";
 if (typeof window !== "undefined") {

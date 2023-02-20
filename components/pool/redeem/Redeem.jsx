@@ -11,7 +11,7 @@ import {
   getTransactionStatus,
   getMappingTokenAddress,
 } from "../contract/poolContract";
-import { useWalletContext } from "../../../context/wallet";
+import { useWalletContext } from "../../../utils/wallet-context";
 import { getAllowance } from "../contract/mappingTokenContract";
 const Redeem = ({ nftPoolAddress }) => {
   if (!nftPoolAddress) return;

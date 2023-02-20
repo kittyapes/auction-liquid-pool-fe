@@ -1,5 +1,5 @@
 import React from "react";
-import { useWalletContext } from "../../context/wallet";
+import { useWalletContext } from "../../utils/wallet-context";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import Identicon from "./IdentIcon";
 import styles from "../header/style/Header.module.css";

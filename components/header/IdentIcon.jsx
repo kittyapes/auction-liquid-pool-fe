@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useWalletContext } from "../../context/wallet";
+import { useWalletContext } from "../../utils/wallet-context";
 if (typeof window !== "undefined") {
   var jazzicon = require("jazzicon");
 }

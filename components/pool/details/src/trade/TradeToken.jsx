@@ -6,7 +6,7 @@ import TextField from "@mui/material/TextField";
 import { withStyles } from "@mui/styles";
 import { Button } from "@mui/material";
 import { ethers } from "ethers";
-import { useWalletContext } from "../../../../../context/wallet";
+import { useWalletContext } from "../../../../../utils/wallet-context";
 import IUniswapV2Router01 from "@uniswap/v2-periphery/build/IUniswapV2Router01.json";
 import {
   getProvider,

@@ -7,7 +7,7 @@ import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
 import { Button } from "@mui/material";
 import QuestionMarkIcon from "@mui/icons-material/QuestionMark";
 import { randomSwap } from "../contract/poolContract";
-import { useWalletContext } from "../../../context/wallet";
+import { useWalletContext } from "../../../utils/wallet-context";
 import CircularProgress from "@mui/material/CircularProgress";
 const RandomSwap = ({ nftPoolAddress, tokenId }) => {
   const { account, pendingTxs, setPendingTxs } = useWalletContext();
