@@ -1,0 +1,23 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-hypexliquidpoolsfe-dev-224034-authRole",
+      "UnauthRoleArn": "arn:aws:iam::988948227203:role/amplify-hypexliquidpoolsfe-dev-224034-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::988948227203:role/amplify-hypexliquidpoolsfe-dev-224034-authRole",
+      "Region": "us-west-2",
+      "DeploymentBucketName": "amplify-hypexliquidpoolsfe-dev-224034-deployment",
+      "UnauthRoleName": "amplify-hypexliquidpoolsfe-dev-224034-unauthRole",
+      "StackName": "amplify-hypexliquidpoolsfe-dev-224034",
+      "StackId": "arn:aws:cloudformation:us-west-2:988948227203:stack/amplify-hypexliquidpoolsfe-dev-224034/d7b336d0-9ae8-11ed-84e6-066ec5256425",
+      "AmplifyAppId": "d9t1oc45khtgm"
+    },
+    "categories": {
+      "hosting": {
+        "amplifyhosting": {
+          "appId": "d9t1oc45khtgm",
+          "type": "manual"
+        }
+      }
+    }
+  }
+}
