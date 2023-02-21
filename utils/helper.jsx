@@ -1,5 +1,5 @@
 const getTimeRemaining = (e) => {
-  const total = Date.parse(e) - Date.parse(new Date());
+  const total = Date.parse(timestamp) - Date.parse(new Date());
   const seconds = Math.floor((total / 1000) % 60);
   const minutes = Math.floor((total / 1000 / 60) % 60);
   const hours = Math.floor((total / 1000 / 60 / 60) % 24);
@@ -11,8 +11,8 @@ const getTimeRemaining = (e) => {
   };
 };
 
-export const startTimer = (e) => {
-  let { total, hours, minutes, seconds } = getTimeRemaining(e);
+export const startTimer = (timestamp) => {
+  let { total, hours, minutes, seconds } = getTimeRemaining(timestamp);
   if (total >= 0) {
     return (
       (hours > 9 ? hours : "0" + hours) +
@@ -28,14 +28,14 @@ export const startTimer = (e) => {
 export const getDeadTime = (timestamp) => {
   let deadline = new Date(timestamp * 1000);
   // This is where you need to adjust if
-  // you entend to add more time
+  // you ented to add more time
   deadline.setSeconds(deadline.getSeconds() + 10);
   return deadline;
 };
 
 export const Status = {
-  NOT_ACTIVATED: "NOT_ACTIVIATED",
-  ACTIVATED: "ACTIVIATED",
+  NOT_ACTIVATED: "NOT_ACTIVATED",
+  ACTIVATED: "ACTIVATED",
   END: "END",
 };
 

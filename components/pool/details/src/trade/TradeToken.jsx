@@ -1,43 +1,24 @@
-import React, { useEffect, useState, useRef, Suspense } from "react";
-import Box from "@mui/material/Box";
-import styles from "./style/Trade.module.css";
-import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
+import React, { useEffect, useState } from "react";
 import { withStyles } from "@mui/styles";
-import { Button } from "@mui/material";
-import { ethers } from "ethers";
-import { useWalletContext } from "../../../../../context/wallet";
-import IUniswapV2Router01 from "@uniswap/v2-periphery/build/IUniswapV2Router01.json";
+import { Box, Button, Grid, Skeleton, TextField } from "@mui/material";
+import { BigNumber, Contract } from "ethers";
 import {
-  getProvider,
-  getContract,
-  getTransactionStatus,
-  getWebSocket,
-  V2_SWAP_ROUTER_ADDRESS,
-} from "../../../../pool/contract/poolContract";
-import Skeleton from "@mui/material/Skeleton";
-import ERC20_ABI from "../../../../pool/contract/ERC20Abi.json";
-import {
-  ChainId,
-  Token,
-  WETH,
   Fetcher,
   Route,
   Trade,
   TokenAmount,
   TradeType,
   Percent,
-  IERC20,
-  InsufficientInputAmountError,
 } from "@uniswap/sdk";
-
+import IUniswapV2Router01 from "@uniswap/v2-periphery/build/IUniswapV2Router01.json";
 import {
-  API,
-  sendTransactionViaExtension,
-  MAX_FEE_PER_GAS,
   MAX_PRIORITY_FEE_PER_GAS,
-} from "../../../contract/poolContract";
-import { ConstructionOutlined } from "@mui/icons-material";
+  UNI_V2_ROUTER,
+} from "../../../../../utils/constants";
+import { useWeb3Context } from "../../../../../utils/web3-context";
+import { getTxStatus } from "../../../../../utils/contracts/pool-slice";
+import { approveToken } from "../../../../../utils/contracts/token-slice";
+import styles from "./style/Trade.module.css";
 
 const CssTextField = withStyles({
   root: {
@@ -64,37 +45,33 @@ export default function TradeToken({
   refresh,
 }) {
   if (!targetToken || !currencyToken) return;
-  const provider = getProvider();
-  const webSocket = getWebSocket();
+  const { account, provider, pendingTxs, setPendingTxs } = useWeb3Context();
   const [loading, setLoading] = useState(true);
-  const { account, pendingTxs, setPendingTxs } = useWalletContext();
-  const [buyTargetTokenNumber, setBuyTargetTokenNumber] = useState(0);
-  const [sellTargetTokenNumber, setSellTargetTokenNumber] = useState(0);
-  const [buyCurrencyTokenNumber, setBuyCurrencyTokenNumber] = useState(0);
-  const [sellCurrencyTokenNumber, setSellCurrencyTokenNumber] = useState(0);
+  const [buyTargetAmount, setBuyTargetAmount] = useState(0);
+  const [sellTargetAmount, setSellTargetAmount] = useState(0);
+  const [buyCurrencyAmount, setBuyCurrencyAmount] = useState(0);
+  const [sellCurrencyAmount, setSellCurrencyAmount] = useState(0);
   const [targetToCurrencyRatio, setTargetToCurrencyRatio] = useState(0);
-  const [liquidityTargetTokenNumber, setLiquidityTargetTokenNumber] =
-    useState(0);
-  const [liquidityCurrencyTokenNumber, setLiquidityCurrencyTokenNumber] =
-    useState(0);
+  const [liquidityTargetAmount, setLiquidityTargetAmount] = useState(0);
+  const [liquidityCurrencyAmount, setLiquidityCurrencyAmount] = useState(0);
   const [targetTokenBalance, setTargetTokenBalance] = useState(0);
   const [currencyTokenBalance, setCurrencyTokenBalance] = useState(0);
 
-  const changeBuyTargetTokenNumber = (event) => {
-    setBuyTargetTokenNumber(event.target.value);
+  const changeBuyTargetAmount = (event) => {
+    setBuyTargetAmount(event.target.value);
   };
 
-  const changeSellTargetTokenNumber = (event) => {
-    setSellTargetTokenNumber(event.target.value);
+  const changeSellTargetAmount = (event) => {
+    setSellTargetAmount(event.target.value);
   };
 
-  const changeLiquidityTargetTokenNumber = (event) => {
-    setLiquidityTargetTokenNumber(event.target.value);
-    setLiquidityCurrencyTokenNumber(event.target.value * targetToCurrencyRatio);
+  const changeLiquidityTargetAmount = (event) => {
+    setLiquidityTargetAmount(event.target.value);
+    setLiquidityCurrencyAmount(event.target.value * targetToCurrencyRatio);
   };
 
-  const changeLiquidityCurrencyTokenNumber = (event) => {
-    setLiquidityCurrencyTokenNumber(event.target.value);
+  const changeLiquidityCurrencyAmount = (event) => {
+    setLiquidityCurrencyAmount(event.target.value);
   };
 
   const fetchTargetTokenPrice = async () => {
@@ -110,65 +87,51 @@ export default function TradeToken({
     }
   };
 
-  async function fetchUserWalletTargetTokenBalance() {
+  const fetchUserWalletTargetTokenBalance = async () => {
     const tokenContract = getContract(targetToken.address);
     const balance = await tokenContract.balanceOf(account);
-    setTargetTokenBalance(Math.floor(ethers.utils.formatUnits(balance)));
+    setTargetTokenBalance(Math.floor(utils.formatUnits(balance)));
     console.log(
-      `Get user mapping T balance:${Math.floor(
-        ethers.utils.formatUnits(balance)
-      )}`
+      `Get user mapping T balance:${Math.floor(utils.formatUnits(balance))}`
     );
-  }
+  };
 
-  async function fetchUserWalletCurrencyTokenBalance() {
+  const fetchUserWalletCurrencyTokenBalance = async () => {
     const tokenContract = getContract(currencyToken.address);
     const balance = await tokenContract.balanceOf(account);
-    setCurrencyTokenBalance(ethers.utils.formatUnits(balance));
-    console.log(`Get user dex balance:${ethers.utils.formatUnits(balance)}`);
-  }
+    setCurrencyTokenBalance(utils.formatUnits(balance));
+    console.log(`Get user dex balance:${utils.formatUnits(balance)}`);
+  };
 
   /// Update the number of currency token users need to pay when
   /// users change the number of target token users want to buy.
   useEffect(() => {
-    setBuyCurrencyTokenNumber(
-      (buyTargetTokenNumber * targetToCurrencyRatio).toFixed(3)
+    setBuyCurrencyAmount((buyTargetAmount * targetToCurrencyRatio).toFixed(3));
+    setSellCurrencyAmount(
+      (sellTargetAmount * targetToCurrencyRatio).toFixed(3)
     );
-    setSellCurrencyTokenNumber(
-      (sellTargetTokenNumber * targetToCurrencyRatio).toFixed(3)
-    );
-  }, [buyTargetTokenNumber, sellTargetTokenNumber, targetToCurrencyRatio]);
+  }, [buyTargetAmount, sellTargetAmount, targetToCurrencyRatio]);
 
   const addLiquidity = async () => {
     try {
-      const UniswapV2Router01 = new ethers.Contract(
-        V2_SWAP_ROUTER_ADDRESS,
+      const UniswapV2Router01 = new Contract(
+        UNI_V2_ROUTER,
         JSON.stringify(IUniswapV2Router01.abi),
         provider.getSigner()
       );
-      const bigNumberLiquidityTargetTokenNumber = ethers.utils.parseUnits(
-        liquidityTargetTokenNumber.toString()
-      );
-      const bigNumberLiquidityCurrencyTokenNumber = ethers.utils.parseUnits(
-        liquidityCurrencyTokenNumber.toString()
-      );
-      const targetTokenContract = new ethers.Contract(
+      const targetAmount = BigNumber.from(liquidityTargetAmount.toString());
+      const currencyAmount = BigNumber.from(liquidityCurrencyAmount.toString());
+      await approveToken(
+        provider,
         targetToken.address,
-        JSON.stringify(ERC20_ABI),
-        provider.getSigner()
+        UNI_V2_ROUTER,
+        targetAmount
       );
-      const currencyContract = new ethers.Contract(
+      await approveToken(
+        provider,
         currencyToken.address,
-        JSON.stringify(ERC20_ABI),
-        provider.getSigner()
-      );
-      await targetTokenContract.approve(
-        V2_SWAP_ROUTER_ADDRESS,
-        bigNumberLiquidityTargetTokenNumber
-      );
-      await currencyContract.approve(
-        V2_SWAP_ROUTER_ADDRESS,
-        bigNumberLiquidityCurrencyTokenNumber
+        UNI_V2_ROUTER,
+        currencyAmount
       );
 
       // Fetch the up-to-date targetToken price.
@@ -179,8 +142,8 @@ export default function TradeToken({
       const transaction = await UniswapV2Router01.addLiquidity(
         targetToken.address,
         currencyToken.address,
-        bigNumberLiquidityTargetTokenNumber,
-        bigNumberLiquidityCurrencyTokenNumber,
+        targetAmount,
+        currencyAmount,
         0,
         0,
         account,
@@ -192,8 +155,8 @@ export default function TradeToken({
       );
       // Append current tx into pending tx list.
       setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
-      getTransactionStatus(transaction.hash, async () => {
-        setSuccessMsg(`Transction successded! hash:${transaction.hash}`);
+      getTxStatus(transaction.hash, async () => {
+        setSuccessMsg(`Transaction succeeded! hash:${transaction.hash}`);
         pendingTxs.delete(transaction.hash);
         setPendingTxs(new Set([...pendingTxs]));
       });
@@ -205,40 +168,35 @@ export default function TradeToken({
 
   const sellTargetToken = async () => {
     try {
-      const UniswapV2Router01 = new ethers.Contract(
-        V2_SWAP_ROUTER_ADDRESS,
+      const UniswapV2Router01 = new Contract(
+        UNI_V2_ROUTER,
         JSON.stringify(IUniswapV2Router01.abi),
         provider.getSigner()
       );
       const pair = await Fetcher.fetchPairData(currencyToken, targetToken);
       const route = new Route([pair], targetToken);
-      const amountIn = sellTargetTokenNumber;
-      const bigNumberAmountIn = ethers.utils.parseUnits(amountIn.toString());
+      const amountIn = sellTargetAmount;
+      const bnAmountIn = BigNumber.from(amountIn.toString());
       const trade = new Trade(
         route,
-        new TokenAmount(targetToken, bigNumberAmountIn),
+        new TokenAmount(targetToken, bnAmountIn),
         TradeType.EXACT_INPUT
       );
       const slippageTolerance = new Percent("5000", "10000"); // 5000 bips, or 50%
       const amountOutMin = trade.minimumAmountOut(slippageTolerance).raw; // needs to be converted to e.g. hex
-      const bigNumberAmountOutMin = ethers.utils.parseUnits(
-        amountOutMin.toString()
-      );
+      const bnAmountOutMin = BigNumber.from(amountOutMin.toString());
       const path = [targetToken.address, currencyToken.address];
       const to = account; // should be a checksummed recipient address
       const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
-      const targetTokenContract = new ethers.Contract(
+      await approveToken(
+        provider,
         targetToken.address,
-        JSON.stringify(ERC20_ABI),
-        provider.getSigner()
-      );
-      await targetTokenContract.approve(
-        V2_SWAP_ROUTER_ADDRESS,
-        bigNumberAmountIn
+        UNI_V2_ROUTER,
+        bnAmountIn
       );
       const transaction = await UniswapV2Router01.swapExactTokensForTokens(
-        bigNumberAmountIn,
-        0, // bigNumberAmountOutMin, //amountOutMin
+        bnAmountIn,
+        0, // bnAmountOutMin, //amountOutMin
         path,
         to,
         deadline,
@@ -249,8 +207,8 @@ export default function TradeToken({
       );
       // Append current tx into pending tx list.
       setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
-      getTransactionStatus(transaction.hash, async () => {
-        setSuccessMsg(`Transction successded! hash:${transaction.hash}`);
+      getTxStatus(transaction.hash, async () => {
+        setSuccessMsg(`Transaction succeeded! hash:${transaction.hash}`);
         pendingTxs.delete(transaction.hash);
         setPendingTxs(new Set([...pendingTxs]));
       });
@@ -262,39 +220,34 @@ export default function TradeToken({
 
   const buyTargetToken = async () => {
     try {
-      const UniswapV2Router01 = new ethers.Contract(
-        V2_SWAP_ROUTER_ADDRESS,
+      const UniswapV2Router01 = new Contract(
+        UNI_V2_ROUTER,
         JSON.stringify(IUniswapV2Router01.abi),
         provider.getSigner()
       );
       const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
       const route = new Route([pair], currencyToken);
-      const amountOut = buyTargetTokenNumber;
-      const bigNumberAmountOut = ethers.utils.parseUnits(amountOut.toString());
+      const amountOut = buyTargetAmount;
+      const bnAmountOut = BigNumber.from(amountOut.toString());
       const trade = new Trade.exactOut(
         route,
-        new TokenAmount(targetToken, bigNumberAmountOut)
+        new TokenAmount(targetToken, bnAmountOut)
       );
       const slippageTolerance = new Percent("5000", "10000"); // 5000 bips, or 50%
       const amountInMax = trade.maximumAmountIn(slippageTolerance).raw; // needs to be converted to e.g. hex
-      const bigNumberAmountInMax = ethers.utils.parseUnits(
-        amountInMax.toString()
-      );
+      const bnAmountInMax = BigNumber.from(amountInMax.toString());
       const path = [currencyToken.address, targetToken.address];
       const to = account; // should be a checksummed recipient address
       const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from the current Unix time
-      const currencyTokenContract = new ethers.Contract(
+      await approveToken(
+        provider,
         currencyToken.address,
-        JSON.stringify(ERC20_ABI),
-        provider.getSigner()
-      );
-      await currencyTokenContract.approve(
-        V2_SWAP_ROUTER_ADDRESS,
-        bigNumberAmountInMax
+        UNI_V2_ROUTER,
+        bnAmountInMax
       );
       let transactionHash = await UniswapV2Router01.swapTokensForExactTokens(
-        bigNumberAmountOut,
-        bigNumberAmountInMax, // bigNumberAmountOutMin, //amountOutMin
+        bnAmountOut,
+        bnAmountInMax, // bnAmountOutMin, //amountOutMin
         path,
         to,
         deadline,
@@ -306,8 +259,8 @@ export default function TradeToken({
       // Append current tx into pending tx list.
       console.log("setPendingTxs");
       setPendingTxs(new Set([transactionHash.hash, ...pendingTxs]));
-      getTransactionStatus(transactionHash.hash, async () => {
-        setSuccessMsg(`Transction successded! hash:${transactionHash.hash}`);
+      getTxStatus(transactionHash.hash, async () => {
+        setSuccessMsg(`Transaction succeeded! hash:${transactionHash.hash}`);
         pendingTxs.delete(transactionHash.hash);
         setPendingTxs(new Set([...pendingTxs]));
       });
@@ -328,7 +281,7 @@ export default function TradeToken({
       setLoading(false);
     });
   }, [refresh]);
-  const formatFloatNumber = (x) => Number.parseFloat(x).toFixed(0);
+
   return (
     <Box sx={{ flexGrow: 1 }} className={styles.container}>
       <Grid container spacing={2}>
@@ -370,9 +323,9 @@ export default function TradeToken({
                 id="outlined-basic"
                 variant="outlined"
                 fullWidth
-                placehoder={0}
-                value={buyTargetTokenNumber}
-                onChange={changeBuyTargetTokenNumber}
+                placeholder={0}
+                value={buyTargetAmount}
+                onChange={changeBuyTargetAmount}
                 type="number"
               />
             </div>
@@ -404,7 +357,7 @@ export default function TradeToken({
                 fontWeight: "700",
               }}
             >
-              Cost: {buyCurrencyTokenNumber} {currencyToken.name}
+              Cost: {buyCurrencyAmount} {currencyToken.name}
             </Box>
             <Button
               sx={{ marginTop: 2, height: 60 }}
@@ -412,13 +365,11 @@ export default function TradeToken({
               size="large"
               fullWidth
               disabled={
-                buyTargetTokenNumber * targetToCurrencyRatio >
-                currencyTokenBalance
+                buyTargetAmount * targetToCurrencyRatio > currencyTokenBalance
               }
               onClick={buyTargetToken}
             >
-              {buyTargetTokenNumber * targetToCurrencyRatio >
-              currencyTokenBalance
+              {buyTargetAmount * targetToCurrencyRatio > currencyTokenBalance
                 ? "Insufficient Balance"
                 : "Buy"}
             </Button>
@@ -463,9 +414,9 @@ export default function TradeToken({
                 id="outlined-basic"
                 fullWidth
                 variant="outlined"
-                placehoder={0}
-                value={sellTargetTokenNumber}
-                onChange={changeSellTargetTokenNumber}
+                placeholder={0}
+                value={sellTargetAmount}
+                onChange={changeSellTargetAmount}
                 type="number"
               />
             </div>
@@ -495,17 +446,17 @@ export default function TradeToken({
                 fontWeight: "700",
               }}
             >
-              Get: {sellCurrencyTokenNumber} {currencyToken.name}
+              Get: {sellCurrencyAmount} {currencyToken.name}
             </Box>
             <Button
               sx={{ marginTop: 2, height: 60 }}
               variant="contained"
               size="large"
-              disabled={sellTargetTokenNumber > targetTokenBalance}
+              disabled={sellTargetAmount > targetTokenBalance}
               fullWidth
               onClick={sellTargetToken}
             >
-              {sellTargetTokenNumber > targetTokenBalance
+              {sellTargetAmount > targetTokenBalance
                 ? "Insufficient Balance"
                 : "Sell"}
             </Button>
@@ -549,8 +500,8 @@ export default function TradeToken({
                 id="outlined-basic"
                 fullWidth
                 variant="outlined"
-                value={liquidityTargetTokenNumber}
-                onChange={changeLiquidityTargetTokenNumber}
+                value={liquidityTargetAmount}
+                onChange={changeLiquidityTargetAmount}
               />
               <div style={{ display: "flex" }}>
                 <span style={{ marginRight: "8px" }}>Max:</span>
@@ -583,8 +534,8 @@ export default function TradeToken({
                 id="outlined-basic"
                 fullWidth
                 variant="outlined"
-                value={liquidityCurrencyTokenNumber}
-                onChange={changeLiquidityCurrencyTokenNumber}
+                value={liquidityCurrencyAmount}
+                onChange={changeLiquidityCurrencyAmount}
               />
               <div style={{ display: "flex" }}>
                 <span style={{ marginRight: "8px" }}>Max:</span>
@@ -618,14 +569,14 @@ export default function TradeToken({
               size="large"
               fullWidth
               disabled={
-                liquidityTargetTokenNumber > targetTokenBalance ||
-                liquidityCurrencyTokenNumber > currencyTokenBalance
+                liquidityTargetAmount > targetTokenBalance ||
+                liquidityCurrencyAmount > currencyTokenBalance
               }
               onClick={addLiquidity}
             >
-              {liquidityTargetTokenNumber > targetTokenBalance
+              {liquidityTargetAmount > targetTokenBalance
                 ? `Insufficient ${targetToken.name} token balance`
-                : liquidityCurrencyTokenNumber > currencyTokenBalance
+                : liquidityCurrencyAmount > currencyTokenBalance
                 ? `Insufficient ${currencyToken.name} Balance`
                 : "Stake"}
             </Button>

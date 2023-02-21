@@ -1,12 +1,13 @@
 import { useEffect, useRef } from "react";
-import { useWalletContext } from "../../context/wallet";
+import { useWeb3Context } from "../../utils/web3-context";
+
 if (typeof window !== "undefined") {
   var jazzicon = require("jazzicon");
 }
 
 export default function Identicon() {
   const avatarRef = useRef();
-  const { account } = useWalletContext();
+  const { account } = useWeb3Context();
 
   useEffect(() => {
     if (!account) return;
@@ -14,7 +15,7 @@ export default function Identicon() {
     if (element && account) {
       const addr = account.slice(2, 10);
       const seed = parseInt(addr, 16);
-      const icon = jazzicon(20, seed); //generates a size 20 icon
+      const icon = jazzicon(20, seed);
       if (element.firstChild) {
         element.removeChild(element.firstChild);
       }

@@ -1,37 +1,25 @@
 // Permission. -> Allowance.  Use timestamp
-// Update token balance after transactoin finish.
+// Update token balance after transaction finish.
 import React, { useEffect, useState } from "react";
-import styles from "../details/style/Details.module.css";
-import Azuki from "../../../static/images/azuki.jpeg";
-import eth from "../../../static/images/eth.png";
-import Grid from "@mui/material/Grid";
-import Avatar from "@mui/material/Avatar";
-import UserActions from "./src/user_actions/UserActions";
+import { Alert, AlertTitle, Avatar, Divider, Grid } from "@mui/material";
 import { useRouter } from "next/router";
-import Divider from "@mui/material/Divider";
-import { API } from "../contract/poolContract";
-import uniswapLiquidityPoolAbi from "../../../contracts/uniswapLiquidityPoolAbi.json";
-import {
-  getProvider,
-  getTokenInfo,
-  fetchPoolInfo,
-  getMappingTokenAddress,
-} from "../../pool/contract/poolContract";
-import { getUniswapPairAddress } from "../../pool/contract/mappingTokenContract";
-import { useWalletContext } from "../../../context/wallet";
-import { ethers } from "ethers";
-import { ChainId, Token, Fetcher, Route } from "@uniswap/sdk";
-import Alert from "@mui/material/Alert";
-import AlertTitle from "@mui/material/AlertTitle";
-import "reactjs-popup/dist/index.css";
 import Popup from "reactjs-popup";
-import UserBanalce from "./UserBalance";
+import { Contract } from "ethers";
+import { ChainId, Fetcher, Route } from "@uniswap/sdk";
+import UserBalance from "./UserBalance";
+import UserActions from "./src/user_actions/UserActions";
+import { useWeb3Context } from "../../../utils/web3-context";
+import { getUniswapPair } from "../../../utils/contracts/token-slice";
+import unipoolAbi from "../../../utils/abis/unipool.json";
+import eth from "../../../static/images/eth.png";
+import styles from "../details/style/Details.module.css";
+import "reactjs-popup/dist/index.css";
+import { usePool } from "../../../utils/contracts/pool-slice";
 
 const Details = ({ nftPoolAddress }) => {
   if (!nftPoolAddress) return;
-  const provider = getProvider();
-  const router = useRouter();
-  const { account, chainId } = useWalletContext();
+
+  const { account, provider, chainId } = useWeb3Context();
   const [collection, setCollection] = useState({});
   const [currencyTokenPrice, setCurrencyTokenPrice] = useState(0);
   const [cardDatas, setCardDatas] = useState([]);
@@ -42,25 +30,26 @@ const Details = ({ nftPoolAddress }) => {
   const [currencyToken, setCurrencyToken] = useState(null);
   const [nftPoolInfo, setNFTPoolInfo] = useState({});
   const [uniswapPairAddress, setUniswapPairAddress] = useState(null);
-  const useToHome = () => {
-    router.push("/");
-  };
+
+  const { data: pool } = usePool(nftPoolAddress);
 
   useEffect(() => {
     if (!targetToken || !currencyToken) return;
-    async function fetchCurrencyTokenPrice() {
+
+    const fetchCurrencyTokenPrice = async () => {
       const pair = await Fetcher.fetchPairData(targetToken, currencyToken);
       const route = new Route([pair], currencyToken);
       setCurrencyTokenPrice(route.midPrice.toSignificant(6));
-    }
+    };
+
     fetchCurrencyTokenPrice();
   }, [targetToken, currencyToken]);
 
   useEffect(() => {
-    async function fetchUniswapLiquidityPoolInfo() {
-      const pool = new ethers.Contract(
+    const fetchUniswapLiquidityPoolInfo = async () => {
+      const pool = new Contract(
         uniswapPairAddress,
-        uniswapLiquidityPoolAbi,
+        unipoolAbi,
         provider.getSigner()
       );
       const targetTokenAddress = await pool.token1();
@@ -72,17 +61,24 @@ const Details = ({ nftPoolAddress }) => {
       let targetTokenBalance = await pool.balanceOf(targetTokenAddress);
       let currencyTokenBalance = await pool.balanceOf(currencyTokenAddress);
       //TODO: Show balance in the detail page.
-    }
-    if (!account || chainId != ChainId.GÖRLI || !uniswapPairAddress) return;
+    };
+    if (
+      !account ||
+      !provider ||
+      chainId != ChainId.GÖRLI ||
+      !uniswapPairAddress
+    )
+      return;
     fetchUniswapLiquidityPoolInfo();
-  }, [account, chainId, uniswapPairAddress]);
+  }, [account, provider, chainId, uniswapPairAddress]);
 
   useEffect(() => {
     const fetchNFTPoolStats = async () => {
-      let res = await API.GetCollectionStats();
-      let data = res.data;
-      if (!data || !data.collection) return;
-      setCollection(data.collection);
+      // TODO: fetch pool stats
+      // let res = await API.GetCollectionStats();
+      // let data = res.data;
+      // if (!data || !data.collection) return;
+      // setCollection(data.collection);
     };
 
     const fetchNFTPoolInfo = async () => {
@@ -92,12 +88,11 @@ const Details = ({ nftPoolAddress }) => {
       setNFTPoolInfo(nftPoolInfo);
     };
 
-    async function fetchUniswapPairAddress() {
-      if (!nftPoolAddress) return;
-      const mappingTokenAddress = await getMappingTokenAddress(nftPoolAddress);
-      const address = await getUniswapPairAddress(mappingTokenAddress);
+    const fetchUniswapPairAddress = async () => {
+      if (!pool.mappingToken) return;
+      const address = await getUniswapPair(pool.mappingToken);
       setUniswapPairAddress(address);
-    }
+    };
     fetchNFTPoolStats();
     fetchNFTPoolInfo();
     fetchUniswapPairAddress();
@@ -214,7 +209,7 @@ const Details = ({ nftPoolAddress }) => {
         </Grid>
       </Grid>
       <Divider className={styles.dividerFull} variant="middle" />
-      <UserBanalce
+      <UserBalance
         targetToken={targetToken}
         currencyToken={currencyToken}
         refresh={refresh}

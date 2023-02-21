@@ -1,61 +1,35 @@
-import React, { useEffect, useState, useRef } from "react";
-import styles from "./style/Collection.module.css";
-import Grid from "@mui/material/Grid";
+import React, { useMemo } from "react";
+import { Grid } from "@mui/material";
 import Card from "./src/Card";
-import { fetchNFTTokenIdsFromPoolAddress } from "../../../contract/poolContract";
+import styles from "./style/Collection.module.css";
+import { usePool } from "../../../../../utils/contracts/pool-slice";
 
-const Collection = ({ nftPoolInfo, type }) => {
-  const [nfts, setNfts] = useState(null);
-  const [ownedNfts, setOwnedNfts] = useState([]);
+const Collection = ({ nftPoolAddress, type }) => {
+  const { data: pool } = usePool(nftPoolAddress);
+  const tokenIds = useMemo(() => (pool ? pool.tokenIds : []), [pool]);
+  const allMyNFTs = []; // TODO: fetch all my nfts
 
-  useEffect(() => {
-    async function fetchNFTInfos() {
-      const tokenIds = await fetchNFTTokenIdsFromPoolAddress(
-        nftPoolInfo.address
-      );
-      let tempList = [];
-      tokenIds.forEach((id) => {
-        tempList.push({
-          tokenId: id,
-        });
-      });
-      setNfts(tempList);
-      console.log(tempList);
-    }
-
-    async function fetchMyNfts() {
-      // TODO(Peter): fetch all nfts that under my wallet in this nft pool. I didn't
-      // see function like tokensOfOwner.
-    }
-    if (type == "Auction") {
-      fetchNFTInfos();
-    } else if (type == "Swap") {
-      fetchMyNfts();
-    }
-  }, []);
   return (
     <Grid container className={styles.collection}>
-      {(type == "Auction" ? nfts : ownedNfts) === null ? (
+      {(type == "Auction" ? tokenIds : allMyNFTs) === null ? (
         <div className={styles.placeholder}></div>
       ) : (
         ""
       )}
-      {(type == "Auction" ? nfts ?? [] : ownedNfts ?? []).map((nft) => {
-        return (
+      {(type == "Auction" ? tokenIds ?? [] : allMyNFTs ?? []).map(
+        (tokenId, index) => (
           <Card
-            pool={nftPoolInfo}
-            nft={nft}
-            key={nft.address}
+            key={`${index}`}
+            nftPoolAddress={nftPoolAddress}
             type={type}
-            item={true}
+            src={""}
+            tokenId={tokenId}
           />
-        );
-      })}
+        )
+      )}
       {type == "Auction"
-        ? nfts != null &&
-          nfts.length == 0 && <p className={styles.banner}>Empty</p>
-        : ownedNfts != null &&
-          ownedNfts.length == 0 && <p className={styles.banner}>Empty</p>}
+        ? tokenIds.length == 0 && <p className={styles.banner}>Empty</p>
+        : allMyNFTs.length == 0 && <p className={styles.banner}>Empty</p>}
     </Grid>
   );
 };

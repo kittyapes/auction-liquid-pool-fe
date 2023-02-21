@@ -1,21 +1,29 @@
-import React, { useEffect, useState, useRef } from "react";
-import styles from "../auction/style/Auction.module.css";
-import src from "../../../static/images/src.jpeg";
-import Grid from "@mui/material/Grid";
-import { useRouter } from "next/router";
-import { Button } from "@mui/material";
-import dynamic from "next/dynamic";
+import React, { useEffect, useState, useRef, useMemo } from "react";
+import { Button, Grid, TextField } from "@mui/material";
 import { withStyles } from "@mui/styles";
-import TextField from "@mui/material/TextField";
+import dynamic from "next/dynamic";
+import { BigNumber, utils } from "ethers";
+import { useWeb3Context } from "../../../utils/web3-context";
 import {
   placeBid,
-  fetchNFTAuctionInfoFromTokenId,
-  getTransactionStatus,
-} from "../contract/poolContract";
-import { fetchPoolInfo } from "../contract/poolContract";
-import { Status, TxStatus, getDeadTime, startTimer } from "./utils";
-import { ethers } from "ethers";
-import { useWalletContext } from "../../../context/wallet";
+  getTxStatus,
+  useAuction,
+  usePool,
+} from "../../../utils/contracts/pool-slice";
+import {
+  Status,
+  TxStatus,
+  getDeadTime,
+  startTimer,
+} from "../../../utils/helper";
+import src from "../../../static/images/src.jpeg";
+import styles from "../auction/style/Auction.module.css";
+import {
+  getAllowance,
+  increaseAllowance,
+} from "../../../utils/contracts/token-slice";
+import { DEX_TOKEN_ADDRESS } from "../../../utils/constants";
+
 const ApexCharts = dynamic(() => import("react-apexcharts"), { ssr: false });
 
 const CssTextField = withStyles({
@@ -39,15 +47,7 @@ const CssTextField = withStyles({
   },
 })(TextField);
 
-// TODO(peter): This chart is just a placehoder, it should indicate the price change of
-// each bid. Need to connect the subgraph and then get the data.
 const chart = {
-  series: [
-    {
-      name: "Desktops",
-      data: [10, 41, 35, 51, 49, 62, 69, 91, 148],
-    },
-  ],
   options: {
     chart: {
       height: 350,
@@ -90,57 +90,70 @@ const chart = {
 
 const Auction = ({ nftPoolAddress, tokenId }) => {
   if (!nftPoolAddress || !tokenId) return;
-  const [status, setStatus] = useState(null);
-  const [auctionInfo, setAuctionInfo] = useState({});
-  const [timer, setTimer] = useState("00:00:00");
-  const { account, pendingTxs } = useWalletContext();
   const Ref = useRef(null);
-
+  const { account, provider, pendingTxs } = useWeb3Context();
+  const [status, setStatus] = useState(null);
+  const [timer, setTimer] = useState("00:00:00");
   const [txStatus, setTxStatus] = useState(TxStatus.NONE);
 
+  const { data: pool } = usePool(nftPoolAddress);
+  const { data: auction } = useAuction(nftPoolAddress, tokenId);
+
+  const nextBidAmount = useMemo(() => {
+    if (!auction) return BigNumber.from(0);
+    const bidAmount = BigNumber.from(auction.highestBid.amount.toString());
+    return pool.isLinear
+      ? bidAmount.add(BigNumber.from(pool.delta))
+      : bidAmount.mul(pool.delta + 1000).div(1000);
+  }, [auction]);
+
   useEffect(() => {
-    async function fetchNftInfo() {
-      if (!tokenId || txStatus == TxStatus.PENDING) return;
-      const auctionInfo = await fetchNFTAuctionInfoFromTokenId(
-        nftPoolAddress,
-        Number(tokenId)
-      );
-      const poolInfo = await fetchPoolInfo(nftPoolAddress);
-      const bidAmount = Number(auctionInfo.bidAmount);
-      const isLinear = poolInfo.isLinear;
-      let nextBid;
-      if (isLinear) {
-        nextBid = bidAmount + Number(poolInfo.delta);
+    if (auction.isEnded) {
+      setStatus(Status.NOT_ACTIVATED);
+    } else {
+      let deadTime = getDeadTime(auction.expireAt);
+      if (deadTime < Date.now()) {
+        setStatus(Status.END);
       } else {
-        nextBid = bidAmount * (Number(poolInfo.ratio) + 1);
+        setStatus(Status.ACTIVATED);
+        clearTimer(deadTime);
       }
-      auctionInfo.nextBidAmount = nextBid;
-
-      setAuctionInfo(auctionInfo);
-      if (Number(auctionInfo.startedAt) == 0) {
-        setStatus(Status.NOT_ACTIVATED);
-      } else {
-        let timestamp =
-          Number(auctionInfo.startedAt) + Number(poolInfo.duration);
-        let deadTime = getDeadTime(timestamp);
-        if (deadTime < Date.now()) {
-          setStatus(Status.END);
-        } else {
-          setStatus(Status.ACTIVATED);
-          clearTimer(deadTime);
-        }
-      } //auctionInfo.winner != "0x0000000000000000000000000000000000000000"
     }
-    fetchNftInfo();
-  }, [txStatus]);
+  }, [auction]);
 
-  // TODO(peter): make sure this function work properly.
-  const placeAuction = async () => {
-    const transaction = await placeBid(nftPoolAddress, 0.05, tokenId, account);
+  const startAuction = async () => {
+    if (!pool) return;
+
+    const mAllowance = await getAllowance(
+      pool.mappingToken,
+      account,
+      nftPoolAddress
+    );
+    if (mAllowance.lt(BigNumber.from(pool.ratio)))
+      await increaseAllowance(
+        provider,
+        pool.mappingToken,
+        nftPoolAddress,
+        BigNumber.from(pool.ratio).sub(mAllowance)
+      );
+    const dAllowance = await getAllowance(
+      DEX_TOKEN_ADDRESS,
+      account,
+      nftPoolAddress
+    );
+    if (dAllowance.lt(BigNumber.from(nextBidAmount)))
+      await increaseAllowance(
+        provider,
+        DEX_TOKEN_ADDRESS,
+        nftPoolAddress,
+        nextBidAmount.sub(dAllowance)
+      );
+
+    const transaction = await placeBid(provider, nftPoolAddress, tokenId);
     setTx(transaction.hash);
     setTxStatus(TxStatus.PENDING);
     setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
-    getTransactionStatus(transaction.hash, async () => {
+    getTxStatus(transaction.hash, async () => {
       pendingTxs.delete(transaction.hash);
       setPendingTxs(new Set([...pendingTxs]));
       setTxStatus(TxStatus.DONE);
@@ -148,14 +161,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
   };
 
   const clearTimer = (e) => {
-    // If you adjust it you should also need to
-    // adjust the Endtime formula we are about
-    // to code next
     setTimer("00:00:00");
-
-    // If you try to remove this line the
-    // updating of timer Variable will be
-    // after 1000ms or 1sec
     if (Ref.current) clearInterval(Ref.current);
     const id = setInterval(() => {
       let time = startTimer(e);
@@ -163,6 +169,15 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
     }, 1000);
     Ref.current = id;
   };
+
+  const series = [
+    {
+      name: "Desktops",
+      data: (auction ? auction.bids : []).map(
+        (x) => +utils.formatEther(x.amount)
+      ),
+    },
+  ];
 
   return (
     <Grid container className={styles.container}>
@@ -180,7 +195,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
         <div id="chart">
           <ApexCharts
             options={chart.options}
-            series={chart.series}
+            series={series}
             type="area"
             height={350}
           />
@@ -208,7 +223,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
                       className={`${styles.mappingToken} ${styles.space}`}
                     >{`1 MT`}</span>
                     <span className={styles.currencyToken}>
-                      {ethers.utils.formatUnits(auctionInfo.bidAmount)}
+                      {utils.formatEther(auctionInfo.bidAmount)}
                       DEX
                     </span>
                   </div>
@@ -218,7 +233,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
                   variant="contained"
                   size="large"
                   fullWidth
-                  onClick={placeAuction}
+                  onClick={startAuction}
                 >
                   Start auction
                 </Button>
@@ -246,7 +261,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
                       className={`${styles.mappingToken} ${styles.space}`}
                     >{`1 MT`}</span>
                     <span className={styles.currencyToken}>
-                      {ethers.utils.formatUnits(auctionInfo.bidAmount)}
+                      {utils.formatEther(auctionInfo.bidAmount)}
                       DEX
                     </span>
                   </div>
@@ -260,7 +275,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
                       className={`${styles.mappingToken} ${styles.space}`}
                     >{`1 MT`}</span>
                     <span className={styles.currencyToken}>
-                      {ethers.utils.formatUnits(auctionInfo.nextBidAmount)}
+                      {utils.formatEther(auctionInfo.nextBidAmount)}
                       DEX
                     </span>
                   </div>
@@ -282,9 +297,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
                       }}
                       id="outlined-basic"
                       variant="outlined"
-                      placeholder={ethers.utils.formatEther(
-                        auctionInfo.nextBidAmount
-                      )}
+                      placeholder={utils.formatEther(auctionInfo.nextBidAmount)}
                       type="number"
                     />
                     <span className={styles.currencyToken}>DEX</span>
@@ -295,7 +308,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
                   variant="contained"
                   size="large"
                   fullWidth
-                  onClick={placeAuction}
+                  onClick={startAuction}
                 >
                   PLACE THE NEXT BID
                 </Button>
@@ -318,7 +331,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
                         variant="contained"
                         size="large"
                         fullWidth
-                        onClick={placeAuction}
+                        onClick={startAuction}
                       >
                         Check Your NFTs
                       </Button>
