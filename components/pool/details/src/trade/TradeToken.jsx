@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { withStyles } from "@mui/styles";
 import { Box, Button, Grid, Skeleton, TextField } from "@mui/material";
-import { BigNumber, Contract } from "ethers";
+import { BigNumber, Contract, utils } from "ethers";
 import {
   Fetcher,
   Route,
@@ -17,7 +17,10 @@ import {
 } from "../../../../../utils/constants";
 import { useWeb3Context } from "../../../../../utils/web3-context";
 import { getTxStatus } from "../../../../../utils/contracts/pool-slice";
-import { approveToken } from "../../../../../utils/contracts/token-slice";
+import {
+  approveToken,
+  getBalance,
+} from "../../../../../utils/contracts/token-slice";
 import styles from "./style/Trade.module.css";
 
 const CssTextField = withStyles({
@@ -88,19 +91,17 @@ export default function TradeToken({
   };
 
   const fetchUserWalletTargetTokenBalance = async () => {
-    const tokenContract = getContract(targetToken.address);
-    const balance = await tokenContract.balanceOf(account);
-    setTargetTokenBalance(Math.floor(utils.formatUnits(balance)));
+    const balance = await getBalance(targetToken.address, account);
+    setTargetTokenBalance(Math.floor(utils.formatEther(balance)));
     console.log(
-      `Get user mapping T balance:${Math.floor(utils.formatUnits(balance))}`
+      `Get user mapping T balance:${Math.floor(utils.formatEther(balance))}`
     );
   };
 
   const fetchUserWalletCurrencyTokenBalance = async () => {
-    const tokenContract = getContract(currencyToken.address);
-    const balance = await tokenContract.balanceOf(account);
-    setCurrencyTokenBalance(utils.formatUnits(balance));
-    console.log(`Get user dex balance:${utils.formatUnits(balance)}`);
+    const balance = await getBalance(currencyToken.address, account);
+    setCurrencyTokenBalance(utils.formatEther(balance));
+    console.log(`Get user dex balance:${utils.formatEther(balance)}`);
   };
 
   /// Update the number of currency token users need to pay when

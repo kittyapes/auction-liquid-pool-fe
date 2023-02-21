@@ -55,7 +55,7 @@ const rows = [
       price: "6.99",
       coinImage: eth.src,
     },
-    address: "0x22D5dc826145166f7cbDfBf14CFE9a43dA02Ea25",
+    address: "0x88ce18240d7aa3a0afefc0d00f5cca1ad608c81d",
   },
   {
     id: 2,
@@ -73,7 +73,7 @@ const rows = [
       price: "6.99",
       coinImage: eth.src,
     },
-    address: "0x22D5dc826145166f7cbDfBf14CFE9a43dA02Ea25",
+    address: "0x88ce18240d7aa3a0afefc0d00f5cca1ad608c81d",
   },
   {
     id: 3,
@@ -91,7 +91,7 @@ const rows = [
       price: "6.99",
       coinImage: eth.src,
     },
-    address: "0x22D5dc826145166f7cbDfBf14CFE9a43dA02Ea25",
+    address: "0x88ce18240d7aa3a0afefc0d00f5cca1ad608c81d",
   },
 ];
 

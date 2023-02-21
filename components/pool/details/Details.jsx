@@ -2,19 +2,21 @@
 // Update token balance after transaction finish.
 import React, { useEffect, useState } from "react";
 import { Alert, AlertTitle, Avatar, Divider, Grid } from "@mui/material";
-import { useRouter } from "next/router";
 import Popup from "reactjs-popup";
 import { Contract } from "ethers";
 import { ChainId, Fetcher, Route } from "@uniswap/sdk";
 import UserBalance from "./UserBalance";
 import UserActions from "./src/user_actions/UserActions";
 import { useWeb3Context } from "../../../utils/web3-context";
-import { getUniswapPair } from "../../../utils/contracts/token-slice";
+import {
+  getTokenInfo,
+  getUniswapPair,
+} from "../../../utils/contracts/token-slice";
+import { usePool } from "../../../utils/contracts/pool-slice";
 import unipoolAbi from "../../../utils/abis/unipool.json";
 import eth from "../../../static/images/eth.png";
 import styles from "../details/style/Details.module.css";
 import "reactjs-popup/dist/index.css";
-import { usePool } from "../../../utils/contracts/pool-slice";
 
 const Details = ({ nftPoolAddress }) => {
   if (!nftPoolAddress) return;
@@ -28,7 +30,6 @@ const Details = ({ nftPoolAddress }) => {
   const [refresh, setRefresh] = useState(0);
   const [targetToken, setTargetToken] = useState(null);
   const [currencyToken, setCurrencyToken] = useState(null);
-  const [nftPoolInfo, setNFTPoolInfo] = useState({});
   const [uniswapPairAddress, setUniswapPairAddress] = useState(null);
 
   const { data: pool } = usePool(nftPoolAddress);
@@ -81,22 +82,18 @@ const Details = ({ nftPoolAddress }) => {
       // setCollection(data.collection);
     };
 
-    const fetchNFTPoolInfo = async () => {
-      if (!nftPoolAddress) return;
-      let nftPoolInfo = await fetchPoolInfo(nftPoolAddress);
-      nftPoolInfo["name"] = "Test pool";
-      setNFTPoolInfo(nftPoolInfo);
-    };
-
     const fetchUniswapPairAddress = async () => {
       if (!pool.mappingToken) return;
+      console.log(pool);
       const address = await getUniswapPair(pool.mappingToken);
       setUniswapPairAddress(address);
     };
+
+    if (!pool) return;
+
     fetchNFTPoolStats();
-    fetchNFTPoolInfo();
     fetchUniswapPairAddress();
-  }, []);
+  }, [pool]);
 
   useEffect(() => {
     if (!collection || !currencyTokenPrice) return;
@@ -216,7 +213,8 @@ const Details = ({ nftPoolAddress }) => {
       />
       <Grid xs={12} className={styles.user_actions}>
         <UserActions
-          nftPoolInfo={nftPoolInfo}
+          nftPoolAddress={nftPoolAddress}
+          name={pool?.name || "unknown"}
           targetToken={targetToken}
           currencyToken={currencyToken}
           setErrorMsg={setErrorMsg}

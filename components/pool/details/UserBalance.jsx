@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Skeleton } from "@mui/material";
 import { utils } from "ethers";
 import { useWeb3Context } from "../../../utils/web3-context";
+import { getBalance } from "../../../utils/contracts/token-slice";
 import styles from "./style/Details.module.css";
 
 const UserBalance = ({ targetToken, currencyToken, refresh }) => {
@@ -25,14 +26,12 @@ const UserBalance = ({ targetToken, currencyToken, refresh }) => {
   const formatFloatNumber = (x) => Number.parseFloat(x).toFixed(3);
 
   const fetchUserWalletTargetTokenBalance = async () => {
-    const tokenContract = getContract(targetToken.address);
-    const balance = await tokenContract.balanceOf(account);
+    const balance = await getBalance(targetToken.address, account);
     setTargetTokenBalance(formatFloatNumber(utils.formatUnits(balance)));
   };
 
   const fetchUserWalletCurrencyTokenBalance = async () => {
-    const tokenContract = getContract(currencyToken.address);
-    const balance = await tokenContract.balanceOf(account);
+    const balance = await getBalance(currencyToken.address, account);
     setCurrencyTokenBalance(formatFloatNumber(utils.formatUnits(balance)));
   };
 

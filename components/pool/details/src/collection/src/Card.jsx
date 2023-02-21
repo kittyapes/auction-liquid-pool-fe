@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useMemo, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { Button } from "@mui/material";
-import { utils } from "ethers";
+import { BigNumber, utils } from "ethers";
 import {
   useAuction,
   usePool,

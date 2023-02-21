@@ -7,6 +7,7 @@ export const POOLS_QUERY = gql`
       owner {
         id
       }
+      name
       nft
       mappingToken
       tokenIds
@@ -32,6 +33,7 @@ export const POOL_QUERY = gql`
       owner {
         id
       }
+      name
       nft
       mappingToken
       tokenIds

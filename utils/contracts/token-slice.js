@@ -1,5 +1,6 @@
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Contract } from "ethers";
+import { ChainId, Token } from "@uniswap/sdk";
 import { RPC_URL } from "../constants";
 import erc20Abi from "../abis/erc20.json";
 import mtokenAbi from "../abis/mtoken.json";
@@ -12,6 +13,11 @@ export const getTokenInfo = async (token) => {
   const symbol = await contract.symbol();
   const name = await contract.name();
   return new Token(ChainId.GÖRLI, token, decimals, symbol, name);
+};
+
+export const getBalance = async (token, account) => {
+  const contract = new Contract(token, erc20Abi, staticProvider);
+  return await contract["balanceOf"](account);
 };
 
 export const getAllowance = async (token, account, operator) => {

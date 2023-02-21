@@ -1,4 +1,4 @@
-const getTimeRemaining = (e) => {
+const getTimeRemaining = (timestamp) => {
   const total = Date.parse(timestamp) - Date.parse(new Date());
   const seconds = Math.floor((total / 1000) % 60);
   const minutes = Math.floor((total / 1000 / 60) % 60);
