@@ -1,18 +1,16 @@
+import React from "react";
 import PropTypes from "prop-types";
-import { useRouter } from "next/router";
-import React, { useEffect, useState, useRef } from "react";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Typography from "@mui/material/Typography";
-import { Button, Box, Divider } from "@mui/material";
-import styles from "../user_actions/style/UserActions.module.css";
-import Collection from "../collection/Collection";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/router";
+import { Button, Box, Divider, Tab, Tabs, Typography } from "@mui/material";
+import Collection from "../collection/Collection";
+import styles from "../user_actions/style/UserActions.module.css";
 
 const TradeToken = dynamic(() => import("../trade/TradeToken"), { ssr: false });
 
-function TabPanel(props) {
+const TabPanel = (props) => {
   const { children, value, index, ...other } = props;
+
   return (
     <div
       className={styles.tab_panel}
@@ -29,7 +27,7 @@ function TabPanel(props) {
       )}
     </div>
   );
-}
+};
 
 TabPanel.propTypes = {
   children: PropTypes.node,
@@ -37,12 +35,10 @@ TabPanel.propTypes = {
   value: PropTypes.number.isRequired,
 };
 
-function a11yProps(index) {
-  return {
-    id: `simple-tab-${index}`,
-    "aria-controls": `simple-tabpanel-${index}`,
-  };
-}
+const a11yProps = (index) => ({
+  id: `simple-tab-${index}`,
+  "aria-controls": `simple-tabpanel-${index}`,
+});
 
 export default function UserActions({
   nftPoolInfo,

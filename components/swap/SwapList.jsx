@@ -1,19 +1,19 @@
-import styles from "./style/SwapList.module.css";
-import { useRouter } from "next/router";
 import React from "react";
-import Avatar from "@mui/material/Avatar";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import MuiTableCell from "@mui/material/TableCell";
-import TableHead from "@mui/material/TableHead";
-import TableRow from "@mui/material/TableRow";
-import Paper from "@mui/material/Paper";
+import { useRouter } from "next/router";
 import { withStyles } from "@mui/styles";
 import { styled } from "@mui/material/styles";
-import clonex from "../../static/images/clonex.jpg";
+import {
+  Avatar,
+  TableCell as MuiTableCell,
+  Paper,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+} from "@mui/material";
 import eth from "../../static/images/eth.png";
-import Pagination from "@mui/material/Pagination";
-import Stack from "@mui/material/Stack";
+import clonex from "../../static/images/clonex.jpg";
+import styles from "./style/SwapList.module.css";
 
 const TableCell = withStyles({
   root: {

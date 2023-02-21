@@ -1,14 +1,11 @@
-import React, { useEffect, useState, useRef } from "react";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import Modal from "@mui/material/Modal";
+import React, { useEffect, useState } from "react";
+import { Box, Typography, Modal } from "@mui/material";
+import { ContentCopy, ArrowOutward } from "@mui/icons-material";
+import { utils } from "ethers";
+import { useWeb3Context } from "../../utils/web3-context";
 import Identicon from "./IdentIcon";
-import { ethers } from "ethers";
 import styles from "../header/style/Header.module.css";
-import { useWalletContext } from "../../utils/wallet-context";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import ArrowOutwardIcon from "@mui/icons-material/ArrowOutward";
-import { getProvider } from "../pool/contract/poolContract";
+
 const style = {
   position: "absolute",
   top: 96,
@@ -20,43 +17,33 @@ const style = {
   borderRadius: 2,
 };
 
-export default function AccountModal({ setAccountModalOpen }) {
-  const provider = getProvider();
-  const handleOpen = () => setAccountModalOpen(true);
-  const handleClose = () => setAccountModalOpen(false);
-  const { account, pendingTxs } = useWalletContext();
-  const [ethBalance, setEthBalance] = useState(0);
+export default function AccountModal({ open, onClose }) {
+  const { account, provider, pendingTxs } = useWeb3Context();
+  const [ethBalance, setETHBalance] = useState(0);
   const [copyLabel, setCopyLabel] = useState("copy");
-  const formatFloatNumber = (x) => Number.parseFloat(x).toFixed(3);
+
   useEffect(() => {
-    async function fetchUserWalletETHBalance() {
+    const fetchETHBalance = async () => {
       const balance = await provider.getBalance(account);
-      setEthBalance(formatFloatNumber(ethers.utils.formatEther(balance)));
-    }
+      setETHBalance(formatFloatNumber(utils.formatEther(balance)));
+    };
 
-    fetchUserWalletETHBalance();
-  });
+    if (provider) fetchETHBalance();
+  }, [account, provider]);
 
-  const copy = () => {
+  const formatFloatNumber = (x) => Number.parseFloat(x).toFixed(3);
+
+  const handleCopy = () => {
     navigator.clipboard.writeText(account);
     setCopyLabel("copied!");
   };
 
-  const explore = () => {
+  const handleExplore = () =>
     window.open(`https://goerli.etherscan.io/address/${account}`, "_blank");
-  };
-
-  const logout = async () => {
-    const res = await window.ethereum.request({
-      method: "eth_requestAccounts",
-      params: [{ eth_accounts: {} }],
-    });
-    console.log(res);
-  };
 
   return (
     <div>
-      <Modal open={true} onClose={handleClose}>
+      <Modal open={open} onClose={onClose}>
         <Box sx={style}>
           <div
             style={{
@@ -83,9 +70,9 @@ export default function AccountModal({ setAccountModalOpen }) {
                 <button
                   className={styles.smallButton}
                   id={styles.copy}
-                  onClick={copy}
+                  onClick={handleCopy}
                 >
-                  <ContentCopyIcon className={styles.smallIcon} />
+                  <ContentCopy className={styles.smallIcon} />
                 </button>
                 <div className={styles.copyHidden}>{copyLabel}</div>
               </div>
@@ -93,9 +80,9 @@ export default function AccountModal({ setAccountModalOpen }) {
                 <button
                   className={styles.smallButton}
                   id={styles.explore}
-                  onClick={explore}
+                  onClick={handleExplore}
                 >
-                  <ArrowOutwardIcon className={styles.smallIcon} />
+                  <ArrowOutward className={styles.smallIcon} />
                 </button>
                 <div className={styles.exploreHidden}>explore</div>
               </div>

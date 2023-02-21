@@ -11,11 +11,13 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@ethersproject/providers": "^5.7.2",
     "@lottiefiles/lottie-player": "^1.6.2",
     "@mui/icons-material": "^5.11.0",
     "@mui/lab": "^5.0.0-alpha.118",
     "@mui/material": "^5.11.7",
     "@mui/styles": "^5.10.16",
+    "@uauth/web3modal": "^2.4.0",
     "@uniswap/sdk": "^3.0.3",
     "@uniswap/smart-order-router": "^2.0.1",
     "@uniswap/v2-periphery": "^1.1.0-beta.0",
@@ -39,7 +41,8 @@
     "react-loading-skeleton": "^2.2.0",
     "reactjs-popup": "^2.0.5",
     "styled-components": "^5.3.6",
-    "web3": "^1.7.4"
+    "web3": "^1.8.2",
+    "web3modal": "^1.9.12"
   },
   "devDependencies": {
     "@uniswap/sdk-core": "^3.1.0",

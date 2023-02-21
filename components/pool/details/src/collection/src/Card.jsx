@@ -1,20 +1,60 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
+import { Button } from "@mui/material";
+import { utils } from "ethers";
+import {
+  useAuction,
+  usePool,
+} from "../../../../../../utils/contracts/pool-slice";
+import {
+  Status,
+  getDeadTime,
+  startTimer,
+} from "../../../../../../utils/helper";
 import styles from "../style/Collection.module.css";
-import { Button, Box, Divider } from "@mui/material";
-import { fetchNFTAuctionInfoFromTokenId } from "../../../../contract/poolContract";
-import { Status, getDeadTime, startTimer } from "../../../../auction/utils";
-const Card = ({ nft, type, pool }) => {
+
+const Card = ({ nftPoolAddress, type, src, tokenId }) => {
   // Three type: not activated, activated, sold.
   const router = useRouter();
-  const [timer, setTimer] = useState("00:00:00");
   const Ref = useRef(null);
-  const [auctionInfo, setAuctionInfo] = useState({});
+  const [timer, setTimer] = useState("00:00:00");
   const [status, setStatus] = useState(Status.NOT_ACTIVATED);
   const [buttonLabel, setButtonLabel] = useState(null);
-  const auction = () => {
-    router.push(`/${type.toLowerCase()}/${pool.address}?id=${nft.tokenId}`);
-  };
+
+  const { data: pool } = usePool(nftPoolAddress);
+  const { data: auction } = useAuction(nftPoolAddress, tokenId);
+
+  const nextBidAmount = useMemo(() => {
+    if (!auction) return BigNumber.from(0);
+    const bidAmount = BigNumber.from(auction.highestBid.amount.toString());
+    return pool.isLinear
+      ? bidAmount.add(BigNumber.from(pool.delta))
+      : bidAmount.mul(pool.delta + 1000).div(1000);
+  }, [auction]);
+
+  useEffect(() => {
+    if (type == "Auction") {
+      if (!auction || auction.isEnded) {
+        setStatus(Status.NOT_ACTIVATED);
+        setButtonLabel("Start Auction");
+      } else {
+        let deadTime = getDeadTime(auction.expireAt);
+        if (deadTime < Date.now()) {
+          setStatus(Status.END);
+          setButtonLabel("Auction Ended");
+        } else {
+          setStatus(Status.ACTIVATED);
+          clearTimer(deadTime);
+          setButtonLabel(`Place Next Bid: ${utils.formatEther(nextBidAmount)}`);
+        }
+      }
+    } else {
+      setButtonLabel("Swap");
+    }
+  }, [auction]);
+
+  const handleAuction = () =>
+    router.push(`/${type.toLowerCase()}/${pool.address}?id=${tokenId}`);
 
   const clearTimer = (e) => {
     setTimer("00:00:00");
@@ -26,46 +66,6 @@ const Card = ({ nft, type, pool }) => {
     Ref.current = id;
   };
 
-  useEffect(() => {
-    async function fetchNftInfo() {
-      // TODO(peter): the auction info is incorrect. startAt>0 but winnder is noone.
-      const auctionInfo = await fetchNFTAuctionInfoFromTokenId(
-        pool.address,
-        nft.tokenId
-      );
-      const bidAmount = Number(auctionInfo.bidAmount);
-      const isLinear = pool.isLinear;
-      let nextBid;
-      if (isLinear) {
-        nextBid = bidAmount + Number(pool.delta);
-      } else {
-        nextBid = bidAmount * (Number(ratio) + 1);
-      }
-      auctionInfo["nextBidAmount"] = nextBid;
-      setAuctionInfo(auctionInfo);
-      if (Number(auctionInfo.startedAt) == 0) {
-        setStatus(Status.NOT_ACTIVATED);
-        setButtonLabel("Start Auction");
-      } else {
-        let timestamp = Number(auctionInfo.startedAt) + Number(pool.duration);
-        let deadTime = getDeadTime(timestamp);
-        if (deadTime < Date.now()) {
-          setStatus(Status.END);
-          setButtonLabel("Auction Ended");
-        } else {
-          setStatus(Status.ACTIVATED);
-          clearTimer(deadTime);
-          setButtonLabel(`Place Next Bid: ${auctionInfo.nextBidAmount}`);
-        }
-      }
-    }
-    console.log(type);
-    if (type == "Auction") fetchNftInfo();
-    else {
-      setButtonLabel("Swap");
-    }
-  }, []);
-
   return (
     <div className={styles.card}>
       <div>
@@ -74,7 +74,7 @@ const Card = ({ nft, type, pool }) => {
             {timer}
           </p>
         )}
-        <img className={styles.nft_image} src={nft.src} />
+        <img className={styles.nft_image} src={src} />
       </div>
       <Button
         sx={{ marginTop: 2, height: 60 }}
@@ -82,7 +82,7 @@ const Card = ({ nft, type, pool }) => {
         variant="contained"
         disabled={status == Status.END}
         className={`${styles.button} ${styles.purple}`}
-        onClick={auction}
+        onClick={handleAuction}
       >
         {buttonLabel}
       </Button>

@@ -1,61 +1,42 @@
 import React, { useEffect, useState } from "react";
-import styles from "../redeem/style/Redeem.module.css";
-import src from "../../../static/images/src.jpeg";
-import Grid from "@mui/material/Grid";
+import { Button, CircularProgress, Grid } from "@mui/material";
 import { useRouter } from "next/router";
-import ArrowRightAltIcon from "@mui/icons-material/ArrowRightAlt";
-import { Button } from "@mui/material";
-import CircularProgress from "@mui/material/CircularProgress";
+import { ArrowRightAlt } from "@mui/icons-material";
+import { useWeb3Context } from "../../../utils/web3-context";
+import { getAllowance } from "../../../utils/contracts/token-slice";
 import {
   redeemNFT,
-  getTransactionStatus,
-  getMappingTokenAddress,
-} from "../contract/poolContract";
-import { useWalletContext } from "../../../utils/wallet-context";
-import { getAllowance } from "../contract/mappingTokenContract";
+  getTxStatus,
+  usePool,
+} from "../../../utils/contracts/pool-slice";
+import src from "../../../static/images/src.jpeg";
+import styles from "../redeem/style/Redeem.module.css";
+
 const Redeem = ({ nftPoolAddress }) => {
   if (!nftPoolAddress) return;
-  const { account, pendingTxs, setPendingTxs } = useWalletContext();
+
+  const { account, provider, pendingTxs, setPendingTxs } = useWeb3Context();
   const [redeemNumber, setRedeemNumber] = useState(0);
-  const [mappingTokenAddress, setMappingTokenAddress] = useState(null);
   const [loading, setLoading] = useState(null);
-  const router = useRouter();
 
-  useEffect(() => {
-    async function fetchMappingTokenAddress() {
-      if (!nftPoolAddress) return;
-      const mappingTokenAddress = await getMappingTokenAddress(nftPoolAddress);
-      console.log(mappingTokenAddress);
-      setMappingTokenAddress(mappingTokenAddress);
-    }
-    fetchMappingTokenAddress();
-  }, [nftPoolAddress]);
+  const { data: pool } = usePool(nftPoolAddress);
 
-  // TODO(peter): make sure this function work properly.
   const placeRedemption = async () => {
-    if (redeemNumber == 0 || mappingTokenAddress == null) return;
-    const res = await getAllowance(
-      account,
-      nftPoolAddress,
-      mappingTokenAddress
-    );
-    if (res == 0) {
-      console.log("Error, no more NFTs left!!");
-    }
-    const transaction = await redeemNFT(account, nftPoolAddress, redeemNumber);
+    if (redeemNumber == 0 || pool.mappingToken == null) return;
+
+    const res = await getAllowance(pool.mappingToken, account, nftPoolAddress);
+    if (res.isZero()) console.log("Error, no more NFTs left!!");
+
+    const transaction = await redeemNFT(provider, nftPoolAddress, redeemNumber);
     setLoading(true);
     // Append current tx into pending tx list.
     setPendingTxs(new Set([transaction.hash, ...pendingTxs]));
-    getTransactionStatus(transaction.hash, async () => {
+    getTxStatus(transaction.hash, async () => {
       pendingTxs.delete(transaction.hash);
       setPendingTxs(new Set([...pendingTxs]));
       setLoading(false);
       // TODO(Peter): How to get the new NFT that user get from redeem.
     });
-  };
-
-  const checkUserNFTs = () => {
-    // todo
   };
 
   const changeRedeemNumber = (event) => {
@@ -86,7 +67,7 @@ const Redeem = ({ nftPoolAddress }) => {
                 <p className={styles.subtitle}>$AZUKI</p>
               </div>
             </div>
-            <ArrowRightAltIcon className={styles.swapIcon} />
+            <ArrowRightAlt className={styles.swapIcon} />
             <div className={styles.swapPartRight}>
               <img
                 src={src.src}

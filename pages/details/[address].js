@@ -1,7 +1,7 @@
-import styles from "../../styles/Home.module.css";
-import Details from "../../components/pool/details/Details";
-import { useRouter } from "next/router";
 import React, { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/router";
+import Details from "../../components/pool/details/Details";
+import styles from "../../styles/Home.module.css";
 
 export default function Home() {
   const router = useRouter();

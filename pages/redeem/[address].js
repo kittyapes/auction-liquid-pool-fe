@@ -1,7 +1,7 @@
-import styles from "../../styles/Home.module.css";
-import Redeem from "../../components/pool/redeem/Redeem";
-import { useRouter } from "next/router";
 import React, { useEffect, useState, useRef } from "react";
+import { useRouter } from "next/router";
+import Redeem from "../../components/pool/redeem/Redeem";
+import styles from "../../styles/Home.module.css";
 
 export default function Home() {
   const router = useRouter();

@@ -1,7 +1,7 @@
-import styles from "../../styles/Home.module.css";
-import Auction from "../../components/pool/auction/Auction";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import React, { useEffect, useState, useRef } from "react";
+import Auction from "../../components/pool/auction/Auction";
+import styles from "../../styles/Home.module.css";
 
 export default function Home() {
   const router = useRouter();

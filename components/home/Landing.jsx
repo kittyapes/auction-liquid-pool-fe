@@ -1,20 +1,15 @@
 import React from "react";
 import { useRouter } from "next/router";
-import styles from "../home/style/Landing.module.css";
 import { Button } from "@mui/material";
+import styles from "../home/style/Landing.module.css";
 
 const Landing = () => {
-  const CHAIN_ID = "5";
   const router = useRouter();
-  const swapNFTs = async () => {
-    router.push("/swap");
-    console.log("swapNFTs");
-  };
 
-  const listProject = async () => {
-    router.push("/list_project");
-    console.log("listProject");
-  };
+  const goSwapNFTs = () => router.push("/swap");
+
+  const goListProject = () => router.push("/list_project");
+
   return (
     <div className={styles.content}>
       <h className={styles.title}>NFT AUCTION</h>
@@ -32,7 +27,7 @@ const Landing = () => {
         sx={{ marginTop: 2, height: 60 }}
         variant="contained"
         size="large"
-        onClick={swapNFTs}
+        onClick={goSwapNFTs}
       >
         Swap NFTs
       </Button>
@@ -41,7 +36,7 @@ const Landing = () => {
         sx={{ marginTop: 2, height: 60 }}
         variant="contained"
         size="large"
-        onClick={listProject}
+        onClick={goListProject}
       >
         List Your Project
       </Button>

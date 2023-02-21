@@ -1,6 +1,6 @@
-const { InMemoryCache } = require("apollo-cache-inmemory");
-const { ApolloClient } = require("apollo-client");
-const { createHttpLink } = require("apollo-link-http");
+import { InMemoryCache } from "apollo-cache-inmemory";
+import { ApolloClient } from "apollo-client";
+import { createHttpLink } from "apollo-link-http";
 
 const client = new ApolloClient({
   link: createHttpLink({
@@ -10,10 +10,11 @@ const client = new ApolloClient({
   shouldBatch: true,
 });
 
-export const fetchFromGraph = async (query, key) => {
+export const fetchFromGraph = async (query, variables, key) => {
   try {
     const result = await client.query({
       query,
+      variables,
       fetchPolicy: "cache-first",
     });
     return result.data[key];
