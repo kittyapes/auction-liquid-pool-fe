@@ -98,23 +98,28 @@ const Details = ({ nftPoolAddress }) => {
   useEffect(() => {
     if (!collection || !currencyTokenPrice) return;
     const floorPrice =
-      collection.stats.floor_price != null ? collection.stats.floor_price : 0;
+      collection.stats != null && collection.stats.floor_price != null
+        ? collection.stats.floor_price
+        : 0;
     const floorPriceUSD = floorPrice * currencyTokenPrice;
 
-    const volume7Day = collection.stats.seven_day_volume;
+    const volume7Day = !collection.stats
+      ? 0
+      : collection.stats.seven_day_volume;
     const volume7DayUSD = volume7Day * floorPriceUSD;
 
     const sellerFee =
-      Object.values(collection.fees.seller_fees).length != 0
-        ? Object.values(collection.fees.seller_fees)[0]
+      Object.values(!collection.fees ? 0 : collection.fees.seller_fees)
+        .length != 0
+        ? Object.values(!collection.fees ? 0 : collection.fees.seller_fees)[0]
         : 0;
 
-    const changeDay1 = collection.stats.one_day_change;
-    const numOfOwners = collection.stats.num_owners;
+    const changeDay1 = !collection.stats ? 0 : collection.stats.one_day_change;
+    const numOfOwners = !collection.stats ? 0 : collection.stats.num_owners;
     let cardDatas = [
       {
         title: "NFTs",
-        value: collection.stats.total_supply,
+        value: !collection.stats ? 0 : collection.stats.total_supply,
         subValue: null,
       },
       {
@@ -158,7 +163,7 @@ const Details = ({ nftPoolAddress }) => {
     setCardDatas(cardDatas);
   }, [collection, currencyTokenPrice]);
 
-  return account == null ? (
+  return account == null || account === "" ? (
     <p className={styles.banner}>Connect Wallet</p>
   ) : chainId != ChainId.GÖRLI ? (
     <p className={styles.banner}>Please switch to Goerli Testnet</p>
