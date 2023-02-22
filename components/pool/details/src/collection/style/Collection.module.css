@@ -40,8 +40,9 @@
   position: relative;
   color: red;
   font-weight: 600;
-  top: 35px;
+  top: 5px;
   left: 100px;
+  height: 0px;
 }
 
 p .banner {

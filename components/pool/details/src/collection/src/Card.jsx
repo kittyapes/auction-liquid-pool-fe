@@ -54,7 +54,7 @@ const Card = ({ nftPoolAddress, type, src, tokenId }) => {
   }, [auction]);
 
   const handleAuction = () =>
-    router.push(`/${type.toLowerCase()}/${pool.address}?id=${tokenId}`);
+    router.push(`/${type.toLowerCase()}/${nftPoolAddress}?id=${tokenId}`);
 
   const clearTimer = (e) => {
     setTimer("00:00:00");

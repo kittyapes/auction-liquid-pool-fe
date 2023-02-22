@@ -108,6 +108,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
   }, [auction]);
 
   useEffect(() => {
+    if (!auction) return;
     if (auction.isEnded) {
       setStatus(Status.NOT_ACTIVATED);
     } else {
@@ -223,7 +224,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
                       className={`${styles.mappingToken} ${styles.space}`}
                     >{`1 MT`}</span>
                     <span className={styles.currencyToken}>
-                      {utils.formatEther(auctionInfo.bidAmount)}
+                      {utils.formatEther(auction.highestBid.amount)}
                       DEX
                     </span>
                   </div>
@@ -252,7 +253,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
                   </div>
                   <div>
                     <p className={styles.subtitle}>Current Highest Bid:</p>
-                    {account == auctionInfo.winner && (
+                    {account == auction.highestBid.account && (
                       <p> Your are the highest bid!</p>
                     )}
                   </div>
@@ -261,7 +262,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
                       className={`${styles.mappingToken} ${styles.space}`}
                     >{`1 MT`}</span>
                     <span className={styles.currencyToken}>
-                      {utils.formatEther(auctionInfo.bidAmount)}
+                      {utils.formatEther(auction.highestBid.amount)}
                       DEX
                     </span>
                   </div>
@@ -275,7 +276,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
                       className={`${styles.mappingToken} ${styles.space}`}
                     >{`1 MT`}</span>
                     <span className={styles.currencyToken}>
-                      {utils.formatEther(auctionInfo.nextBidAmount)}
+                      {utils.formatEther(nextBidAmount)}
                       DEX
                     </span>
                   </div>
@@ -297,7 +298,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
                       }}
                       id="outlined-basic"
                       variant="outlined"
-                      placeholder={utils.formatEther(auctionInfo.nextBidAmount)}
+                      placeholder={utils.formatEther(nextBidAmount)}
                       type="number"
                     />
                     <span className={styles.currencyToken}>DEX</span>
@@ -316,7 +317,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
             )}
             {status == Status.END && (
               <div className={styles.auctionDone}>
-                {account == auctionInfo.winner ? (
+                {account == auction.highestBid.account ? (
                   <div>
                     <div>
                       <p>YOU WIN THE ACTION</p>
@@ -342,7 +343,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
                     <p className={styles.subtitle} style={{ marginTop: "0" }}>
                       Auction winner is:
                     </p>
-                    <p style={{ margin: "0" }}>{auctionInfo.winner}</p>
+                    <p style={{ margin: "0" }}>{auction.highestBid.account}</p>
                   </div>
                 )}
               </div>
