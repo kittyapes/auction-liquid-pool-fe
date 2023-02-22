@@ -108,8 +108,9 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
   }, [auction]);
 
   useEffect(() => {
-    if (!auction) return;
-    if (auction.isEnded) {
+    // TODO(Peter): verify whether auction status should be
+    // set to not activated if aution is null.
+    if (auction == null) {
       setStatus(Status.NOT_ACTIVATED);
     } else {
       let deadTime = getDeadTime(auction.expireAt);
@@ -224,7 +225,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
                       className={`${styles.mappingToken} ${styles.space}`}
                     >{`1 MT`}</span>
                     <span className={styles.currencyToken}>
-                      {utils.formatEther(auction.highestBid.amount)}
+                      {utils.formatEther(0)}
                       DEX
                     </span>
                   </div>
