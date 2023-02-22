@@ -25,7 +25,10 @@ const Redeem = ({ nftPoolAddress }) => {
     if (redeemNumber == 0 || pool.mappingToken == null) return;
 
     const res = await getAllowance(pool.mappingToken, account, nftPoolAddress);
-    if (res.isZero()) console.log("Error, no more NFTs left!!");
+    if (res.isZero()) {
+      console.log("Error, failed to get allowance.");
+      return;
+    }
 
     const transaction = await redeemNFT(provider, nftPoolAddress, redeemNumber);
     setLoading(true);

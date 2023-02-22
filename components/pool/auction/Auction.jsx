@@ -163,7 +163,7 @@ const Auction = ({ nftPoolAddress, tokenId }) => {
   };
 
   const clearTimer = (e) => {
-    setTimer("00:00:00");
+    setTimer("");
     if (Ref.current) clearInterval(Ref.current);
     const id = setInterval(() => {
       let time = startTimer(e);
