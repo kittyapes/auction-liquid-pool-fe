@@ -6,7 +6,6 @@ import styles from "../header/style/Header.module.css";
 
 const Header = () => {
   const router = useRouter();
-
   const goHome = () => router.push("/");
 
   return (
