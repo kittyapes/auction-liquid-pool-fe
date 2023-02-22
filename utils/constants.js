@@ -10,3 +10,16 @@ export const DEX_TOKEN_ADDRESS = "0x334E2D204EaF5EF89F0AD7b4DaC167Bf8Fcc752e";
 export const MAX_FEE_PER_GAS = "50000000000";
 
 export const MAX_PRIORITY_FEE_PER_GAS = "2000000000";
+
+export const GOERLI_CHAIN = {
+  chainId: "0x5",
+  networkName: "Goerli",
+  rpcUrls: [
+    RPC_URL,
+    "https://eth-goerli.public.blastapi.io",
+    "https://rpc.ankr.com/eth_goerli",
+  ],
+  symbol: "ETH",
+  decimals: 18,
+  blockExplorerUrls: ["https://goerli.etherscan.io/"],
+};

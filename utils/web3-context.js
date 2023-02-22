@@ -2,21 +2,16 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
 import Web3Modal from "web3modal";
 import * as UAuthWeb3Modal from "@uauth/web3modal";
 import { Web3Provider } from "@ethersproject/providers";
+import { GOERLI_CHAIN } from "../utils/constants";
 
 const Web3Context = createContext(null);
-
-let web3Modal;
-if (typeof window !== "undefined")
-  web3Modal = new Web3Modal({
-    cacheProvider: true,
-    providerOptions: { connector: UAuthWeb3Modal.connector },
-  });
 
 export const useWeb3Context = () => {
   const web3Context = useContext(Web3Context);
@@ -33,19 +28,63 @@ export const Web3ContextProvider = ({ children }) => {
   const [provider, setProvider] = useState(null);
   const [pendingTxs, setPendingTxs] = useState(new Set([]));
 
+  const [web3Modal, setWeb3Modal] = useState();
+
+  useEffect(() => {
+    if (typeof window !== "undefined")
+      setWeb3Modal(
+        new Web3Modal({
+          cacheProvider: true,
+          providerOptions: { connector: UAuthWeb3Modal.connector },
+        })
+      );
+  }, [typeof window]);
+
+  useEffect(() => {
+    const isConnected = window.localStorage.getItem("connected");
+    if (isConnected && web3Modal) connect();
+  }, [web3Modal]);
+
   const hasCachedProvider = useCallback(() => {
-    if (!web3Modal) {
-      return false;
-    }
+    if (!web3Modal) return false;
     UAuthWeb3Modal.registerWeb3Modal(web3Modal);
     return !!web3Modal.cachedProvider;
-  }, []);
+  }, [web3Modal]);
+
+  const switchToTargetChain = async () => {
+    const chainId = "0x5"; // DEFAULT CHAIN ID - Goerli (test)
+    try {
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId }],
+      });
+      return true;
+    } catch (e) {
+      if (e.code === 4902) {
+        try {
+          await window.ethereum.request({
+            method: "wallet_addEthereumChain",
+            params: [GOERLI_CHAIN],
+          });
+          return true;
+        } catch (addError) {
+          console.error(addError);
+          return false;
+        }
+      } else {
+        console.error(e);
+        return false;
+      }
+    }
+  };
 
   const disconnect = useCallback(async () => {
-    web3Modal.clearCachedProvider();
     setConnected(false);
-
+    window.localStorage.setItem("connected", false);
     setTimeout(() => window.location.reload(), 1);
+
+    if (!web3Modal) return;
+    web3Modal.clearCachedProvider();
   }, []);
 
   const _initListeners = useCallback(
@@ -79,27 +118,37 @@ export const Web3ContextProvider = ({ children }) => {
   );
 
   const connect = useCallback(async () => {
-    const rawProvider = await web3Modal.connect();
+    if (!web3Modal) return;
+    try {
+      const rawProvider = await web3Modal.connect();
 
-    _initListeners(rawProvider);
-    const connectedProvider = new Web3Provider(rawProvider, "any");
-    const chainId = await connectedProvider
-      .getNetwork()
-      .then((network) => network.chainId);
-    const connectedAddress = await connectedProvider.getSigner().getAddress();
+      _initListeners(rawProvider);
+      const connectedProvider = new Web3Provider(rawProvider, "any");
+      const chainId = await connectedProvider
+        .getNetwork()
+        .then((network) => network.chainId);
+      const connectedAddress = await connectedProvider.getSigner().getAddress();
 
-    if (chainId !== 5) {
-      web3Modal.clearCachedProvider();
-      console.error("Unable to connect. Please change network using provider.");
-      return;
+      if (chainId !== 5) {
+        const switched = await switchToTargetChain();
+        if (!switched) {
+          web3Modal.clearCachedProvider();
+          console.error(
+            "Unable to connect. Please change network using provider."
+          );
+          return;
+        }
+      }
+
+      setChainId(chainId);
+      setAccount(connectedAddress);
+      setProvider(connectedProvider);
+      setConnected(true);
+      window.localStorage.setItem("connected", true);
+      return connectedProvider;
+    } catch (e) {
+      console.error(e);
     }
-
-    setChainId(chainId);
-    setAccount(connectedAddress);
-    setProvider(connectedProvider);
-    setConnected(true);
-
-    return connectedProvider;
   }, [_initListeners, web3Modal]);
 
   const onChainProvider = useMemo(
@@ -122,6 +171,7 @@ export const Web3ContextProvider = ({ children }) => {
       connected,
       account,
       chainId,
+      web3Modal,
       hasCachedProvider,
       pendingTxs,
       setPendingTxs,

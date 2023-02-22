@@ -84,7 +84,6 @@ const Details = ({ nftPoolAddress }) => {
 
     const fetchUniswapPairAddress = async () => {
       if (!pool.mappingToken) return;
-      console.log(pool);
       const address = await getUniswapPair(pool.mappingToken);
       setUniswapPairAddress(address);
     };
@@ -96,7 +95,7 @@ const Details = ({ nftPoolAddress }) => {
   }, [pool]);
 
   useEffect(() => {
-    if (!collection || !currencyTokenPrice) return;
+    if (!collection.stats || !currencyTokenPrice) return;
     const floorPrice =
       collection.stats.floor_price != null ? collection.stats.floor_price : 0;
     const floorPriceUSD = floorPrice * currencyTokenPrice;
